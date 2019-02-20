@@ -40,7 +40,7 @@
 #include <pw3270/plugin.h>
 
 #include "service.h"
-#include "dbus-glue.h"
+//#include "dbus-glue.h"
 
 #include <gtk/gtk.h>
 
@@ -55,7 +55,6 @@
 
  LIB3270_EXPORT int pw3270_plugin_start(GtkWidget *window, GtkWidget *terminal)
  {
-
 	GError	* error 		= NULL;
 	guint     result;
 	char	  session_id	= 0;

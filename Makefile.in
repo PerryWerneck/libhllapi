@@ -31,6 +31,7 @@ PACKAGE_NAME=@PACKAGE_NAME@
 
 PLUGIN_SOURCES= \
 	$(wildcard src/plugin/*.c) \
+	$(wildcard src/plugin/@OSNAME@/*.c) \
 	$(wildcard src/plugin/@OSNAME@/*.rc)
 
 TEST_SOURCES= \
@@ -78,9 +79,7 @@ BINRLS=$(BINDIR)/Release
 #---[ Rules ]----------------------------------------------------------------------------
 
 DEPENDS= \
-	Makefile \
-	src/include/*.h \
-	src/include/lib3270/*.h
+	Makefile
 
 CFLAGS= \
 	@CFLAGS@ \
@@ -229,11 +228,17 @@ $(POTDIR)/$(MODULE_NAME).pot: \
 locale: \
 	$(POTDIR)/$(MODULE_NAME).pot
 
+run: \
+	$(BINDBG)/$(MODULE_NAME)@DLLEXT@ \
+	$(BINDBG)/$(MODULE_NAME)@EXEEXT@
+
+	$(BINDBG)/$(MODULE_NAME)@EXEEXT@
 
 #---[ Debug Targets ]--------------------------------------------------------------------
 
 Debug: \
-	$(BINDBG)/$(MODULE_NAME)@DLLEXT@
+	$(BINDBG)/$(MODULE_NAME)@DLLEXT@ \
+	$(BINDBG)/$(MODULE_NAME)@EXEEXT@
 
 $(BINDBG)/lib$(MODULE_NAME).a: \
 	$(foreach SRC, $(basename $(CORE_SOURCES)), $(OBJDBG)/$(SRC).o)
@@ -260,25 +265,8 @@ $(BINDBG)/$(MODULE_NAME)@EXEEXT@: \
 		$(GTK_LIBS) \
 		$(GLIB_LIBS)
 
-$(BINDBG)/$(PACKAGE_NAME)d@EXEEXT@: \
-	$(foreach SRC, $(basename $(SERVICE_SOURCES)), $(OBJDBG)/$(SRC).o) \
-	$(BINDBG)/lib$(MODULE_NAME).a	
-
-	@$(MKDIR) $(@D)
-	@echo $< ...
-	@$(LD) \
-		-o $@ \
-		$(foreach SRC, $(basename $(SERVICE_SOURCES)), $(OBJDBG)/$(SRC).o) \
-		-L$(BINDBG) \
-		-Wl,-rpath,$(BINDBG) \
-		$(LDFLAGS) \
-		$(LIBS) \
-		-l$(MODULE_NAME) \
-		$(GLIB_LIBS)
-
 $(BINDBG)/$(MODULE_NAME)@DLLEXT@: \
-	$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJDBG)/$(SRC).o) \
-	$(BINDBG)/lib$(MODULE_NAME).a	
+	$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJDBG)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
 	@echo $< ...
@@ -287,7 +275,7 @@ $(BINDBG)/$(MODULE_NAME)@DLLEXT@: \
 		-o $@ \
 		$(LDFLAGS) \
 		$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJDBG)/$(SRC).o) \
-		-L$(BINDBG) -l$(MODULE_NAME) \
+		-L$(BINDBG) -lpw3270cpp \
 		$(V3270_LIBS) \
 		$(LIBS) \
 		$(GTK_LIBS)
@@ -308,8 +296,10 @@ cleanDebug:
 	@rm -fr $(BINDBG)
 	@rm -fr $(OBJDIR)/marshal
 
-clean: \
-	cleanDebug \
-	cleanRelease
+cleanRelease:
+
+	@rm -fr $(OBJRLS)
+	@rm -fr $(BINRLS)
+	@rm -fr $(OBJDIR)/marshal
 
 
