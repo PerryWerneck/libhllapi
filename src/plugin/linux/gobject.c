@@ -68,7 +68,7 @@ static void pw3270_dbus_class_init(PW3270DbusClass *klass)
 	object_class->finalize = pw3270_dbus_finalize;
 }
 
-static void pw3270_dbus_init(PW3270Dbus *object)
+static void pw3270_dbus_init(PW3270Dbus G_GNUC_UNUSED(*object))
 {
 
 }
@@ -199,6 +199,7 @@ int pw3270_dbus_check_valid_state(PW3270Dbus *object, DBusGMethodInvocation *con
 		case LIB3270_MESSAGE_RESOLVING:
 		case LIB3270_MESSAGE_CONNECTING:
 			error = g_error_new(ERROR_DOMAIN,EINPROGRESS,_( "Connecting to host" ));
+			break;
 
 		case LIB3270_MESSAGE_USER:
 			error = g_error_new(ERROR_DOMAIN,-1,_( "Unexpected state %04d" ),state);
@@ -512,7 +513,7 @@ void pw3270_dbus_set_clipboard(PW3270Dbus *object, const gchar *text, DBusGMetho
 	dbus_g_method_return(context,0);
 }
 
-void pw3270_dbus_set_script(PW3270Dbus *object, const gchar *text, int mode, DBusGMethodInvocation *context)
+void pw3270_dbus_set_script(PW3270Dbus *object, const gchar G_GNUC_UNUSED(*text), int mode, DBusGMethodInvocation *context)
 {
 	GtkWidget *widget = pw3270_get_terminal_widget(NULL);
 
@@ -540,7 +541,7 @@ void pw3270_dbus_get_host_charset(PW3270Dbus *object, DBusGMethodInvocation *con
 	dbus_g_method_return(context,lib3270_get_host_charset(pw3270_dbus_get_session_handle(object)));
 }
 
-void pw3270_dbus_get_display_charset(PW3270Dbus *object, DBusGMethodInvocation *context)
+void pw3270_dbus_get_display_charset(PW3270Dbus G_GNUC_UNUSED(*object), DBusGMethodInvocation *context)
 {
 	// Allways return UTF-8 to avoid double conversion
 	dbus_g_method_return(context,"UTF-8");

@@ -10,3 +10,4 @@ stamp-h1
 *.layout
 .bin
 .obj
+dbus-glue.h

@@ -50,6 +50,7 @@ XGETTEXT=@XGETTEXT@
 MSGCAT=@MSGCAT@
 WINDRES=@WINDRES@
 AR=@AR@
+DBUSBINDINGTOOL=@DBUSBINDINGTOOL@
 
 #---[ Paths ]----------------------------------------------------------------------------
 
@@ -79,7 +80,8 @@ BINRLS=$(BINDIR)/Release
 #---[ Rules ]----------------------------------------------------------------------------
 
 DEPENDS= \
-	Makefile
+	Makefile \
+	@DEPENDS@
 
 CFLAGS= \
 	@CFLAGS@ \
@@ -89,17 +91,30 @@ CFLAGS= \
 	@LIB3270_CFLAGS@ \
 	@V3270_CFLAGS@ \
 	@GTK_CFLAGS@ \
-	@GLIB_CFLAGS@
+	@GLIB_CFLAGS@ \
+	@PW3270_CFLAGS@
 
 GTK_LIBS=@GTK_LIBS@
 V3270_LIBS=@V3270_LIBS@
 GLIB_LIBS=@GLIB_LIBS@
+DBUS_LIBS=@DBUS_LIBS@ @GDBUS_LIBS@
 
 LIBS= \
 	@LIBS@ \
 	@LIBICONV@ \
 	@INTL_LIBS@ \
-	@LIB3270_LIBS@
+	@LIB3270_LIBS@ \
+	@PW3270_LIBS@
+
+src/include/dbus-glue.h: \
+	pw3270dbus.xml
+
+	@echo $@ ...
+	@$(DBUSBINDINGTOOL) \
+		--mode=glib-server \
+		--output=$@ \
+		--prefix=pw3270_dbus $^
+
 
 #---[ Debug Rules ]----------------------------------------------------------------------
 
@@ -191,7 +206,9 @@ $(BINRLS)/$(MODULE_NAME)@DLLEXT@: \
 		-L$(BINRLS) -l$(MODULE_NAME) \
 		$(V3270_LIBS) \
 		$(LIBS) \
-		$(GTK_LIBS)
+		$(GTK_LIBS) \
+		$(DBUS_LIBS)
+
 
 $(BINRLS)/lib$(MODULE_NAME).a: \
 	$(foreach SRC, $(basename $(CORE_SOURCES)), $(OBJRLS)/$(SRC).o)
@@ -278,7 +295,8 @@ $(BINDBG)/$(MODULE_NAME)@DLLEXT@: \
 		-L$(BINDBG) -lpw3270cpp \
 		$(V3270_LIBS) \
 		$(LIBS) \
-		$(GTK_LIBS)
+		$(GTK_LIBS) \
+		$(DBUS_LIBS)
 
 
 #---[ Clean Targets ]--------------------------------------------------------------------

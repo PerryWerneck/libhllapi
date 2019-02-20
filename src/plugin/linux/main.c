@@ -40,7 +40,7 @@
 #include <pw3270/plugin.h>
 
 #include "service.h"
-//#include "dbus-glue.h"
+#include "dbus-glue.h"
 
 #include <gtk/gtk.h>
 
@@ -53,7 +53,7 @@
 
 /*---[ Implement ]-------------------------------------------------------------------------------*/
 
- LIB3270_EXPORT int pw3270_plugin_start(GtkWidget *window, GtkWidget *terminal)
+ LIB3270_EXPORT int pw3270_plugin_start(GtkWidget *window, GtkWidget G_GNUC_UNUSED(*terminal))
  {
 	GError	* error 		= NULL;
 	guint     result;
@@ -144,7 +144,7 @@
 	return 0;
  }
 
- LIB3270_EXPORT int pw3270_plugin_stop(GtkWidget *window, GtkWidget *terminal)
+ LIB3270_EXPORT int pw3270_plugin_stop(GtkWidget G_GNUC_UNUSED(*window), GtkWidget G_GNUC_UNUSED(*terminal))
  {
 	if(service_name)
 	{
@@ -156,13 +156,13 @@
 	return 0;
  }
 
- void pw3270_dbus_quit(PW3270Dbus *object, DBusGMethodInvocation *context)
+ void pw3270_dbus_quit(PW3270Dbus G_GNUC_UNUSED(*object), DBusGMethodInvocation *context)
  {
 	gtk_main_quit();
 	dbus_g_method_return(context,0);
  }
 
- H3270 * pw3270_dbus_get_session_handle(PW3270Dbus *object)
+ H3270 * pw3270_dbus_get_session_handle(PW3270Dbus G_GNUC_UNUSED(*object))
  {
 	return lib3270_get_default_session_handle();
  }
