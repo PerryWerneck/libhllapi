@@ -66,11 +66,12 @@ static void pw3270_dbus_class_init(PW3270DbusClass *klass)
 	GObjectClass *object_class;
 	object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = pw3270_dbus_finalize;
+	debug("%s",__FUNCTION__);
 }
 
-static void pw3270_dbus_init(PW3270Dbus G_GNUC_UNUSED(*object))
+static void pw3270_dbus_init(PW3270Dbus *object)
 {
-
+	debug("%s(%p)",__FUNCTION__,object);
 }
 
 PW3270Dbus * pw3270_dbus_new(void)
@@ -80,12 +81,8 @@ PW3270Dbus * pw3270_dbus_new(void)
 
 void pw3270_dbus_get_revision(PW3270Dbus *object, DBusGMethodInvocation *context)
 {
-	trace("%s object=%p context=%p",__FUNCTION__,object,context);
-#ifdef PACKAGE_REVISION
-	dbus_g_method_return(context,PACKAGE_REVISION);
-#else
-	dbus_g_method_return(context,BUILD_DATE);
-#endif
+	debug("%s object=%p context=%p",__FUNCTION__,object,context);
+	dbus_g_method_return(context,lib3270_get_revision());
 }
 
 void pw3270_dbus_connect(PW3270Dbus *object, const gchar *uri, DBusGMethodInvocation *context)

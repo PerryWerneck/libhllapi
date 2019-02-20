@@ -3,11 +3,12 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="pw3270 HLLAPI v5.1 compatibility plugin" />
+		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output=".bin/Debug/pw3270 HLLAPI v5" prefix_auto="1" extension_auto="1" />
+				<Option output=".bin/Debug/ipc3270c" prefix_auto="1" extension_auto="1" />
 				<Option object_output=".obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -16,7 +17,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output=".bin/Release/pw3270 HLLAPI v5" prefix_auto="1" extension_auto="1" />
+				<Option output=".bin/Release/ipc3270c" prefix_auto="1" extension_auto="1" />
 				<Option object_output=".obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -31,6 +32,21 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="src/plugin/linux/daemon.h" />
+		<Unit filename="src/plugin/linux/globals.h" />
+		<Unit filename="src/plugin/linux/gobject.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/plugin/linux/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/plugin/linux/misc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/plugin/linux/service.h" />
+		<Unit filename="src/testprogram/testprogram.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

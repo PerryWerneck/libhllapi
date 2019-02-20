@@ -171,6 +171,7 @@
 
  H3270 * pw3270_dbus_get_session_handle(PW3270Dbus G_GNUC_UNUSED(*object))
  {
+ 	debug("%s=%p",__FUNCTION__,lib3270_get_default_session_handle());
 	return lib3270_get_default_session_handle();
  }
 
