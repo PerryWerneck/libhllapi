@@ -18,7 +18,7 @@
  * programa; se não, escreva para a Free Software Foundation, Inc., 51 Franklin
  * St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * Este programa está nomeado como pluginmain.c e possui - linhas de código.
+ * Este programa está nomeado como - e possui - linhas de código.
  *
  * Contatos:
  *
@@ -598,11 +598,12 @@
 
  LIB3270_EXPORT int pw3270_plugin_start(GtkWidget *window, GtkWidget *terminal)
  {
-	char id;
+	char		  id;
+	const gchar	* name = "pw3270";
 
 	for(id='A';id < 'Z';id++)
 	{
-		gchar	* pipename = g_strdup_printf("\\\\.\\pipe\\%s_%c",pw3270_get_session_name(window),id);
+		gchar	* pipename = g_strdup_printf("\\\\.\\pipe\\%s_%c",name,id);
 		gchar 	* ptr;
 		HANDLE	  hPipe;
 
@@ -636,9 +637,11 @@
 				NULL
 			};
 			pipe_source  	* source;
-			gchar 			* session = g_strdup_printf("%s:%c",pw3270_get_session_name(window),id);
+			gchar 			* session = g_strdup_printf("%s:%c",name,id);
 
-			pw3270_set_session_name(window,session);
+			// pw3270_set_session_name(window,session);
+			v3270_set_session_name(terminal,session);
+
 			g_free(session);
 
 			source = (pipe_source *) g_source_new(&pipe_source_funcs,sizeof(pipe_source));
