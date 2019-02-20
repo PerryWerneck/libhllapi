@@ -40,6 +40,7 @@
  #include <pw3270/plugin.h>
  #include <string.h>
  #include <stdlib.h>
+ #include <pw3270.h>
 
  /*---[ Globals ]------------------------------------------------------------------------------------*/
 

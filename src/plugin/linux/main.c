@@ -36,6 +36,7 @@
 #include <dbus/dbus-glib-lowlevel.h>
 #include <dbus/dbus-glib.h>
 
+#include <v3270.h>
 #include <pw3270.h>
 #include <pw3270/plugin.h>
 
@@ -53,12 +54,13 @@
 
 /*---[ Implement ]-------------------------------------------------------------------------------*/
 
- LIB3270_EXPORT int pw3270_plugin_start(GtkWidget *window, GtkWidget G_GNUC_UNUSED(*terminal))
+ LIB3270_EXPORT int pw3270_plugin_start(GtkWidget G_GNUC_UNUSED(*window), GtkWidget *terminal)
  {
-	GError	* error 		= NULL;
-	guint     result;
-	char	  session_id	= 0;
-	char	  id			= 'a';
+	GError		* error 		= NULL;
+	guint		  result;
+	char		  session_id	= 0;
+	char		  id			= 'a';
+	const gchar	* name			= "pw3270";
 
 	connection = dbus_g_bus_get_private(DBUS_BUS_SESSION, g_main_context_default(), &error);
 	if(error)
@@ -88,7 +90,7 @@
 	{
 		gboolean has_owner = FALSE;
 
-		service_name = g_strdup_printf("br.com.bb.%s.%c",pw3270_get_session_name(window),(int) id);
+		service_name = g_strdup_printf("br.com.bb.%s.%c",name,(int) id);
 
 		org_freedesktop_DBus_name_has_owner(proxy, service_name, &has_owner, NULL);
 
@@ -129,16 +131,16 @@
 
 	if(session_id)
 	{
-		gchar * path	= g_strdup_printf("/br/com/bb/%s",pw3270_get_session_name(window));
-		gchar * session	= g_strdup_printf("%s:%c",pw3270_get_session_name(window),g_ascii_toupper(session_id));
-		pw3270_set_session_name(window,session);
-		g_free(session);
+		g_autofree gchar * path	= g_strdup_printf("/br/com/bb/%s",name);
+		g_autofree gchar * session	= g_strdup_printf("%s:%c",name,g_ascii_toupper(session_id));
 
-		g_message("DBUS service path is %s",path);
+		// pw3270_set_session_name(window,session);
+		v3270_set_session_name(terminal,session);
+
+		g_message("DBUS service path is %s, session name is %s",path,session);
 
 		pw3270_dbus_register_object(connection,proxy,PW3270_TYPE_DBUS,&dbus_glib_pw3270_dbus_object_info,path);
 
-		g_free(path);
 	}
 
 	return 0;
@@ -146,10 +148,15 @@
 
  LIB3270_EXPORT int pw3270_plugin_stop(GtkWidget G_GNUC_UNUSED(*window), GtkWidget G_GNUC_UNUSED(*terminal))
  {
+ 	if(proxy)
+	{
+		debug("%s: Releasing proxy",__FUNCTION__);
+		g_object_unref(proxy);
+		proxy = NULL;
+	}
+
 	if(service_name)
 	{
-		// org_freedesktop_DBus_release_name
-
 		g_free(service_name);
 		service_name = NULL;
 	}
