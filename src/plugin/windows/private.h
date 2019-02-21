@@ -18,7 +18,7 @@
  * programa;  se  não, escreva para a Free Software Foundation, Inc., 59 Temple
  * Place, Suite 330, Boston, MA, 02111-1307, USA
  *
- * Este programa está nomeado como server.h e possui - linhas de código.
+ * Este programa está nomeado como -e possui - linhas de código.
  *
  * Contatos:
  *
@@ -40,14 +40,11 @@
  #include <pw3270.h>
  #include <pw3270/hllapi.h>
 
-#ifdef _WIN32
  #include <windows.h>
 
  #define PIPE_BUFFER_LENGTH HLLAPI_MAXLENGTH+30
 
  G_GNUC_INTERNAL void popup_lasterror(const gchar *fmt, ...);
  G_GNUC_INTERNAL void set_active(gboolean on);
-
-#endif // _WIN32
 
 

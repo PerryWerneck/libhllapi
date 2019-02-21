@@ -31,7 +31,7 @@
  *
  */
 
- #include "server.h"
+ #include "private.h"
 
 #ifdef _WIN32
 	#include <windows.h>
@@ -99,8 +99,8 @@
 	case ERROR_PIPE_CONNECTED:
 		trace("%s: ERROR_PIPE_CONNECTED",__FUNCTION__);
 		set_active(TRUE);
-		if(SetEvent(source->overlap.hEvent))
-			break;
+		SetEvent(source->overlap.hEvent);
+		break;
 
 	// If an error occurs during the connect operation...
 	default:
@@ -208,7 +208,7 @@
 	send_text(source,strdup(lib3270_get_url(lib3270_get_default_session_handle())));
  }
 
- static void process_input(pipe_source *source, DWORD cbRead)
+ static void process_input(pipe_source *source, DWORD G_GNUC_UNUSED(cbRead))
  {
 	const struct hllapi_packet_query * query = ((struct hllapi_packet_query *) source->buffer);
 
@@ -490,7 +490,7 @@
 
  }
 
- static gboolean IO_dispatch(GSource *source, GSourceFunc callback, gpointer data)
+ static gboolean IO_dispatch(GSource *source, GSourceFunc G_GNUC_UNUSED(callback), gpointer G_GNUC_UNUSED(data))
  {
 	/*
 	 * Called to dispatch the event source,
@@ -559,9 +559,8 @@
 
  }
 
- static gboolean IO_closure(gpointer data)
+ static gboolean IO_closure(gpointer G_GNUC_UNUSED(data))
  {
-//	trace("%s: data=%p",__FUNCTION__,data);
 	return 0;
  }
 

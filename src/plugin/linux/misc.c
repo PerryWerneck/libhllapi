@@ -39,7 +39,7 @@
 
 gpointer pw3270_dbus_register_object(DBusGConnection *connection,DBusGProxy G_GNUC_UNUSED(*proxy),GType object_type,const DBusGObjectInfo *info,const gchar *path)
 {
-	GObject *object = g_object_new (object_type, NULL);
+	GObject *object = G_OBJECT(g_object_new(object_type, NULL));
 	dbus_g_object_type_install_info (object_type, info);
 	dbus_g_connection_register_g_object (connection, path, object);
 	return object;

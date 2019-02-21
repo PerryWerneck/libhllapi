@@ -76,7 +76,7 @@ static void pw3270_dbus_init(PW3270Dbus *object)
 
 PW3270Dbus * pw3270_dbus_new(void)
 {
-	return g_object_new(PW3270_TYPE_DBUS, NULL);
+	return (PW3270Dbus *) g_object_new(PW3270_TYPE_DBUS, NULL);
 }
 
 void pw3270_dbus_get_revision(PW3270Dbus *object, DBusGMethodInvocation *context)
@@ -406,7 +406,7 @@ void pw3270_dbus_get_text_at(PW3270Dbus *object, int row, int col, int len, char
  void pw3270_dbus_set_toggle(PW3270Dbus *object, int id, int value, DBusGMethodInvocation *context)
  {
 	trace("%s object=%p context=%p",__FUNCTION__,object,context);
-	dbus_g_method_return(context,lib3270_set_toggle(pw3270_dbus_get_session_handle(object),id,value));
+	dbus_g_method_return(context,lib3270_set_toggle(pw3270_dbus_get_session_handle(object),(LIB3270_TOGGLE) id,value));
  }
 
 void pw3270_dbus_cmp_text_at(PW3270Dbus *object, int row, int col, const gchar *utftext, char lf, DBusGMethodInvocation *context)

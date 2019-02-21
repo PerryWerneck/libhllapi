@@ -55,7 +55,7 @@
  	g_message("Closing module %p",module);
 
 	static void (*stop)(GtkWidget *window, GtkWidget *terminal) = NULL;
-	if(!g_module_symbol(module,"pw3270_plugin_stop",(gpointer) &stop))
+	if(!g_module_symbol(module,"pw3270_plugin_stop",(void **) &stop))
 	{
 		g_message("Can't get stop method from plugin: %s",g_module_error());
 	}
@@ -93,12 +93,12 @@
  	if(!module)
 		return;
 
-	GtkWidget * terminal = g_object_get_data(G_OBJECT(button),"terminal");
+	GtkWidget * terminal = GTK_WIDGET(g_object_get_data(G_OBJECT(button),"terminal"));
 
 	const gchar * method_name = (gtk_toggle_tool_button_get_active(button) ? "pw3270_plugin_start" : "pw3270_plugin_stop");
 
 	static void (*call)(GtkWidget *window, GtkWidget *terminal) = NULL;
-	if(!g_module_symbol(module,method_name,(gpointer) &call))
+	if(!g_module_symbol(module,method_name,(void **) &call))
 	{
 		g_message("Can't get method \"%s\": %s",method_name,g_module_error());
 		return;

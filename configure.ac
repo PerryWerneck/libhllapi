@@ -50,6 +50,7 @@ AM_ICONV
 
 dnl Checks for programs.
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_SED
 AC_PROG_LN_S
 
@@ -77,8 +78,10 @@ DLLPREFIX="lib"
 case "$host" in
 	*-mingw32|*-pc-msys)
 		app_cv_osname="windows"
+
 		CFLAGS="$CFLAGS -pthread -D_WIN32_WINNT=0x0600"
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
+
 		LDFLAGS="$LDFLAGS -pthread"
 		DLLEXT=".dll"
 		DLLPREFIX=""
