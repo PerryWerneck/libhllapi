@@ -47,6 +47,8 @@
 		<Unit filename="src/plugin/windows/main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/plugin/windows/private.h" />
+		<Unit filename="src/plugin/windows/resources.rc" />
 		<Unit filename="src/testprogram/testprogram.c">
 			<Option compilerVar="CC" />
 		</Unit>

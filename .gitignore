@@ -11,3 +11,4 @@ stamp-h1
 .bin
 .obj
 dbus-glue.h
+*.rc
