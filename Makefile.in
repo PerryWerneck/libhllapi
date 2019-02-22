@@ -24,18 +24,19 @@
 # erico.mendonca@gmail.com	(Erico Mascarenhas de Mendonça)
 #
 
-#---[ Library configuration ]------------------------------------------------------------
-
-MODULE_NAME=ipc3270c
 PACKAGE_NAME=@PACKAGE_NAME@
 
-PLUGIN_SOURCES= \
-	$(wildcard src/plugin/*.c) \
-	$(wildcard src/plugin/@OSNAME@/*.c) \
-	$(wildcard src/plugin/@OSNAME@/*.rc)
+#---[ PLugin configuration ]-------------------------------------------------------------
 
-TEST_SOURCES= \
-	$(wildcard src/testprogram/*.c)
+PLUGIN_NAME=ipc3270c
+
+PLUGIN_SOURCES= \
+	$(wildcard src/$(PLUGIN_NAME)/*.c) \
+	$(wildcard src/$(PLUGIN_NAME)/@OSNAME@/*.c) \
+	$(wildcard src/$(PLUGIN_NAME)/@OSNAME@/*.rc)
+
+PLUGIN_TEST_SOURCES= \
+	src/testprograms/plugin.c
 
 #---[ Tools ]----------------------------------------------------------------------------
 
@@ -69,7 +70,7 @@ BASEDIR=@BASEDIR@
 
 POTDIR=$(BASEDIR)/.pot
 
-OBJDIR=$(BASEDIR)/.obj/$(MODULE_NAME)
+OBJDIR=$(BASEDIR)/.obj
 OBJDBG=$(OBJDIR)/Debug
 OBJRLS=$(OBJDIR)/Release
 
@@ -160,7 +161,7 @@ $(OBJRLS)/%.o: \
 
 #---[ Misc Rules ]-----------------------------------------------------------------------
 
-$(POTDIR)/$(MODULE_NAME)/%.pot: \
+$(POTDIR)/$(PLUGIN_NAME)/%.pot: \
 	%.c
 
 	@echo $(notdir $@) ...
@@ -174,7 +175,7 @@ $(POTDIR)/$(MODULE_NAME)/%.pot: \
 		$<
 	@touch $@
 
-$(POTDIR)/$(MODULE_NAME)/%.pot: \
+$(POTDIR)/$(PLUGIN_NAME)/%.pot: \
 	%.rc
 
 	@echo $< ...
@@ -185,13 +186,13 @@ $(POTDIR)/$(MODULE_NAME)/%.pot: \
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
-	$(BINRLS)/$(MODULE_NAME)@DLLEXT@ \
-	$(POTDIR)/$(MODULE_NAME).pot
+	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
+	$(POTDIR)/$(PLUGIN_NAME).pot
 
 Release: \
-	$(BINRLS)/$(MODULE_NAME)@DLLEXT@
+	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@
 
-$(BINRLS)/$(MODULE_NAME)@DLLEXT@: \
+$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@: \
 	$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJRLS)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
@@ -213,39 +214,39 @@ install: \
 	install-plugin
 
 install-plugin: \
-	$(BINRLS)/$(MODULE_NAME)@DLLEXT@
+	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@
 
 	@$(MKDIR) $(DESTDIR)$(libdir)/pw3270-plugins
 
 	@$(INSTALL_PROGRAM) \
-		$(BINRLS)/$(MODULE_NAME)@DLLEXT@ \
+		$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
 		$(DESTDIR)$(libdir)/pw3270-plugins
 
 #---[ Misc Targets ]---------------------------------------------------------------------
 
-$(POTDIR)/$(MODULE_NAME).pot: \
-	$(foreach SRC, $(basename $(SOURCES)), $(POTDIR)/$(MODULE_NAME)/$(SRC).pot)
+$(POTDIR)/$(PLUGIN_NAME).pot: \
+	$(foreach SRC, $(basename $(SOURCES)), $(POTDIR)/$(PLUGIN_NAME)/$(SRC).pot)
 
 	@rm -f $@
 	@mkdir -p `dirname $@`
 	@$(MSGCAT) --sort-output $^ > $@
 
 locale: \
-	$(POTDIR)/$(MODULE_NAME).pot
+	$(POTDIR)/$(PLUGIN_NAME).pot
 
-run: \
-	$(BINDBG)/$(MODULE_NAME)@DLLEXT@ \
-	$(BINDBG)/$(MODULE_NAME)@EXEEXT@
+run-plugin: \
+	$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@ \
+	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@
 
-	$(BINDBG)/$(MODULE_NAME)@EXEEXT@
+	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@
 
 #---[ Debug Targets ]--------------------------------------------------------------------
 
 Debug: \
-	$(BINDBG)/$(MODULE_NAME)@DLLEXT@ \
-	$(BINDBG)/$(MODULE_NAME)@EXEEXT@
+	$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@ \
+	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@
 
-$(BINDBG)/lib$(MODULE_NAME).a: \
+$(BINDBG)/lib$(PLUGIN_NAME).a: \
 	$(foreach SRC, $(basename $(CORE_SOURCES)), $(OBJDBG)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
@@ -254,8 +255,8 @@ $(BINDBG)/lib$(MODULE_NAME).a: \
 	@$(AR) rcs $@ $^
 
 
-$(BINDBG)/$(MODULE_NAME)@EXEEXT@: \
-	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o)
+$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@: \
+	$(foreach SRC, $(basename $(PLUGIN_TEST_SOURCES)), $(OBJDBG)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
 	@echo $< ...
@@ -270,7 +271,7 @@ $(BINDBG)/$(MODULE_NAME)@EXEEXT@: \
 		$(GTK_LIBS) \
 		$(GLIB_LIBS)
 
-$(BINDBG)/$(MODULE_NAME)@DLLEXT@: \
+$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@: \
 	$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJDBG)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
@@ -293,8 +294,8 @@ clean: \
 	cleanDebug \
 	cleanRelease
 
-	@rm -fr $(BASEDIR)/.tmp/$(MODULE_NAME)
-	@rm -fr $(POTDIR)/$(MODULE_NAME)
+	@rm -fr $(BASEDIR)/.tmp/$(PLUGIN_NAME)
+	@rm -fr $(POTDIR)/$(PLUGIN_NAME)
 
 cleanDebug:
 
