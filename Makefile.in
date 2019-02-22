@@ -225,6 +225,7 @@ $(POTDIR)/$(PLUGIN_NAME)/%.pot: \
 
 all: \
 	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
+	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@ \
 	$(POTDIR)/$(PLUGIN_NAME).pot
 
 Release: \
@@ -246,6 +247,20 @@ $(BINRLS)/$(PLUGIN_NAME)@DLLEXT@: \
 		$(GTK_LIBS) \
 		$(DBUS_LIBS)
 
+$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@: \
+	$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJRLS)/$(SRC).o)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(CXX) \
+		-shared -Wl,-soname,$(@F) \
+		-o $@ \
+		$(LDFLAGS) \
+		$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJRLS)/$(SRC).o) \
+		-lpw3270cpp \
+		-L$(BINDBG) \
+		$(LIBS) \
+		$(DBUS_LIBS)
 
 #---[ Install Targets ]------------------------------------------------------------------
 

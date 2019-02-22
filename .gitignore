@@ -10,5 +10,6 @@ stamp-h1
 *.layout
 .bin
 .obj
+.pot
 dbus-glue.h
 *.rc
