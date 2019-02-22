@@ -32,7 +32,7 @@
  #include <cstring>
 
  #include <pw3270/hllapi.h>
- #include <pw3270cpp.h>
+ #include <pw3270/pw3270cpp.h>
  #include "client.h"
 
  using namespace std;
