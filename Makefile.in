@@ -36,12 +36,25 @@ PLUGIN_SOURCES= \
 	$(wildcard src/$(PLUGIN_NAME)/@OSNAME@/*.rc)
 
 PLUGIN_TEST_SOURCES= \
-	src/testprograms/plugin.c
+	src/testprograms/$(PLUGIN_NAME).c
+
+#---[ Library configuration ]------------------------------------------------------------
+
+LIBRARY_NAME=hllapi
+
+LIBRARY_SOURCES= \
+	$(wildcard src/$(LIBRARY_NAME)/*.c) \
+	$(wildcard src/$(LIBRARY_NAME)/@OSNAME@/*.c) \
+	$(wildcard src/$(LIBRARY_NAME)/@OSNAME@/*.rc)
+
+LIBRARY_TEST_SOURCES= \
+	src/testprograms/$(LIBRARY_NAME).c
 
 #---[ Tools ]----------------------------------------------------------------------------
 
 CC=@CC@
 LD=@CC@
+CXX=@CXX@
 LN_S=@LN_S@
 MKDIR=@MKDIR_P@
 INSTALL=@INSTALL@
@@ -190,7 +203,8 @@ all: \
 	$(POTDIR)/$(PLUGIN_NAME).pot
 
 Release: \
-	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@
+	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
+	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@
 
 $(BINRLS)/$(PLUGIN_NAME)@DLLEXT@: \
 	$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJRLS)/$(SRC).o)
@@ -240,36 +254,41 @@ run-plugin: \
 
 	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@
 
+run-library: \
+	$(BINDBG)/$(LIBRARY_NAME)@DLLEXT@ \
+	$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
+
+	$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
+
 #---[ Debug Targets ]--------------------------------------------------------------------
 
 Debug: \
-	$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@ \
+	Debug-plugin \
+	Debug-library
+
+Debug-plugin: \
 	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@
 
-$(BINDBG)/lib$(PLUGIN_NAME).a: \
-	$(foreach SRC, $(basename $(CORE_SOURCES)), $(OBJDBG)/$(SRC).o)
-
-	@$(MKDIR) $(@D)
-	@echo $< ...
-
-	@$(AR) rcs $@ $^
-
+Debug-library: \
+	$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
 
 $(BINDBG)/$(PLUGIN_NAME)@EXEEXT@: \
-	$(foreach SRC, $(basename $(PLUGIN_TEST_SOURCES)), $(OBJDBG)/$(SRC).o)
+	$(foreach SRC, $(basename $(PLUGIN_TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@
 
 	@$(MKDIR) $(@D)
 	@echo $< ...
 	@$(LD) \
 		-o $@ \
-		$^ \
+		$(foreach SRC, $(basename $(PLUGIN_TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
 		-L$(BINDBG) \
 		-Wl,-rpath,$(BINDBG) \
 		$(LDFLAGS) \
 		$(LIBS) \
 		$(V3270_LIBS) \
 		$(GTK_LIBS) \
-		$(GLIB_LIBS)
+		$(GLIB_LIBS) \
+		$(DBUS_LIBS)
 
 $(BINDBG)/$(PLUGIN_NAME)@DLLEXT@: \
 	$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJDBG)/$(SRC).o)
@@ -279,14 +298,48 @@ $(BINDBG)/$(PLUGIN_NAME)@DLLEXT@: \
 	@$(LD) \
 		-shared -Wl,-soname,$(@F) \
 		-o $@ \
-		$(LDFLAGS) \
 		$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJDBG)/$(SRC).o) \
+		$(LDFLAGS) \
 		-L$(BINDBG) \
-		$(V3270_LIBS) \
 		$(LIBS) \
+		$(V3270_LIBS) \
 		$(GTK_LIBS) \
+		$(GLIB_LIBS) \
 		$(DBUS_LIBS)
 
+$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@: \
+	$(foreach SRC, $(basename $(LIBRARY_TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(BINDBG)/lib$(LIBRARY_NAME)@DLLEXT@
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(CXX) \
+		-o $@ \
+		$(foreach SRC, $(basename $(LIBRARY_TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
+		-Wl,-rpath,$(BINDBG) \
+		$(LDFLAGS) \
+		-L$(BINDBG) \
+		-l$(LIBRARY_NAME) \
+		$(LIBS) \
+		$(V3270_LIBS) \
+		$(GTK_LIBS) \
+		$(GLIB_LIBS) \
+		$(DBUS_LIBS)
+
+$(BINDBG)/lib$(LIBRARY_NAME)@DLLEXT@: \
+	$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJDBG)/$(SRC).o)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(CXX) \
+		-shared -Wl,-soname,$(@F) \
+		-o $@ \
+		$(LDFLAGS) \
+		$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJDBG)/$(SRC).o) \
+		-lpw3270cpp \
+		-L$(BINDBG) \
+		$(LIBS) \
+		$(DBUS_LIBS)
 
 #---[ Clean Targets ]--------------------------------------------------------------------
 
