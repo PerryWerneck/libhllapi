@@ -44,6 +44,7 @@ LIBRARY_NAME=hllapi
 
 LIBRARY_SOURCES= \
 	$(wildcard src/$(LIBRARY_NAME)/*.c) \
+	$(wildcard src/$(LIBRARY_NAME)/*.cc) \
 	$(wildcard src/$(LIBRARY_NAME)/@OSNAME@/*.c) \
 	$(wildcard src/$(LIBRARY_NAME)/@OSNAME@/*.rc)
 
@@ -146,6 +147,19 @@ $(OBJDBG)/%.o: \
 		-o $@ -c $<
 
 $(OBJDBG)/%.o: \
+	%.cc \
+	$(DEPENDS)
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+
+	@$(CXX) \
+		$(CFLAGS) \
+		-Wall -Wextra -fstack-check \
+		-DDEBUG=1 \
+		-o $@ -c $<
+
+$(OBJDBG)/%.o: \
 	%.rc
 
 	@echo $< ...
@@ -161,6 +175,17 @@ $(OBJRLS)/%.o: \
 	@echo $< ...
 	@$(MKDIR) $(@D)
 	@$(CC) \
+		$(CFLAGS) \
+		-DNDEBUG=1 \
+		-o $@ -c $<
+
+$(OBJRLS)/%.o: \
+	%.cc \
+	$(DEPENDS)
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+	@$(CXX) \
 		$(CFLAGS) \
 		-DNDEBUG=1 \
 		-o $@ -c $<
