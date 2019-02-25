@@ -8,7 +8,7 @@
 #
 # Setup:
 #
-# git remote add github https://github.com/PerryWerneck/pw3270-plugin-hllapi.git
+# git remote add https://github.com/PerryWerneck/pw3270-plugin-hllapi.git
 #
 #
 
