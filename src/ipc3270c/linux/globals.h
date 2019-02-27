@@ -45,7 +45,7 @@
 #if ! GLIB_CHECK_VERSION(2,44,0)
 
         G_GNUC_INTERNAL void hllapi_autoptr_cleanup_generic_gfree(void *p);
-        #define g_autofree __attribute__((cleanup(v3270_autoptr_cleanup_generic_gfree)))
+        #define g_autofree __attribute__((cleanup(hllapi_autoptr_cleanup_generic_gfree)))
 
 #endif // ! GLIB(2,44,0)
 
