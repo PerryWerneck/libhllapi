@@ -63,9 +63,6 @@
 		</Unit>
 		<Unit filename="src/ipc3270c/windows/private.h" />
 		<Unit filename="src/ipc3270c/windows/resources.rc" />
-		<Unit filename="src/plugin/linux/daemon.h" />
-		<Unit filename="src/plugin/linux/globals.h" />
-		<Unit filename="src/plugin/linux/service.h" />
 		<Unit filename="src/plugin/windows/private.h" />
 		<Unit filename="src/plugin/windows/resources.rc" />
 		<Unit filename="src/testprograms/hllapi.c">
