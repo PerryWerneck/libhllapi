@@ -209,33 +209,20 @@
 
 int main (int argc, char **argv) {
 
-	/*
-	GVariantBuilder builder;
+	static const GOptionEntry app_options[] = {
+		{ "plugin-path",		'P', 0, G_OPTION_ARG_STRING, &plugin_path, 	"Path for plugin search",	NULL						},
+		{ "install",			'S', 0, G_OPTION_ARG_STRING, &session_name,	"Session name",				"pw3270"					},
+		{ "module",				'm', 0, G_OPTION_ARG_STRING, &plugin_name,	"Module name",				"ipc3270c."	G_MODULE_SUFFIX	},
 
-	g_variant_builder_init(&builder,G_VARIANT_TYPE("(isi)"));
-
-	g_variant_builder_add(&builder, "i", 10);
-	g_variant_builder_add(&builder, "s", "teste");
-	g_variant_builder_add(&builder, "i", 20);
-
-	GVariant *value = g_variant_builder_end(&builder);
-
-	size_t szPacket = 0;
-	g_autofree unsigned char * buffer = ipc3270_pack("teste", value, &szPacket);
-	g_variant_unref(value);
-
-	debug("Package \"%s\" was created with %u bytes", buffer, (unsigned int) szPacket);
-
-	value = ipc3270_unpack(buffer);
-
-	g_variant_unref(value);
-	*/
+		{ NULL }
+	};
 
 	GtkApplication *app;
 	int status;
 
-	app = gtk_application_new ("br.com.bb.pw3270",G_APPLICATION_FLAGS_NONE);
+	app = gtk_application_new("br.com.bb.ipc3270c",G_APPLICATION_FLAGS_NONE);
 
+	g_application_add_main_option_entries(G_APPLICATION(app),app_options);
 	g_signal_connect (app, "activate", G_CALLBACK(activate), NULL);
 
 	status = g_application_run (G_APPLICATION (app), argc, argv);

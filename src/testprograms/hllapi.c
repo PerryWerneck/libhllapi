@@ -30,6 +30,7 @@
  #include <stdio.h>
  #include <string.h>
  #include <time.h>
+ #include <getopt.h>
  #include <pw3270/hllapi.h>
 
  #if defined(DEBUG) && defined(_WIN32)
@@ -39,10 +40,11 @@
 
  #define MAX_DATA_SIZE 8000	//< Maximum data size for this application.
 
- static CHAR hllapi_data[MAX_DATA_SIZE];
+// static CHAR hllapi_data[MAX_DATA_SIZE];
 
 /*---[ Implement ]--------------------------------------------------------------------------------*/
 
+ /*
  static void connect_ps(const char *session)
  {
  	WORD len;
@@ -54,51 +56,65 @@
 	len = strlen(session);
 	hllapi(&fn,hllapi_data,&len,&rc);
 
-	/*
-	if(rc)
-	{
-		trace("HLLAPI_CMD_CONNECTPS(%s) exits with rc=%d", session, (int) rc);
-	}
-	*/
-
  }
+ */
 
- int main(int numpar, char *param[])
+ int main(int argc, char **argv)
  {
+ 	const char *host	= NULL;
  	const char *session = "pw3270:A";
 
- 	connect_ps(session);
+	#pragma GCC diagnostic push
+	static struct option options[] =
+	{
+		{ "host",			required_argument,	0,	'h' },
+		{ "session-name",	required_argument,	0,	'S' },
+		{ 0, 0, 0, 0}
+	};
+	#pragma GCC diagnostic pop
 
- 	/*
+	int long_index =0;
+	int opt;
+	while((opt = getopt_long(argc, argv, "h:S:", options, &long_index )) != -1)
+	{
 
- 	printf("init(%s)=%d\n",session,(int) hllapi_init((LPSTR) session));
-	printf("revision=%d\n",(int) hllapi_get_revision());
-	printf("connect=%d\n",(int) hllapi_connect((char *) "fandezhi.efglobe.com:23",1));
-	printf("wait_for_ready=%d\n",(int) hllapi_wait_for_ready(10));
-	printf("connected=%s\n",(int) hllapi_is_connected() ? "Yes" : "No");
+		switch(opt)
+		{
+		case 'h':
+			host = optarg;
+			break;
 
-//	printf("disconnect=%d\n",(int) hllapi_disconnect());
+		case 'S':
+			session = optarg;
+			break;
 
+		}
 
-	printf("deinit=%d\n",(int) hllapi_deinit());
+	}
 
- 	DWORD	revision;
- 	int 	rc;
-
- 	rc = hllapi_init("");
+ 	int rc = hllapi_init((char *) session);
  	if(rc)
 	{
-		printf("Init exits with rc=%d\n",rc);
+		printf("hllapi_init returns with rc=%d\n",rc);
 		return rc;
 	}
 
-	if(!hllapi_get_revision(&revision))
-		printf("Library revision is %d\n",(int) revision);
+	printf("Library revision is %d\n",(int) hllapi_get_revision());
 
+	if(host) {
 
-	printf("Deinit exits with rc=%d\n",rc);
+		printf("connect=%d\n",(int) hllapi_connect((char *) host,1));
+		printf("wait_for_ready=%d\n",(int) hllapi_wait_for_ready(10));
+		printf("connected=%s\n",(int) hllapi_is_connected() ? "Yes" : "No");
+
+		printf("disconnect=%d\n",(int) hllapi_disconnect());
+	}
+
+	printf("connected=%s\n",(int) hllapi_is_connected() ? "Yes" : "No");
+
 	rc = hllapi_deinit();
-*/
+	printf("hllapi_deinit exits with rc=%d\n",rc);
+
 	return 0;
  }
 
