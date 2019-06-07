@@ -140,6 +140,8 @@
 
 		static const gchar * path = "/br/com/bb/pw3270";
 		g_message("DBUS service path is %s, session name is %s",path,session);
+		v3270_set_session_name(terminal,session);
+
 		pw3270_dbus_register_object(connection,proxy,PW3270_TYPE_DBUS,&dbus_glib_pw3270_dbus_object_info,path);
 
 	}
