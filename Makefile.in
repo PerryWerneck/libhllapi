@@ -250,6 +250,23 @@ $(BINRLS)/$(PLUGIN_NAME)@DLLEXT@: \
 		$(DBUS_LIBS)
 
 $(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@: \
+	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@
+
+	@echo $< ...
+	@rm -f $@
+	@$(LN_S) \
+		$^ \
+		$@
+
+$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@: \
+	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
+
+	@rm -f $@
+	@$(LN_S) \
+		$^ \
+		$@
+
+$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@: \
 	$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJRLS)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
@@ -281,6 +298,7 @@ $(PLUGIN_NAME)-@PACKAGE_VERSION@.@host@.zip: \
 #---[ Install Targets ]------------------------------------------------------------------
 
 install: \
+	install-shared \
 	install-plugin
 
 install-plugin: \
@@ -291,6 +309,23 @@ install-plugin: \
 	@$(INSTALL_PROGRAM) \
 		$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
 		$(DESTDIR)$(libdir)/pw3270-plugins
+
+install-shared: \
+	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@
+
+	@$(MKDIR) $(DESTDIR)/$(libdir)
+
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
+		$(DESTDIR)/$(libdir)
+
+	@$(LN_S) \
+		lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
+		$(DESTDIR)/$(libdir)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
+
+	@$(LN_S) \
+		lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
+		$(DESTDIR)/$(libdir)/lib$(LIBRARY_NAME)@DLLEXT@
 
 #---[ Misc Targets ]---------------------------------------------------------------------
 
