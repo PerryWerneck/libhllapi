@@ -598,7 +598,7 @@
  LIB3270_EXPORT int pw3270_plugin_start(GtkWidget *window, GtkWidget *terminal)
  {
 	char		  id;
-	const gchar	* name = gtk_widget_get_name(window);
+	const gchar	* name = v3270_get_session_name(terminal);
 
 	for(id='A';id < 'Z';id++)
 	{

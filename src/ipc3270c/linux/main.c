@@ -61,7 +61,8 @@
 	guint		  result;
 	char		  session_id	= 0;
 	char		  id			= 'a';
-	const gchar	* name			= "pw3270";
+	gchar		* ptr;
+	const gchar	* name = v3270_get_session_name(terminal);
 
 	connection = dbus_g_bus_get_private(DBUS_BUS_SESSION, g_main_context_default(), &error);
 	if(error)
@@ -92,6 +93,8 @@
 		gboolean has_owner = FALSE;
 
 		service_name = g_strdup_printf("br.com.bb.%s.%c",name,(int) id);
+		for(ptr=service_name;*ptr;ptr++)
+			*ptr = g_ascii_tolower(*ptr);
 
 		org_freedesktop_DBus_name_has_owner(proxy, service_name, &has_owner, NULL);
 
@@ -132,14 +135,11 @@
 
 	if(session_id)
 	{
-		g_autofree gchar * path	= g_strdup_printf("/br/com/bb/%s",name);
+
 		g_autofree gchar * session	= g_strdup_printf("%s:%c",name,g_ascii_toupper(session_id));
 
-		// pw3270_set_session_name(window,session);
-		v3270_set_session_name(terminal,session);
-
+		static const gchar * path = "/br/com/bb/pw3270";
 		g_message("DBUS service path is %s, session name is %s",path,session);
-
 		pw3270_dbus_register_object(connection,proxy,PW3270_TYPE_DBUS,&dbus_glib_pw3270_dbus_object_info,path);
 
 	}

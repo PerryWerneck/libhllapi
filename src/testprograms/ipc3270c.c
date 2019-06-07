@@ -130,6 +130,7 @@
 	GModule   * module		= NULL;
 
 	gtk_widget_set_name(window,session_name);
+	v3270_set_session_name(terminal, session_name);
 
 	// Setup tabs
 	gtk_notebook_append_page(GTK_NOTEBOOK(notebook),terminal,gtk_label_new(v3270_get_session_name(terminal)));
@@ -211,7 +212,7 @@ int main (int argc, char **argv) {
 
 	static const GOptionEntry app_options[] = {
 		{ "plugin-path",		'P', 0, G_OPTION_ARG_STRING, &plugin_path, 	"Path for plugin search",	NULL						},
-		{ "install",			'S', 0, G_OPTION_ARG_STRING, &session_name,	"Session name",				"pw3270"					},
+		{ "session-name",		'S', 0, G_OPTION_ARG_STRING, &session_name,	"Session name",				"pw3270"					},
 		{ "module",				'm', 0, G_OPTION_ARG_STRING, &plugin_name,	"Module name",				"ipc3270c."	G_MODULE_SUFFIX	},
 
 		{ NULL }
