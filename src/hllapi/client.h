@@ -39,7 +39,7 @@
 
  #if defined(DEBUG) && defined(_WIN32)
 	#undef trace
-	#define trace( fmt, ... )	{ FILE *out = fopen("c:\\Users\\Perry\\hllapi.log","a"); if(out) { fprintf(out, "%s(%d) " fmt "\n", __FILE__, __LINE__, __VA_ARGS__ ); fclose(out); } }
+	#define trace( fmt, ... )	fprintf(stderr, "%s(%d) " fmt "\n", __FILE__, __LINE__, __VA_ARGS__ ); fflush(stderr);
  #endif // DEBUG
 
  #ifdef __cplusplus
