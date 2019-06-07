@@ -185,7 +185,7 @@
 	WriteFile(source->hPipe,&pkt,wrote,&wrote,NULL);
  }
 
- static int do_file_transfer(struct hllapi_packet_file_transfer * source)
+ static int do_file_transfer(struct hllapi_packet_file_transfer G_GNUC_UNUSED(* source))
  {
  	/*
  	const gchar	* local		= (const char *) source->text;
@@ -598,13 +598,13 @@
  LIB3270_EXPORT int pw3270_plugin_start(GtkWidget *window, GtkWidget *terminal)
  {
 	char		  id;
-	const gchar	* name = "pw3270";
+	const gchar	* name = gtk_widget_get_name(window);
 
 	for(id='A';id < 'Z';id++)
 	{
-		gchar	* pipename = g_strdup_printf("\\\\.\\pipe\\%s_%c",name,id);
-		gchar 	* ptr;
-		HANDLE	  hPipe;
+		g_autofree gchar	* pipename = g_strdup_printf("\\\\.\\pipe\\%s_%c",name,id);
+		gchar			 	* ptr;
+		HANDLE				  hPipe;
 
 		for(ptr=pipename;*ptr;ptr++)
 			*ptr = g_ascii_tolower(*ptr);
@@ -622,7 +622,6 @@
 									NULL);						// default security attributes
 
 		trace("%s = %p",pipename,hPipe);
-		g_free(pipename);
 
 		if(hPipe != INVALID_HANDLE_VALUE)
 		{
@@ -635,15 +634,8 @@
 				IO_closure,
 				NULL
 			};
-			pipe_source  	* source;
-			gchar 			* session = g_strdup_printf("%s:%c",name,id);
-
-			// pw3270_set_session_name(window,session);
-			v3270_set_session_name(terminal,session);
-
-			g_free(session);
-
-			source = (pipe_source *) g_source_new(&pipe_source_funcs,sizeof(pipe_source));
+			g_autofree gchar	* session = g_strdup_printf("%s:%c",name,id);
+			pipe_source			* source = (pipe_source *) g_source_new(&pipe_source_funcs,sizeof(pipe_source));
 
 			source->hPipe			= hPipe;
 			source->state			= PIPE_STATE_WAITING;
@@ -651,6 +643,9 @@
 
 			g_source_attach((GSource *) source,NULL);
 			IO_accept(source);
+
+			v3270_set_session_name(terminal,session);
+			g_message("Session %s attached to %s",session,pipename);
 
 			return 0;
 		}
@@ -662,7 +657,7 @@
 	return -1;
  }
 
- LIB3270_EXPORT int pw3270_plugin_stop(GtkWidget *window, GtkWidget *terminal)
+ LIB3270_EXPORT int pw3270_plugin_stop(GtkWidget G_GNUC_UNUSED(*window), GtkWidget G_GNUC_UNUSED(*terminal))
  {
 
 	return 0;

@@ -55,7 +55,11 @@
 			delete hSession;
 		hSession = session::create(mode);
 
-		session::get_default()->set_display_charset();
+		if(!hSession) {
+			return HLLAPI_STATUS_UNAVAILABLE;
+		}
+
+		hSession->set_display_charset();
 
 		trace("hSession=%p",hSession);
 	}
@@ -65,7 +69,8 @@
 		return HLLAPI_STATUS_SYSTEM_ERROR;
 	}
 
- 	return hSession ? HLLAPI_STATUS_SUCCESS : HLLAPI_STATUS_UNAVAILABLE;
+ 	return HLLAPI_STATUS_SUCCESS;
+
  }
 
  HLLAPI_API_CALL hllapi_deinit(void)

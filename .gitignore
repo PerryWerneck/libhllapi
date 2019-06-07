@@ -13,3 +13,4 @@ stamp-h1
 .pot
 dbus-glue.h
 *.rc
+*.cache
