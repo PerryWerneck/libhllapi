@@ -14,3 +14,4 @@ stamp-h1
 dbus-glue.h
 *.rc
 *.cache
+*.zip

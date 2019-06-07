@@ -264,6 +264,20 @@ $(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@: \
 		$(LIBS) \
 		$(DBUS_LIBS)
 
+zip: \
+	$(PLUGIN_NAME)-@PACKAGE_VERSION@.@host@.zip
+
+$(PLUGIN_NAME)-@PACKAGE_VERSION@.@host@.zip: \
+	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
+	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@ \
+	$(POTDIR)/$(PLUGIN_NAME).pot
+
+	@rm -f $@
+	@zip -9 -j $@ \
+		$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
+		$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@ \
+		$(POTDIR)/$(PLUGIN_NAME).pot
+
 #---[ Install Targets ]------------------------------------------------------------------
 
 install: \
@@ -311,6 +325,23 @@ Debug-plugin: \
 
 Debug-library: \
 	$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
+
+zip-debug: \
+	$(PLUGIN_NAME)-debug-@PACKAGE_VERSION@.@host@.zip
+
+$(PLUGIN_NAME)-debug-@PACKAGE_VERSION@.@host@.zip: \
+	$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@ \
+	$(BINDBG)/lib$(LIBRARY_NAME)@DLLEXT@ \
+	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@ \
+	$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
+
+	@rm -f $@
+	@zip -9 -j $@ \
+		$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@ \
+		$(BINDBG)/lib$(LIBRARY_NAME)@DLLEXT@ \
+		$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@ \
+		$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
+
 
 $(BINDBG)/$(PLUGIN_NAME)@EXEEXT@: \
 	$(foreach SRC, $(basename $(PLUGIN_TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
