@@ -29,8 +29,8 @@
 
 #---[ Main package ]--------------------------------------------------------------------------------------------------
 
-Summary:	D-Bus based IPC plugin for pw3270 (Compatible version)
-Name:		pw3270-plugin-dbus
+Summary:	HLLAPI plugin and client library for pw3270
+Name:		pw3270-plugin-hllapi
 Version:	5.2
 Release:	0
 License:	LGPL-3.0
@@ -68,7 +68,7 @@ BuildRequires:	gtk3-devel
 
 %description
 
-D-Bus plugin for compatibility with pw3270 5.1 language bindings.
+Plugin and client library for compatibility with the old HLLAPI.
 
 See more details at https://softwarepublico.gov.br/social/pw3270/
 
@@ -91,7 +91,7 @@ rm -rf $RPM_BUILD_ROOT
 
 make \
 	DESTDIR=%{?buildroot:%{buildroot}} \
-    install-plugin
+	install
 
 %files
 %defattr(-,root,root)
