@@ -21,12 +21,6 @@
 %define MAJOR_VERSION 5
 %define MINOR_VERSION 2
 
-#---[ Macros ]--------------------------------------------------------------------------------------------------------
-
-%if ! %{defined _release}
-  %define _release suse%{suse_version}
-%endif
-
 #---[ Main package ]--------------------------------------------------------------------------------------------------
 
 Summary:	HLLAPI plugin and client library for pw3270
@@ -41,8 +35,9 @@ Url:		https://portal.softwarepublico.gov.br/social/pw3270/
 Group:		System/X11/Terminals
 BuildRoot:	/var/tmp/%{name}-%{version}
 
-BuildRequires:	libv3270-%{MAJOR_VERSION}_%{MINOR_VERSION}-devel
-BuildRequires:	lib3270-%{MAJOR_VERSION}_%{MINOR_VERSION}-devel
+
+BuildRequires:	lib3270-devel >= 5.2
+BuildRequires:	libv3270-devel >= 5.2
 BuildRequires:	pw3270-devel >= 5.2
 BuildRequires:  autoconf >= 2.61
 BuildRequires:  automake
@@ -98,6 +93,10 @@ make \
 %doc AUTHORS LICENSE README.md
 
 %{_libdir}/pw3270-plugins/*.so
+
+%{_libdir}/libhllapi.so
+%{_libdir}/libhllapi.so.%{MAJOR_VERSION}
+%{_libdir}/libhllapi.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
 %pre
 /sbin/ldconfig
