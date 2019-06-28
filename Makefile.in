@@ -115,6 +115,8 @@ GTK_LIBS=@GTK_LIBS@
 V3270_LIBS=@V3270_LIBS@
 GLIB_LIBS=@GLIB_LIBS@
 DBUS_LIBS=@DBUS_LIBS@ @GDBUS_LIBS@
+STATIC_LDFLAGS=@STATIC_LDFLAGS@
+LDFLAGS=@LDFLAGS@
 
 LIBS= \
 	@LIBS@ \
@@ -274,7 +276,7 @@ $(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERS
 	@$(CXX) \
 		-shared -Wl,-soname,$(@F) \
 		-o $@ \
-		$(LDFLAGS) \
+		$(LDFLAGS) $(STATIC_LDFLAGS)\
 		$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJRLS)/$(SRC).o) \
 		-lpw3270cpp \
 		-L$(BINDBG) \
@@ -440,7 +442,7 @@ $(BINDBG)/lib$(LIBRARY_NAME)@DLLEXT@: \
 	@$(CXX) \
 		-shared -Wl,-soname,$(@F) \
 		-o $@ \
-		$(LDFLAGS) \
+		$(LDFLAGS) $(STATIC_LDFLAGS)\
 		$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJDBG)/$(SRC).o) \
 		-lpw3270cpp \
 		-L$(BINDBG) \

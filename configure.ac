@@ -81,7 +81,7 @@ case "$host" in
 
 		CFLAGS="$CFLAGS -pthread -D_WIN32_WINNT=0x0600"
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
-		LDFLAGS="-static-libgcc -static-libstdc++ $LDFLAGS"
+		STATIC_LDFLAGS="-static-libgcc -static-libstdc++"
 		DLLEXT=".dll"
 		DLLPREFIX=""
 
@@ -109,6 +109,8 @@ AC_SUBST(LIBS)
 AC_SUBST(LOGDIR)
 AC_SUBST(DLLEXT)
 AC_SUBST(DLLPREFIX)
+AC_SUBST(STATIC_LDFLAGS)
+AC_SUBST(LDFLAGS)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for other programs
