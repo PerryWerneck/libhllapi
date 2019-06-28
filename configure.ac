@@ -81,8 +81,7 @@ case "$host" in
 
 		CFLAGS="$CFLAGS -pthread -D_WIN32_WINNT=0x0600"
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
-
-		LDFLAGS="$LDFLAGS -pthread"
+		LDFLAGS="-static-libgcc -static-libstdc++ $LDFLAGS"
 		DLLEXT=".dll"
 		DLLPREFIX=""
 
