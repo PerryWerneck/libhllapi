@@ -35,6 +35,8 @@ Url:		https://portal.softwarepublico.gov.br/social/pw3270/
 Group:		System/X11/Terminals
 BuildRoot:	/var/tmp/%{name}-%{version}
 
+Provides:	pw3270-plugin-dbus
+Conflicts:	otherproviders(pw3270-plugin-dbus)
 
 BuildRequires:	lib3270-devel >= 5.2
 BuildRequires:	libv3270-devel >= 5.2
