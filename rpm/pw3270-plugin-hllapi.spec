@@ -19,13 +19,13 @@
 #---[ Versions ]------------------------------------------------------------------------------------------------------
 
 %define MAJOR_VERSION 5
-%define MINOR_VERSION 2
+%define MINOR_VERSION 1
 
 #---[ Main package ]--------------------------------------------------------------------------------------------------
 
 Summary:	HLLAPI plugin and client library for pw3270
 Name:		pw3270-plugin-hllapi
-Version:	5.2
+Version:	5.1
 Release:	0
 License:	LGPL-3.0
 Source:		%{name}-%{version}.tar.xz
