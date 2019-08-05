@@ -45,6 +45,7 @@
 #include <v3270.h>
 #include <lib3270/actions.h>
 #include <lib3270/charset.h>
+#include <lib3270/toggle.h>
 
 #include "service.h"
 

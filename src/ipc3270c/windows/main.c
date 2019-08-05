@@ -44,6 +44,7 @@
  #include <pw3270/ipcpackets.h>
  #include <lib3270/actions.h>
  #include <lib3270/charset.h>
+ #include <lib3270/toggle.h>
 
 /*--[ Defines ]--------------------------------------------------------------------------------------*/
 
@@ -595,7 +596,7 @@
 	LocalFree(lpMsgBuf);
  }
 
- LIB3270_EXPORT int pw3270_plugin_start(GtkWidget *window, GtkWidget *terminal)
+ LIB3270_EXPORT int pw3270_plugin_start(GtkWidget G_GNUC_UNUSED(*window), GtkWidget *terminal)
  {
 	char		  id;
 	const gchar	* name = v3270_get_session_name(terminal);

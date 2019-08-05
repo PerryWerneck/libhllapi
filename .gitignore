@@ -15,3 +15,4 @@ dbus-glue.h
 *.rc
 *.cache
 *.zip
+*.bak
