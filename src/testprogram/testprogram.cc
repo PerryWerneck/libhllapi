@@ -29,7 +29,10 @@
 
  #include <iostream>
  #include <getopt.h>
+ #include <cstring>
  #include <lib3270/hllapi.h>
+
+ #define SCREEN_LENGTH 2000
 
  using namespace std;
 
@@ -88,7 +91,27 @@
 		return rc;
 	}
 
-	cout << "Host is " << (hllapi_is_connected() ? "connected" : "not connected") << endl;
+	if(hllapi_is_connected()) {
+
+		cout << "Host is connected" << endl;
+
+		char buffer[SCREEN_LENGTH+1];
+		memset(buffer,' ',SCREEN_LENGTH);
+		buffer[SCREEN_LENGTH] = 0;
+
+		rc = hllapi_get_screen(0,buffer,SCREEN_LENGTH);
+		cout << "hllapi_get_screen returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+
+		if(rc == HLLAPI_STATUS_SUCCESS) {
+			cout << endl << buffer << endl;
+		}
+
+	} else {
+
+		cout << "Host is not connected" << endl;
+
+
+	}
 
 	rc = hllapi_disconnect();
  	if(rc) {
