@@ -82,6 +82,20 @@
 		return rc;
 	}
 
+	rc = hllapi_wait_for_ready(10);
+ 	if(rc) {
+		cout << "hllapi_wait_for_ready returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+		return rc;
+	}
+
+	cout << "Host is " << (hllapi_is_connected() ? "connected" : "not connected") << endl;
+
+	rc = hllapi_disconnect();
+ 	if(rc) {
+		cout << "hllapi_disconnect returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+		return rc;
+	}
+
 	cout << "HLLAPI Last error was \"" << hllapi_get_last_error() << "\"" << endl;
 
 	/*

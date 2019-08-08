@@ -170,7 +170,7 @@
 	HLLAPI_API_CALL hllapi_deinit(void);
 	HLLAPI_API_CALL hllapi_get_revision(void);
 
-	HLLAPI_API_CALL hllapi_reset(void);
+	HLLAPI_API_CALL hllapi_kybdreset(void);
 
 	/**
 	 * @brief Connect to host.
@@ -211,7 +211,7 @@
 	HLLAPI_API_CALL hllapi_erase_eol(void);
 	HLLAPI_API_CALL hllapi_erase_input(void);
 
-	HLLAPI_API_CALL hllapi_action(LPSTR buffer);
+	HLLAPI_API_CALL hllapi_action(LPSTR action_name);
 
 	HLLAPI_API_CALL hllapi_print(void);
 

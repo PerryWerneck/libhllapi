@@ -31,7 +31,35 @@
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
- static DWORD action(const TN3270::Action id) {
+ HLLAPI_API_CALL hllapi_get_screen_at(WORD row, WORD col, LPSTR buffer) {
+
+	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
+
+		if(!(buffer && *buffer))
+			return HLLAPI_STATUS_BAD_PARAMETER;
+
+		size_t length = strlen(buffer);
+		string contents = host.toString( (int) row, (int) col, length);
+
+		strncpy((char *) buffer, contents.c_str(), std::min(length,contents.size()));
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	}
+
+ 	return HLLAPI_STATUS_SUCCESS;
+
+ }
+
+ HLLAPI_API_CALL hllapi_get_screen(WORD offset, LPSTR buffer, WORD len) {
 
  	try {
 
@@ -40,68 +68,25 @@
 		if(!host.isConnected())
 			return HLLAPI_STATUS_DISCONNECTED;
 
-		host.push(id);
+		if(!(buffer && *buffer))
+			return HLLAPI_STATUS_BAD_PARAMETER;
 
-		return 0;
+		if(len == 0)
+			return HLLAPI_STATUS_BAD_PARAMETER;
 
-	} catch(std::exception &e) {
+		string contents = host.toString((int) offset, (size_t) len);
 
-		hllapi_lasterror = e.what();
-
-	}
-
-	return HLLAPI_STATUS_SYSTEM_ERROR;
-
- }
-
- HLLAPI_API_CALL hllapi_enter(void) {
-	return action(TN3270::ENTER);
- }
-
- HLLAPI_API_CALL hllapi_erase(void) {
- 	return action(TN3270::ERASE);
- }
-
- HLLAPI_API_CALL hllapi_erase_eof(void) {
- 	return action(TN3270::ERASE_EOF);
- }
-
- HLLAPI_API_CALL hllapi_erase_eol(void) {
- 	return action(TN3270::ERASE_EOL);
- }
-
- HLLAPI_API_CALL hllapi_erase_input(void) {
- 	return action(TN3270::ERASE_INPUT);
- }
-
- HLLAPI_API_CALL hllapi_kybdreset(void) {
- 	return action(TN3270::KYBD_RESET);
- }
-
- HLLAPI_API_CALL hllapi_action(LPSTR action_name) {
-
- 	try {
-
-		getSession().action((const char *) action_name);
-
-		return HLLAPI_STATUS_SUCCESS;
+		memset(buffer,' ',len);
+		strncpy((char *) buffer, contents.c_str(), std::min((size_t) len,contents.size()));
 
 	} catch(std::exception &e) {
 
 		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	}
 
-	return HLLAPI_STATUS_SYSTEM_ERROR;
+ 	return HLLAPI_STATUS_SUCCESS;
 
  }
-
-/*
-
- HLLAPI_API_CALL hllapi_print(void)
- {
-	return session::get_default()->print();
- }
-
- */
 

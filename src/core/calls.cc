@@ -237,29 +237,6 @@
 	return hllapi_get_state();
  }
 
- HLLAPI_API_CALL hllapi_get_screen_at(WORD row, WORD col, LPSTR buffer)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	if(!(buffer && *buffer))
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-
-	try
-	{
-		size_t	  sz = strlen(buffer);
-		string	  str = session::get_default()->get_string_at(row,col,sz);
-		strncpy(buffer,str.c_str(),sz);
-	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-
- 	return HLLAPI_STATUS_SUCCESS;
- }
-
-
  HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text)
  {
 	if(!hllapi_is_connected())
@@ -345,88 +322,6 @@
 #endif // _WIN32
 
 	return *datadir;
- }
-
- HLLAPI_API_CALL hllapi_setcursor(WORD pos)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	session::get_default()->set_cursor_addr(pos-1);
-
-	return HLLAPI_STATUS_SUCCESS;
-
- }
-
- HLLAPI_API_CALL hllapi_set_cursor_address(WORD pos)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	session::get_default()->set_cursor_addr(pos-1);
-
-	return HLLAPI_STATUS_SUCCESS;
-
- }
-
- HLLAPI_API_CALL hllapi_get_cursor_address()
- {
-	return session::get_default()->get_cursor_addr()+1;
- }
-
- HLLAPI_API_CALL hllapi_getcursor()
- {
-	return session::get_default()->get_cursor_addr()+1;
- }
-
- HLLAPI_API_CALL hllapi_get_screen(WORD offset, LPSTR buffer, WORD len)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	int rc = HLLAPI_STATUS_SYSTEM_ERROR;
-
-	if(offset < 1)
-	{
-		return HLLAPI_STATUS_BAD_PARAMETER;
-	}
-
-	offset--;
-
-	if(!session::has_default())
-	{
-		return HLLAPI_STATUS_DISCONNECTED;
-	}
-
-	if(!(buffer && *buffer)) {
-		return HLLAPI_STATUS_BAD_PARAMETER;
-	}
-
-	try
-	{
-		size_t szBuffer;
-
-		if(len > 0)
-		{
-			szBuffer = (size_t) len;
-		}
-		else
-		{
-			return HLLAPI_STATUS_BAD_PARAMETER;
-		}
-
-		memset(buffer,' ',szBuffer);
-
-		string str = session::get_default()->get_string(offset,szBuffer,false);
-		strncpy(buffer,str.c_str(),szBuffer);
-		rc = HLLAPI_STATUS_SUCCESS;
-	}
-	catch(std::exception &e)
-	{
-		rc = HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-
-	return rc;
  }
 
  HLLAPI_API_CALL hllapi_emulate_input(const LPSTR buffer, WORD len, WORD pasting)

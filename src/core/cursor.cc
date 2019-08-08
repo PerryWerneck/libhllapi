@@ -27,26 +27,59 @@
  *
  */
 
-#ifndef PRIVATE_H_INCLUDED
+ #include "private.h"
 
-	#define PRIVATE_H_INCLUDED 1
+/*--[ Implement ]------------------------------------------------------------------------------------*/
 
-	#include <exception>
-	#include <stdexcept>
-	#include <string>
-	#include <cerrno>
-	#include <cstring>
-	#include <lib3270/ipc.h>
-	#include <lib3270/log.h>
-	#include <lib3270/hllapi.h>
+ HLLAPI_API_CALL hllapi_set_cursor_address(WORD pos) {
 
-	using std::runtime_error;
-	using std::string;
-	using TN3270::Host;
-	using std::exception;
+ 	try {
 
-	extern string hllapi_lasterror;
+		TN3270::Host &host = getSession();
 
-	TN3270::Host & getSession();
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
 
-#endif // PRIVATE_H_INCLUDED
+		host.setCursorPosition((unsigned short) pos -1);
+
+		return 0;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }
+
+ HLLAPI_API_CALL hllapi_setcursor(WORD pos) {
+ 	return hllapi_set_cursor_address(pos);
+ }
+
+ HLLAPI_API_CALL hllapi_get_cursor_address() {
+
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected())
+			return 0;
+
+		return (DWORD) (host.getCursorPosition()+1);
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+		return -1;
+
+	}
+
+	return -1;
+ }
+
+ HLLAPI_API_CALL hllapi_getcursor() {
+ 	return hllapi_get_cursor_address();
+ }
+
