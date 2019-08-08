@@ -18,7 +18,7 @@
  * programa;  se  não, escreva para a Free Software Foundation, Inc., 59 Temple
  * Place, Suite 330, Boston, MA, 02111-1307, USA
  *
- * Este programa está nomeado como calls.cc e possui - linhas de código.
+ * Este programa está nomeado como - e possui - linhas de código.
  *
  * Contatos:
  *
@@ -27,144 +27,135 @@
  *
  */
 
- #include <exception>
- #include <cstdlib>
- #include <cstring>
-
- #include <pw3270/hllapi.h>
- #include <pw3270/pw3270cpp.h>
- #include "client.h"
-
- using namespace std;
- using namespace PW3270_NAMESPACE;
-
-/*--[ Globals ]--------------------------------------------------------------------------------------*/
-
- static session	* hSession 			= NULL;
- static time_t	  hllapi_timeout	= 120;
+ #include "private.h"
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
- HLLAPI_API_CALL hllapi_init(LPSTR mode)
- {
- 	trace("%s(%s)",__FUNCTION__,mode);
-
-	try
-	{
-		if(hSession)
-			delete hSession;
-		hSession = session::create(mode);
-
-		if(!hSession) {
-			return HLLAPI_STATUS_UNAVAILABLE;
-		}
-
-		hSession->set_display_charset();
-
-		trace("hSession=%p",hSession);
-	}
-	catch(std::exception &e)
-	{
-		trace("Error \"%s\"",e.what());
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-
- 	return HLLAPI_STATUS_SUCCESS;
-
- }
-
- HLLAPI_API_CALL hllapi_deinit(void)
- {
- 	trace("%s()",__FUNCTION__);
-
- 	try
- 	{
-		if(hSession)
-		{
-			delete hSession;
-			hSession = NULL;
-		}
-	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-
- 	return HLLAPI_STATUS_SUCCESS;
- }
-
  HLLAPI_API_CALL hllapi_get_revision(void)
  {
- 	try
- 	{
-		return atoi(session::get_default()->get_revision().c_str());
+ 	try {
+
+ 		return atoi(getSession().getRevision().c_str());
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
 	}
-	catch(std::exception &e)
-	{
-		return -1;
-	}
+
 	return (DWORD) -1;
  }
 
- HLLAPI_API_CALL hllapi_connect(LPSTR uri, WORD wait)
+ HLLAPI_API_CALL hllapi_connect(const LPSTR uri, WORD wait)
  {
- 	try
- 	{
-		session::get_default()->connect(uri,hllapi_timeout);
-	}
-	catch(std::exception &e)
-	{
+ 	try {
+
+ 		getSession().connect((const char *) uri, wait);
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
 		return HLLAPI_STATUS_SYSTEM_ERROR;
 	}
 
 	return hllapi_get_state();
+
  }
 
- HLLAPI_API_CALL hllapi_is_connected(void)
- {
- 	if(!session::has_default())
-	{
-		return 0;
+ HLLAPI_API_CALL hllapi_is_connected(void) {
+
+ 	try {
+
+ 		return getSession().isConnected();
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
 	}
 
-	return session::get_default()->is_connected();
+	return 0;
  }
 
- HLLAPI_API_CALL hllapi_get_state(void)
- {
-	switch(hllapi_get_message_id())
-	{
-	case LIB3270_MESSAGE_NONE:					// 0 - No message
-		return HLLAPI_STATUS_SUCCESS;			// keyboard was unlocked and ready for input.
+ HLLAPI_API_CALL hllapi_get_state(void) {
 
-	case LIB3270_MESSAGE_DISCONNECTED:			// 4 - Disconnected from host
-		return HLLAPI_STATUS_DISCONNECTED;		// Your application program was not connected to a valid session.
+ 	try {
 
-	case LIB3270_MESSAGE_MINUS:
-	case LIB3270_MESSAGE_PROTECTED:
-	case LIB3270_MESSAGE_NUMERIC:
-	case LIB3270_MESSAGE_OVERFLOW:
-	case LIB3270_MESSAGE_INHIBIT:
-	case LIB3270_MESSAGE_KYBDLOCK:
-		return HLLAPI_STATUS_KEYBOARD_LOCKED;	// keyboard is locked.
+		switch(hllapi_get_message_id()) {
+		case LIB3270_MESSAGE_NONE:					// 0 - No message
+			return HLLAPI_STATUS_SUCCESS;			// keyboard was unlocked and ready for input.
 
-	case LIB3270_MESSAGE_SYSWAIT:
-	case LIB3270_MESSAGE_TWAIT:
-	case LIB3270_MESSAGE_AWAITING_FIRST:
-	case LIB3270_MESSAGE_X:
-	case LIB3270_MESSAGE_RESOLVING:
-	case LIB3270_MESSAGE_CONNECTING:
-		return HLLAPI_STATUS_WAITING;			// time-out while still busy (in XCLOCK or XSYSTEM in X) for the 3270 terminal emulation.
+		case LIB3270_MESSAGE_DISCONNECTED:			// 4 - Disconnected from host
+			return HLLAPI_STATUS_DISCONNECTED;		// Your application program was not connected to a valid session.
+
+		case LIB3270_MESSAGE_MINUS:
+		case LIB3270_MESSAGE_PROTECTED:
+		case LIB3270_MESSAGE_NUMERIC:
+		case LIB3270_MESSAGE_OVERFLOW:
+		case LIB3270_MESSAGE_INHIBIT:
+		case LIB3270_MESSAGE_KYBDLOCK:
+			return HLLAPI_STATUS_KEYBOARD_LOCKED;	// keyboard is locked.
+
+		case LIB3270_MESSAGE_SYSWAIT:
+		case LIB3270_MESSAGE_TWAIT:
+		case LIB3270_MESSAGE_AWAITING_FIRST:
+		case LIB3270_MESSAGE_X:
+		case LIB3270_MESSAGE_RESOLVING:
+		case LIB3270_MESSAGE_CONNECTING:
+			return HLLAPI_STATUS_WAITING;			// time-out while still busy (in XCLOCK or XSYSTEM in X) for the 3270 terminal emulation.
+		}
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
 	}
 
+	hllapi_lasterror = "Unexpected message id";
 	return HLLAPI_STATUS_SYSTEM_ERROR;
  }
 
- HLLAPI_API_CALL hllapi_disconnect(void)
- {
-	session::get_default()->disconnect();
+ HLLAPI_API_CALL hllapi_get_message_id(void) {
+
+ 	try {
+
+		TN3270::Host & session = getSession();
+
+		if(!session.isConnected()) {
+			hllapi_lasterror = strerror(ENOTCONN);
+			return HLLAPI_STATUS_DISCONNECTED;
+		}
+
+		return (DWORD) session.getProgramMessage();
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	}
+
+	return 0;
+
+ }
+
+ HLLAPI_API_CALL hllapi_disconnect(void) {
+
+ 	try {
+
+		getSession().disconnect();
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	}
+
 	return HLLAPI_STATUS_SUCCESS;
  }
+
+
+ /*
 
  HLLAPI_API_CALL hllapi_wait_for_ready(WORD seconds)
  {
@@ -184,14 +175,6 @@
 	session::get_default()->wait(seconds);
 
 	return hllapi_get_state();
- }
-
- HLLAPI_API_CALL hllapi_get_message_id(void)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	return session::get_default()->get_program_message();
  }
 
  HLLAPI_API_CALL hllapi_get_screen_at(WORD row, WORD col, LPSTR buffer)
@@ -765,44 +748,40 @@
 				break;
 
 
-/*
+// Global Const PC_TEST = "@A@C"
+// Global Const PC_WORDDELETE = "@A@D"
+// Global Const PC_FIELDEXIT = "@A@E"
+// Global Const PC_ERASEINPUT = "@A@F"
+// Global Const PC_SYSTEMREQUEST = "@A@H"
+// Global Const PC_INSERTTOGGLE = "@A@I"
+// Global Const PC_CURSORSELECT = "@A@J"
+// Global Const PC_CURSLEFTFAST = "@A@L"
+// Global Const PC_GETCURSOR = "@A@N"
+// Global Const PC_LOCATECURSOR = "@A@O"
+// Global Const PC_ATTENTION = "@A@Q"
+// Global Const PC_DEVICECANCEL = "@A@R"
+// Global Const PC_PRINTPS = "@A@T"
+// Global Const PC_CURSUPFAST = "@A@U"
+// Global Const PC_CURSDOWNFAST = "@A@V"
+// Global Const PC_HEX = "@A@X"
+// Global Const PC_FUNCTIONKEY = "@A@Y"
+// Global Const PC_CURSRIGHTFAST = "@A@Z"
 
-Global Const PC_TEST = "@A@C"
-Global Const PC_WORDDELETE = "@A@D"
-Global Const PC_FIELDEXIT = "@A@E"
-Global Const PC_ERASEINPUT = "@A@F"
-Global Const PC_SYSTEMREQUEST = "@A@H"
-Global Const PC_INSERTTOGGLE = "@A@I"
-Global Const PC_CURSORSELECT = "@A@J"
-Global Const PC_CURSLEFTFAST = "@A@L"
-Global Const PC_GETCURSOR = "@A@N"
-Global Const PC_LOCATECURSOR = "@A@O"
-Global Const PC_ATTENTION = "@A@Q"
-Global Const PC_DEVICECANCEL = "@A@R"
-Global Const PC_PRINTPS = "@A@T"
-Global Const PC_CURSUPFAST = "@A@U"
-Global Const PC_CURSDOWNFAST = "@A@V"
-Global Const PC_HEX = "@A@X"
-Global Const PC_FUNCTIONKEY = "@A@Y"
-Global Const PC_CURSRIGHTFAST = "@A@Z"
+// Global Const PC_REVERSEVIDEO = "@A@9"
+// Global Const PC_UNDERSCORE = "@A@b"
+// Global Const PC_BLINK = "@A@c"
+// Global Const PC_RED = "@A@d"
+// Global Const PC_PINK = "@A@e"
+// Global Const PC_GREEN = "@A@f"
+// Global Const PC_YELLOW = "@A@g"
+// Global Const PC_BLUE = "@A@h"
+// Global Const PC_TURQOISE = "@A@i"
+// Global Const PC_WHITE = "@A@j"
+// Global Const PC_RSTHOSTCOLORS = "@A@l"
+// Global Const PC_PRINTPC = "@A@t"
 
-Global Const PC_REVERSEVIDEO = "@A@9"
-Global Const PC_UNDERSCORE = "@A@b"
-Global Const PC_BLINK = "@A@c"
-Global Const PC_RED = "@A@d"
-Global Const PC_PINK = "@A@e"
-Global Const PC_GREEN = "@A@f"
-Global Const PC_YELLOW = "@A@g"
-Global Const PC_BLUE = "@A@h"
-Global Const PC_TURQOISE = "@A@i"
-Global Const PC_WHITE = "@A@j"
-Global Const PC_RSTHOSTCOLORS = "@A@l"
-Global Const PC_PRINTPC = "@A@t"
-
-Global Const PC_FIELDMINUS = "@A@-"
-Global Const PC_FIELDPLUS = "@A@+"
-
-*/
+// Global Const PC_FIELDMINUS = "@A@-"
+// Global Const PC_FIELDPLUS = "@A@+"
 
 			}
 
@@ -824,3 +803,4 @@ Global Const PC_FIELDPLUS = "@A@+"
 	return rc;
  }
 
+*/

@@ -27,6 +27,7 @@
 #---[ Library configuration ]------------------------------------------------------------
 
 LIBNAME=libhllapi
+SONAME=@SONAME@
 
 SOURCES= \
 	$(wildcard src/core/*.cc) \
@@ -82,7 +83,9 @@ BINRLS=$(BINDIR)/Release
 
 DEPENDS= \
 	Makefile \
-	src/include/*.h
+	src/include/*.h \
+	src/include/lib3270/*.h
+
 
 CFLAGS= \
 	@CFLAGS@ \
@@ -98,7 +101,7 @@ LIBS= \
 #---[ Debug Rules ]----------------------------------------------------------------------
 
 $(OBJDBG)/%.o: \
-	%.c \
+	%.cc \
 	$(DEPENDS)
 
 	@echo $< ...
@@ -121,7 +124,7 @@ $(OBJDBG)/%.o: \
 #---[ Release Rules ]--------------------------------------------------------------------
 
 $(OBJRLS)/%.o: \
-	%.c \
+	%.cc \
 	$(DEPENDS)
 
 	@echo $< ...

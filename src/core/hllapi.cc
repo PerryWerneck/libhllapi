@@ -27,15 +27,7 @@
  *
  */
 
- #include <lib3270.h>
- #include <malloc.h>
- #include <string.h>
- #include <errno.h>
- #include <pw3270/hllapi.h>
- #include <stdio.h>
- #include <time.h>
- #include <lib3270/log.h>
- #include "client.h"
+ #include <lib3270/hllapi.h>
 
  /*--[ Prototipes ]-----------------------------------------------------------------------------------*/
 
@@ -92,6 +84,7 @@
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
+/*
 HLLAPI_API_CALL hllapi(const LPWORD func, LPSTR buffer, LPWORD length, LPWORD rc)
 {
 	unsigned int f;
@@ -200,27 +193,27 @@ static int input_string(char *buffer, unsigned short *length, unsigned short *rc
 
 static int search_ps(char *buffer, unsigned short *length, unsigned short *ps)
 {
-	/*
-	 * Data String	Target string for search.
-	 * Length	Length of the target data string. Overridden in EOT mode.
-	 * PS Position	Position within the host presentation space where the search is to begin (SRCHFRWD option) or to end
-	 * (SRCHBKWD option). Overridden in SRCHALL (default) mode.
-	 *
-	 * Return in *ps:
-	 *
-	 * = 0	The string was not found.
-	 * > 0	The string was found at the indicated host presentation space position.
-	 *
-	 * Return code:
-	 *
-	 * 0	The Search Presentation Space function was successful.
-	 * 1	Your program is not connected to a host session.
-	 * 2	An error was made in specifying parameters.
-	 * 7	The host presentation space position is not valid.
-	 * 9	A system error was encountered.
-	 * 24	The search string was not found.
-	 *
-	 */
+	//
+	// Data String	Target string for search.
+	// Length	Length of the target data string. Overridden in EOT mode.
+	//  PS Position	Position within the host presentation space where the search is to begin (SRCHFRWD option) or to end
+	//  (SRCHBKWD option). Overridden in SRCHALL (default) mode.
+	//
+	//  Return in *ps:
+	//
+	//  = 0	The string was not found.
+	//  > 0	The string was found at the indicated host presentation space position.
+	//
+	//  Return code:
+	//
+	//  0	The Search Presentation Space function was successful.
+	//  1	Your program is not connected to a host session.
+	//  2	An error was made in specifying parameters.
+	//  7	The host presentation space position is not valid.
+	//  9	A system error was encountered.
+	// 24	The search string was not found.
+	//
+	//
 	size_t   szBuffer = strlen(buffer);
 	char   * text;
 	int		 rc = HLLAPI_STATUS_SYSTEM_ERROR;
@@ -256,22 +249,22 @@ static int search_ps(char *buffer, unsigned short *length, unsigned short *ps)
 
 static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc)
 {
-	/*
-	 * Data String	Preallocated target string the size of your host presentation space. This can vary depending on how your host presentation space is configured. When the Set Session Parameters (9) function with the EAB option is issued, the length of the data string must be at least twice the length of the presentation space.
-	 *				DBCS Only: When the EAD option is specified, the length of the data string must be at least three times the length of the presentation space. When both the EAB and EAD options are specified, the length of the data string must be at least four times the length of the presentation space.
-	 *
-	 * Length		NA (the length of the host presentation space is implied).
-	 * PS Position	NA.
-	 *
-	 * Return values:
-	 *
-	 * 0	The host presentation space contents were copied to the application program. The target presentation space was active, and the keyboard was unlocked.
-	 * 1	Your program is not connected to a host session.
-	 * 4	The host presentation space contents were copied. The connected host presentation space was waiting for host response.
-	 * 5	The host presentation space was copied. The keyboard was locked.
-	 * 9	A system error was encountered.
-	 *
-	 */
+	//
+	// Data String	Preallocated target string the size of your host presentation space. This can vary depending on how your host presentation space is configured. When the Set Session Parameters (9) function with the EAB option is issued, the length of the data string must be at least twice the length of the presentation space.
+	//				DBCS Only: When the EAD option is specified, the length of the data string must be at least three times the length of the presentation space. When both the EAB and EAD options are specified, the length of the data string must be at least four times the length of the presentation space.
+	//
+	// Length		NA (the length of the host presentation space is implied).
+	// PS Position	NA.
+	//
+	// Return values:
+	//
+	// 0	The host presentation space contents were copied to the application program. The target presentation space was active, and the keyboard was unlocked.
+	// 1	Your program is not connected to a host session.
+	// 4	The host presentation space contents were copied. The connected host presentation space was waiting for host response.
+	// 5	The host presentation space was copied. The keyboard was locked.
+	// 9	A system error was encountered.
+	//
+	//
 	size_t	  			  szBuffer	= strlen(buffer);
 	char				* text;
 
@@ -292,40 +285,23 @@ static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc)
 
 static int wait_system(char *buffer, unsigned short *length, unsigned short *rc)
 {
-	/*
-	 * Checks the status of the host-connected presentation space. If the session is
-	 * waiting for a host response (indicated by XCLOCK (X []) or XSYSTEM), the Wait
-	 * function causes HLLAPI to wait up to 1 minute to see if the condition clears.
-	 *
-	 */
+	//
+	// Checks the status of the host-connected presentation space. If the session is
+	// waiting for a host response (indicated by XCLOCK (X []) or XSYSTEM), the Wait
+	// function causes HLLAPI to wait up to 1 minute to see if the condition clears.
+	//
+	//
 
-	/*
-	 * Return Code	Definition
-	 *
-	 * HLLAPI_STATUS_SUCCESS			0	The keyboard is unlocked and ready for input.
-	 * HLLAPI_STATUS_DISCONNECTED		1	Your application program is not connected to a valid session.
-	 * HLLAPI_STATUS_TIMEOUT			4	Timeout while still in XCLOCK (X []) or XSYSTEM.
-	 * HLLAPI_STATUS_KEYBOARD_LOCKED	5	The keyboard is locked.
-	 * HLLAPI_STATUS_SYSTEM_ERROR		9	A system error was encountered.
-	 *
-	 */
-
-	 /*
-	 time_t end = time(0) + 60;
-
-	 while(time(0) < end)
-	 {
-		int state = hllapi_get_state();
-
-		if(state != HLLAPI_STATUS_WAITING)
-			return state;
-
-		hllapi_wait(1);
-
-	 }
-
-	 return HLLAPI_STATUS_TIMEOUT;
-	 */
+	//
+	// Return Code	Definition
+	//
+	// HLLAPI_STATUS_SUCCESS			0	The keyboard is unlocked and ready for input.
+	// HLLAPI_STATUS_DISCONNECTED		1	Your application program is not connected to a valid session.
+	// HLLAPI_STATUS_TIMEOUT			4	Timeout while still in XCLOCK (X []) or XSYSTEM.
+	// HLLAPI_STATUS_KEYBOARD_LOCKED	5	The keyboard is locked.
+	// HLLAPI_STATUS_SYSTEM_ERROR		9	A system error was encountered.
+	//
+	//
 
 	 int state = hllapi_wait_for_ready(60);
 	 return (state == HLLAPI_STATUS_WAITING ? HLLAPI_STATUS_TIMEOUT : state);
@@ -334,24 +310,24 @@ static int wait_system(char *buffer, unsigned short *length, unsigned short *rc)
 
 static int copy_str_to_ps(char *text, unsigned short *length, unsigned short *ps)
 {
-	/*
-	 * Call Parameters
-	 *
-	 * Data 	String of ASCII data to be copied into the host presentation space.
-	 * Length	Length, in number of bytes, of the source data string. Overridden if in EOT mode.
-	 * PS 		Position in the host presentation space to begin the copy, a value between 1 and the configured size of your host presentation space.
-	 *
-	 * Return Parameters
-	 *
-	 * HLLAPI_STATUS_SUCCESS			0	The Copy String to Presentation Space function was successful.
-	 * HLLAPI_STATUS_DISCONNECTED		1	Your program is not connected to a host session.
-	 * HLLAPI_STATUS_BAD_PARAMETER		2	Parameter error or zero length for copy.
-	 * HLLAPI_STATUS_KEYBOARD_LOCKED	5	The target presentation space is protected or inhibited, or incorrect data was sent to the target presentation space (such as a field attribute byte).
-	 * 									6	The copy was completed, but the data was truncated.
-	 * 									7	The host presentation space position is not valid.
-	 * HLLAPI_STATUS_SYSTEM_ERROR		9	A system error was encountered.
-	 *
-	 */
+	//
+	// Call Parameters
+	//
+	// Data 	String of ASCII data to be copied into the host presentation space.
+	// Length	Length, in number of bytes, of the source data string. Overridden if in EOT mode.
+	// PS 		Position in the host presentation space to begin the copy, a value between 1 and the configured size of your host presentation space.
+	//
+	// Return Parameters
+	//
+	// HLLAPI_STATUS_SUCCESS			0	The Copy String to Presentation Space function was successful.
+	// HLLAPI_STATUS_DISCONNECTED		1	Your program is not connected to a host session.
+	// HLLAPI_STATUS_BAD_PARAMETER		2	Parameter error or zero length for copy.
+	// HLLAPI_STATUS_KEYBOARD_LOCKED	5	The target presentation space is protected or inhibited, or incorrect data was sent to the target presentation space (such as a field attribute byte).
+	// 									6	The copy was completed, but the data was truncated.
+	// 									7	The host presentation space position is not valid.
+	// HLLAPI_STATUS_SYSTEM_ERROR		9	A system error was encountered.
+	//
+	//
 	size_t szText = strlen(text);
 
 	if(*length < szText)
@@ -464,3 +440,4 @@ HLLAPI_API_CALL hllapi_set_session_parameter(LPSTR param, WORD len, WORD value)
 
 	return HLLAPI_STATUS_SUCCESS;
 }
+*/
