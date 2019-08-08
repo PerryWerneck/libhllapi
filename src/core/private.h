@@ -42,6 +42,7 @@
 
 	using std::runtime_error;
 	using std::string;
+	using TN3270::Host;
 
 	extern string hllapi_lasterror;
 

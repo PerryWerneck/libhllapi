@@ -50,7 +50,10 @@
  {
  	try {
 
- 		getSession().connect((const char *) uri, wait);
+ 		getSession().connect((const char *) uri, false);
+
+ 		if(wait)
+			return hllapi_wait_for_ready(wait);
 
 	} catch(std::exception &e) {
 
@@ -152,20 +155,77 @@
 	}
 
 	return HLLAPI_STATUS_SUCCESS;
+
  }
 
+ HLLAPI_API_CALL hllapi_wait_for_ready(WORD seconds) {
+
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		if(host.isConnected())
+			host.waitForReady((unsigned int) seconds);
+
+		return hllapi_get_state();
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }
+
+ HLLAPI_API_CALL hllapi_pfkey(WORD key) {
+
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
+
+		host.pfkey((unsigned short) key);
+
+		return 0;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }
+
+ HLLAPI_API_CALL hllapi_pakey(WORD key) {
+
+  	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
+
+		host.pakey((unsigned short) key);
+
+		return 0;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }
 
  /*
-
- HLLAPI_API_CALL hllapi_wait_for_ready(WORD seconds)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	session::get_default()->wait_for_ready(seconds);
-
-	return hllapi_get_state();
- }
 
  HLLAPI_API_CALL hllapi_wait(WORD seconds)
  {
@@ -199,13 +259,6 @@
  	return HLLAPI_STATUS_SUCCESS;
  }
 
- HLLAPI_API_CALL hllapi_enter(void)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	return session::get_default()->enter();
- }
 
  HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text)
  {
@@ -272,22 +325,6 @@
 	}
 
 	return 0;
- }
-
- HLLAPI_API_CALL hllapi_pfkey(WORD key)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	return session::get_default()->pfkey(key);
- }
-
- HLLAPI_API_CALL hllapi_pakey(WORD key)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	return session::get_default()->pakey(key);
  }
 
  HLLAPI_API_CALL hllapi_get_datadir(LPSTR datadir)
@@ -409,84 +446,6 @@
 	return HLLAPI_STATUS_SUCCESS;
  }
 
- HLLAPI_API_CALL hllapi_erase(void)
- {
- 	try
- 	{
-		session::get_default()->erase();
- 	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-	return HLLAPI_STATUS_SUCCESS;
- }
-
- HLLAPI_API_CALL hllapi_erase_eof(void)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
- 	try
- 	{
-		session::get_default()->erase_eof();
- 	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-	return HLLAPI_STATUS_SUCCESS;
- }
-
- HLLAPI_API_CALL hllapi_erase_eol(void)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
- 	try
- 	{
-		session::get_default()->erase_eol();
- 	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-	return HLLAPI_STATUS_SUCCESS;
- }
-
- HLLAPI_API_CALL hllapi_erase_input(void)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
- 	try
- 	{
-		session::get_default()->erase_input();
- 	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-	return HLLAPI_STATUS_SUCCESS;
- }
-
- HLLAPI_API_CALL hllapi_action(LPSTR buffer) {
- 	try
- 	{
-		session::get_default()->action((const char *) buffer);
- 	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-	return HLLAPI_STATUS_SUCCESS;
- }
-
- HLLAPI_API_CALL hllapi_print(void)
- {
-	return session::get_default()->print();
- }
-
  char * hllapi_get_string(int offset, size_t len)
  {
 	try
@@ -505,11 +464,6 @@
  void hllapi_free(void *p)
  {
  	free(p);
- }
-
- HLLAPI_API_CALL hllapi_reset(void)
- {
-	return HLLAPI_STATUS_SUCCESS;
  }
 
  HLLAPI_API_CALL hllapi_input_string(LPSTR input, WORD length)

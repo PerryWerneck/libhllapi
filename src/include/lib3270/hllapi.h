@@ -172,7 +172,19 @@
 
 	HLLAPI_API_CALL hllapi_reset(void);
 
+	/**
+	 * @brief Connect to host.
+	 *
+	 * @param uri	Host URI (tn3270://hostname:port).
+	 * @param wait	How many seconds to wait for the connection.
+	 *
+	 */
 	HLLAPI_API_CALL hllapi_connect(const LPSTR uri, WORD wait);
+
+	/**
+	 * @brief Disconnect from host.
+	 *
+	 */
 	HLLAPI_API_CALL hllapi_disconnect(void);
 
 	HLLAPI_API_CALL hllapi_get_message_id(void);
