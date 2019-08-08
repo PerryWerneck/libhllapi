@@ -31,7 +31,7 @@ AC_PREREQ(2.61)
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([ipc3270], [5.1], [perry.werneck@gmail.com])
+AC_INIT([hllapi], [5.2], [perry.werneck@gmail.com])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -54,7 +54,7 @@ AC_PROG_CXX
 AC_PROG_SED
 AC_PROG_LN_S
 
-AC_LANG([C])
+AC_LANG([C++])
 
 dnl ---------------------------------------------------------------------------
 dnl Initialize defaults
@@ -65,8 +65,7 @@ RLS_CFLAGS="-DNDEBUG=1"
 PLUGINS=""
 APP_RESOURCES=""
 APP_LDFLAGS=""
-DLL_LDFLAGS="-shared"
-STATIC_LDFLAGS=""
+DLL_LDFLAGS="-shared -Wl,-soname,\$(@F)"
 DEPENDS=""
 
 dnl ---------------------------------------------------------------------------
@@ -85,9 +84,12 @@ case "$host" in
 		DLLEXT=".dll"
 		DLLPREFIX=""
 
-		app_win32_revision=$(date +%y.%m.%d.%H)
+		app_win32_revision=$(date +%-y.%-m.%-d.%-H)
 		AC_SUBST(WIN32_VERSION,$app_win32_revision)
-		AC_CONFIG_FILES(src/ipc3270c/windows/resources.rc)
+
+		app_win32_file_version=$(date +%-y,%-m,%-d,%-H)
+		AC_SUBST(WIN32_FILE_VERSION,$app_win32_file_version)
+
 		AC_CONFIG_FILES(src/hllapi/windows/resources.rc)
 		;;
 
@@ -125,7 +127,7 @@ dnl ---------------------------------------------------------------------------
 dnl Version info
 dnl ---------------------------------------------------------------------------
 
-AC_SUBST(PACKAGE_DESCRIPTION,"PW3270 IPC Compatible Module")
+AC_SUBST(PACKAGE_DESCRIPTION,"PW3270 HLLAPI Module")
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
@@ -136,7 +138,7 @@ AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor)
 AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
 AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
 
-AC_ARG_WITH([release], [AS_HELP_STRING([--with-release], [Set release])], [ app_cv_release="$withval" ],[ app_cv_release="`date +%y`.`date +%m`.`date +%d`" ])
+AC_ARG_WITH([release], [AS_HELP_STRING([--with-release], [Set release])], [ app_cv_release="$withval" ],[ app_cv_release="`date +%-y`.`date +%-m`.`date +%-d`" ])
 
 app_rls_major=$(echo $app_cv_release.0.0 | cut -d. -f1)
 app_rls_minor=$(echo $app_cv_release.0.0 | cut -d. -f2)
@@ -148,6 +150,20 @@ AC_DEFINE_UNQUOTED(PACKAGE_MINOR_RELEASE, $app_rls_minor)
 AC_SUBST(PACKAGE_RELEASE,$app_cv_release)
 AC_SUBST(PACKAGE_MAJOR_RELEASE,$app_rls_major)
 AC_SUBST(PACKAGE_MINOR_RELEASE,$app_rls_minor)
+
+case "$host" in
+        *-mingw32|*-pc-msys)
+                AC_SUBST(SONAME,hllapi.dll)
+                ;;
+
+        s390x-*)
+                AC_SUBST(SONAME,libhllapi.so)
+                ;;
+
+        *)
+                AC_SUBST(SONAME,libhllapi.so.$app_vrs_major.$app_vrs_minor)
+
+esac
 
 dnl ---------------------------------------------------------------------------
 dnl Check for libintl
@@ -164,68 +180,13 @@ AC_PATH_TOOL([MSGFMT], [msgfmt], [no])
 AC_SUBST(INTL_LIBS)
 
 dnl ---------------------------------------------------------------------------
-dnl Check for LIB3270
+dnl Check for IPC3270
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES( [LIB3270], [lib3270], AC_DEFINE(HAVE_LIB3270), AC_MSG_ERROR([LIB3270 not present.]))
+PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(HAVE_IPC3270), AC_MSG_ERROR([LIB3270 not present.]))
 
-AC_SUBST(LIB3270_LIBS)
-AC_SUBST(LIB3270_CFLAGS)
-
-dnl ---------------------------------------------------------------------------
-dnl Check for PW3270
-dnl ---------------------------------------------------------------------------
-
-PKG_CHECK_MODULES( [PW3270], [pw3270], AC_DEFINE(HAVE_PW3270), AC_MSG_ERROR([PW3270 not present.]))
-
-AC_SUBST(PW3270_LIBS)
-AC_SUBST(PW3270_CFLAGS)
-
-dnl ---------------------------------------------------------------------------
-dnl Check for LIBV3270
-dnl ---------------------------------------------------------------------------
-
-PKG_CHECK_MODULES( [V3270], [libv3270], AC_DEFINE(HAVE_V3270), AC_MSG_ERROR([V3270 not present.]))
-
-AC_SUBST(V3270_LIBS)
-AC_SUBST(V3270_CFLAGS)
-
-dnl ---------------------------------------------------------------------------
-dnl Check for GTK
-dnl ---------------------------------------------------------------------------
-
-PKG_CHECK_MODULES( [GTK], [gtk+-3.0], AC_DEFINE(HAVE_GTK), AC_MSG_ERROR([GTK not present.]))
-
-AC_SUBST(GTK_LIBS)
-AC_SUBST(GTK_CFLAGS)
-
-dnl ---------------------------------------------------------------------------
-dnl Check for GLIB
-dnl ---------------------------------------------------------------------------
-
-PKG_CHECK_MODULES( [GLIB], [glib-2.0 gobject-2.0 gmodule-2.0 gio-2.0], AC_DEFINE(HAVE_GLIB), AC_MSG_ERROR([GLIB not present.] ))
-AC_SUBST(GLIB_LIBS)
-AC_SUBST(GLIB_CFLAGS)
-
-dnl ---------------------------------------------------------------------------
-dnl Check for D-Bus
-dnl ---------------------------------------------------------------------------
-
-AC_PATH_TOOL([DBUSBINDINGTOOL],[dbus-binding-tool],[no])
-
-PKG_CHECK_MODULES( [DBUS], [dbus-1], app_cv_libdbus=yes, AC_MSG_NOTICE([ No DBUS support.]) )
-AC_SUBST(DBUS_LIBS)
-AC_SUBST(DBUS_CFLAGS)
-
-PKG_CHECK_MODULES( [GDBUS], [dbus-glib-1], app_cv_dbus=yes, AC_MSG_NOTICE([No GDBUS support.])  )
-AC_SUBST(GDBUS_LIBS)
-AC_SUBST(GDBUS_CFLAGS)
-
-if test "$app_cv_dbus" == "yes"; then
-        AC_DEFINE(HAVE_DBUS)
-	DEPENDS="$DEPENDS src/include/dbus-glue.h"
-fi
-
+AC_SUBST(IPC3270_LIBS)
+AC_SUBST(IPC3270_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for pic

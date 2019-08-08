@@ -16,3 +16,4 @@ dbus-glue.h
 *.cache
 *.zip
 *.bak
+*.[0-9]

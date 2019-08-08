@@ -24,38 +24,22 @@
 # erico.mendonca@gmail.com	(Erico Mascarenhas de Mendonça)
 #
 
-PACKAGE_NAME=@PACKAGE_NAME@
-
-#---[ PLugin configuration ]-------------------------------------------------------------
-
-PLUGIN_NAME=ipc3270c
-
-PLUGIN_SOURCES= \
-	$(wildcard src/$(PLUGIN_NAME)/*.c) \
-	$(wildcard src/$(PLUGIN_NAME)/@OSNAME@/*.c) \
-	$(wildcard src/$(PLUGIN_NAME)/@OSNAME@/*.rc)
-
-PLUGIN_TEST_SOURCES= \
-	src/testprograms/$(PLUGIN_NAME).c
-
 #---[ Library configuration ]------------------------------------------------------------
 
-LIBRARY_NAME=hllapi
+LIBNAME=libhllapi
 
-LIBRARY_SOURCES= \
-	$(wildcard src/$(LIBRARY_NAME)/*.c) \
-	$(wildcard src/$(LIBRARY_NAME)/*.cc) \
-	$(wildcard src/$(LIBRARY_NAME)/@OSNAME@/*.c) \
-	$(wildcard src/$(LIBRARY_NAME)/@OSNAME@/*.rc)
+SOURCES= \
+	$(wildcard src/core/*.cc) \
+	$(wildcard src/core/@OSNAME@/*.rc) \
+	$(wildcard src/core/@OSNAME@/*.cc)
 
-LIBRARY_TEST_SOURCES= \
-	src/testprograms/$(LIBRARY_NAME).c
+TEST_SOURCES= \
+	$(wildcard src/testprogram/*.cc)
 
 #---[ Tools ]----------------------------------------------------------------------------
 
-CC=@CC@
-LD=@CC@
 CXX=@CXX@
+LD=@CXX@
 LN_S=@LN_S@
 MKDIR=@MKDIR_P@
 INSTALL=@INSTALL@
@@ -65,7 +49,11 @@ XGETTEXT=@XGETTEXT@
 MSGCAT=@MSGCAT@
 WINDRES=@WINDRES@
 AR=@AR@
-DBUSBINDINGTOOL=@DBUSBINDINGTOOL@
+VALGRIND=@VALGRIND@
+GENMARSHAL=@GENMARSHAL@
+CONVERT=@CONVERT@
+OPTIPNG=@OPTIPNG@
+ZIP=@ZIP@
 
 #---[ Paths ]----------------------------------------------------------------------------
 
@@ -82,9 +70,7 @@ sysconfdir=@sysconfdir@
 
 BASEDIR=@BASEDIR@
 
-POTDIR=$(BASEDIR)/.pot
-
-OBJDIR=$(BASEDIR)/.obj
+OBJDIR=$(BASEDIR)/.obj/$(LIBNAME)
 OBJDBG=$(OBJDIR)/Debug
 OBJRLS=$(OBJDIR)/Release
 
@@ -96,44 +82,18 @@ BINRLS=$(BINDIR)/Release
 
 DEPENDS= \
 	Makefile \
-	@DEPENDS@
+	src/include/*.h
 
 CFLAGS= \
 	@CFLAGS@ \
 	-g \
 	-Isrc/include \
 	-DBUILD_DATE=`date +%Y%m%d` \
-	@LIB3270_CFLAGS@ \
-	@V3270_CFLAGS@ \
-	@GTK_CFLAGS@ \
-	@GLIB_CFLAGS@ \
-	@PW3270_CFLAGS@ \
-	@DBUS_CFLAGS@ \
-	@GDBUS_CFLAGS@
-
-GTK_LIBS=@GTK_LIBS@
-V3270_LIBS=@V3270_LIBS@
-GLIB_LIBS=@GLIB_LIBS@
-DBUS_LIBS=@DBUS_LIBS@ @GDBUS_LIBS@
-STATIC_LDFLAGS=@STATIC_LDFLAGS@
-LDFLAGS=@LDFLAGS@
+	@IPC3270_CFLAGS@
 
 LIBS= \
 	@LIBS@ \
-	@LIBICONV@ \
-	@INTL_LIBS@ \
-	@LIB3270_LIBS@ \
-	@PW3270_LIBS@
-
-src/include/dbus-glue.h: \
-	pw3270dbus.xml
-
-	@echo $@ ...
-	@$(DBUSBINDINGTOOL) \
-		--mode=glib-server \
-		--output=$@ \
-		--prefix=pw3270_dbus $^
-
+	@IPC3270_LIBS@
 
 #---[ Debug Rules ]----------------------------------------------------------------------
 
@@ -142,32 +102,20 @@ $(OBJDBG)/%.o: \
 	$(DEPENDS)
 
 	@echo $< ...
-	@$(MKDIR) $(@D)
-
-	@$(CC) \
-		$(CFLAGS) \
-		-Wall -Wextra -fstack-check \
-		-DDEBUG=1 \
-		-o $@ -c $<
-
-$(OBJDBG)/%.o: \
-	%.cc \
-	$(DEPENDS)
-
-	@echo $< ...
-	@$(MKDIR) $(@D)
+	@$(MKDIR) $(dir $@)
 
 	@$(CXX) \
 		$(CFLAGS) \
 		-Wall -Wextra -fstack-check \
 		-DDEBUG=1 \
-		-o $@ -c $<
+		-o $@ \
+		-c $<
 
 $(OBJDBG)/%.o: \
 	%.rc
 
 	@echo $< ...
-	@$(MKDIR) $(@D)
+	@$(MKDIR) $(dir $@)
 	@$(WINDRES) $< -O coff -o $@
 
 #---[ Release Rules ]--------------------------------------------------------------------
@@ -177,277 +125,112 @@ $(OBJRLS)/%.o: \
 	$(DEPENDS)
 
 	@echo $< ...
-	@$(MKDIR) $(@D)
-	@$(CC) \
-		$(CFLAGS) \
-		-DNDEBUG=1 \
-		-o $@ -c $<
-
-$(OBJRLS)/%.o: \
-	%.cc \
-	$(DEPENDS)
-
-	@echo $< ...
-	@$(MKDIR) $(@D)
+	@$(MKDIR) $(dir $@)
 	@$(CXX) \
 		$(CFLAGS) \
 		-DNDEBUG=1 \
-		-o $@ -c $<
+		-o $@ \
+		-c $<
 
 $(OBJRLS)/%.o: \
 	%.rc
 
 	@echo $< ...
-	@$(MKDIR) $(@D)
+	@$(MKDIR) $(dir $@)
 	@$(WINDRES) $< -O coff -o $@
-
-#---[ Misc Rules ]-----------------------------------------------------------------------
-
-$(POTDIR)/$(PLUGIN_NAME)/%.pot: \
-	%.c
-
-	@echo $(notdir $@) ...
-	@$(MKDIR) $(@D)
-	@$(XGETTEXT) \
-		--language=C \
-		--keyword=_ \
-		--keyword=N_ \
-		--keyword=MSG_:2 \
-		--output=$@ \
-		$<
-	@touch $@
-
-$(POTDIR)/$(PLUGIN_NAME)/%.pot: \
-	%.rc
-
-	@echo $< ...
-	@$(MKDIR) $(@D)
-	@touch $@
-
 
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
-	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
-	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@ \
-	$(POTDIR)/$(PLUGIN_NAME).pot
+	$(BINRLS)/$(SONAME) \
+	$(BINRLS)/static/$(LIBNAME).a \
+	$(POTDIR)/$(LIBNAME).pot
 
 Release: \
-	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
-	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@
+	$(BINRLS)/$(SONAME)
 
-$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@: \
-	$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJRLS)/$(SRC).o)
+$(BINRLS)/$(SONAME): \
+	$(foreach SRC, $(basename $(SOURCES)), $(OBJRLS)/$(SRC).o)
 
-	@$(MKDIR) $(@D)
+	@$(MKDIR) $(dir $@)
 	@echo $< ...
 	@$(LD) \
-		-shared -Wl,-soname,$(@F) \
+		@DLL_LDFLAGS@ \
 		-o $@ \
 		$(LDFLAGS) \
-		$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJRLS)/$(SRC).o) \
-		$(V3270_LIBS) \
-		$(LIBS) \
-		$(GTK_LIBS) \
-		$(DBUS_LIBS)
-
-$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@: \
-	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@
-
-	@echo $< ...
-	@rm -f $@
-	@$(LN_S) \
 		$^ \
-		$@
-
-$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@: \
-	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
-
-	@rm -f $@
-	@$(LN_S) \
-		$^ \
-		$@
-
-$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@: \
-	$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJRLS)/$(SRC).o)
-
-	@$(MKDIR) $(@D)
-	@echo $< ...
-	@$(CXX) \
-		-shared -Wl,-soname,$(@F) \
-		-o $@ \
-		$(LDFLAGS) $(STATIC_LDFLAGS)\
-		$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJRLS)/$(SRC).o) \
-		-lpw3270cpp \
-		-L$(BINDBG) \
-		$(LIBS) \
-		$(DBUS_LIBS)
-
-zip: \
-	$(PLUGIN_NAME)-@PACKAGE_VERSION@.@host@.zip
-
-$(PLUGIN_NAME)-@PACKAGE_VERSION@.@host@.zip: \
-	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
-	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@ \
-	$(POTDIR)/$(PLUGIN_NAME).pot
-
-	@rm -f $@
-	@zip -9 -j $@ \
-		$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
-		$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@ \
-		$(POTDIR)/$(PLUGIN_NAME).pot
+		$(LIBS)
 
 #---[ Install Targets ]------------------------------------------------------------------
 
 install: \
-	install-shared \
-	install-plugin
+	$(BINRLS)/$(SONAME)
 
-install-plugin: \
-	$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@
-
-	@$(MKDIR) $(DESTDIR)$(libdir)/pw3270-plugins
+	# Install library
+	@$(MKDIR) $(DESTDIR)$(libdir)
 
 	@$(INSTALL_PROGRAM) \
-		$(BINRLS)/$(PLUGIN_NAME)@DLLEXT@ \
-		$(DESTDIR)$(libdir)/pw3270-plugins
-
-install-shared: \
-	$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@
-
-	@$(MKDIR) $(DESTDIR)/$(libdir)
-
-	@$(INSTALL_PROGRAM) \
-		$(BINRLS)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
-		$(DESTDIR)/$(libdir)
+		$(BINRLS)/$(SONAME) \
+		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
 
 	@$(LN_S) \
-		lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
-		$(DESTDIR)/$(libdir)/lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
+		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
+		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@
 
 	@$(LN_S) \
-		lib$(LIBRARY_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
-		$(DESTDIR)/$(libdir)/lib$(LIBRARY_NAME)@DLLEXT@
+		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
+		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@
 
-#---[ Misc Targets ]---------------------------------------------------------------------
-
-$(POTDIR)/$(PLUGIN_NAME).pot: \
-	$(foreach SRC, $(basename $(SOURCES)), $(POTDIR)/$(PLUGIN_NAME)/$(SRC).pot)
-
-	@rm -f $@
-	@mkdir -p `dirname $@`
-	@$(MSGCAT) --sort-output $^ > $@
-
-locale: \
-	$(POTDIR)/$(PLUGIN_NAME).pot
-
-run-plugin: \
-	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@
-
-	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@
-
-run-library: \
-	$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
-
-	$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
 
 #---[ Debug Targets ]--------------------------------------------------------------------
 
 Debug: \
-	Debug-plugin \
-	Debug-library
+	$(BINDBG)/$(LIBNAME)@EXEEXT@
 
-Debug-plugin: \
-	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@
+$(BINDBG)/$(LIBNAME)@EXEEXT@: \
+	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(BINDBG)/$(SONAME)
 
-Debug-library: \
-	$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
-
-zip-debug: \
-	$(PLUGIN_NAME)-debug-@PACKAGE_VERSION@.@host@.zip
-
-$(PLUGIN_NAME)-debug-@PACKAGE_VERSION@.@host@.zip: \
-	$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@ \
-	$(BINDBG)/lib$(LIBRARY_NAME)@DLLEXT@ \
-	$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@ \
-	$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
-
-	@rm -f $@
-	@zip -9 -j $@ \
-		$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@ \
-		$(BINDBG)/lib$(LIBRARY_NAME)@DLLEXT@ \
-		$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@ \
-		$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@
-
-
-$(BINDBG)/$(PLUGIN_NAME)@EXEEXT@: \
-	$(foreach SRC, $(basename $(PLUGIN_TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
-	$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@
-
-	@$(MKDIR) $(@D)
+	@$(MKDIR) $(dir $@)
 	@echo $< ...
 	@$(LD) \
 		-o $@ \
-		$(foreach SRC, $(basename $(PLUGIN_TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
+		$^ \
 		-L$(BINDBG) \
 		-Wl,-rpath,$(BINDBG) \
 		$(LDFLAGS) \
-		$(LIBS) \
-		$(V3270_LIBS) \
-		$(GTK_LIBS) \
-		$(GLIB_LIBS) \
-		$(DBUS_LIBS)
+		$(LIBS)
+ 
+run: \
+	$(BINDBG)/$(LIBNAME)@EXEEXT@
 
-$(BINDBG)/$(PLUGIN_NAME)@DLLEXT@: \
-	$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJDBG)/$(SRC).o)
+ifeq ($(VALGRIND),no)
 
-	@$(MKDIR) $(@D)
+	@LD_LIBRARY_PATH=$(BINDBG) \
+		$(BINDBG)/$(LIBNAME)@EXEEXT@
+
+else
+	@touch valgrind.suppression
+
+	@LD_LIBRARY_PATH=$(BINDBG) \
+		$(VALGRIND) --leak-check=full --track-origins=yes --gen-suppressions=all --suppressions=valgrind.suppression \
+			$(BINDBG)/$(LIBNAME)@EXEEXT@
+endif
+
+
+$(BINDBG)/$(SONAME): \
+	$(foreach SRC, $(basename $(SOURCES)), $(OBJDBG)/$(SRC).o)
+
+	@$(MKDIR) $(dir $@)
 	@echo $< ...
 	@$(LD) \
 		-shared -Wl,-soname,$(@F) \
 		-o $@ \
-		$(foreach SRC, $(basename $(PLUGIN_SOURCES)), $(OBJDBG)/$(SRC).o) \
+		-L$(BINDBG) \
 		$(LDFLAGS) \
-		-L$(BINDBG) \
-		$(LIBS) \
-		$(V3270_LIBS) \
-		$(GTK_LIBS) \
-		$(GLIB_LIBS) \
-		$(DBUS_LIBS)
+		$^ \
+		$(LIBS)
 
-$(BINDBG)/$(LIBRARY_NAME)@EXEEXT@: \
-	$(foreach SRC, $(basename $(LIBRARY_TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
-	$(BINDBG)/lib$(LIBRARY_NAME)@DLLEXT@
-
-	@$(MKDIR) $(@D)
-	@echo $< ...
-	@$(CXX) \
-		-o $@ \
-		$(foreach SRC, $(basename $(LIBRARY_TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
-		-Wl,-rpath,$(BINDBG) \
-		$(LDFLAGS) \
-		-L$(BINDBG) \
-		-l$(LIBRARY_NAME) \
-		$(LIBS) \
-		$(V3270_LIBS) \
-		$(GTK_LIBS) \
-		$(GLIB_LIBS) \
-		$(DBUS_LIBS)
-
-$(BINDBG)/lib$(LIBRARY_NAME)@DLLEXT@: \
-	$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJDBG)/$(SRC).o)
-
-	@$(MKDIR) $(@D)
-	@echo $< ...
-	@$(CXX) \
-		-shared -Wl,-soname,$(@F) \
-		-o $@ \
-		$(LDFLAGS) $(STATIC_LDFLAGS)\
-		$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJDBG)/$(SRC).o) \
-		-lpw3270cpp \
-		-L$(BINDBG) \
-		$(LIBS) \
-		$(DBUS_LIBS)
 
 #---[ Clean Targets ]--------------------------------------------------------------------
 
@@ -455,19 +238,18 @@ clean: \
 	cleanDebug \
 	cleanRelease
 
-	@rm -fr $(BASEDIR)/.tmp/$(PLUGIN_NAME)
-	@rm -fr $(POTDIR)/$(PLUGIN_NAME)
-
 cleanDebug:
 
 	@rm -fr $(OBJDBG)
 	@rm -fr $(BINDBG)
-	@rm -fr $(OBJDIR)/marshal
 
 cleanRelease:
 
 	@rm -fr $(OBJRLS)
 	@rm -fr $(BINRLS)
-	@rm -fr $(OBJDIR)/marshal
+
+clean: \
+	cleanDebug \
+	cleanRelease
 
 
