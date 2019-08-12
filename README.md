@@ -1,5 +1,5 @@
 
-HLLAPI plugin and client library for pw3270
-===========================================
+HLLAPI library for lib3270/pw3270
+=================================
 
 
