@@ -78,7 +78,6 @@ case "$host" in
 
 		CFLAGS="$CFLAGS -pthread -D_WIN32_WINNT=0x0600"
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
-		LDFLAGS="$LDFLAGS -static-libgcc -static-libstdc++"
 		DLLEXT=".dll"
 
 		app_win32_revision=$(date +%-y.%-m.%-d.%-H)
@@ -108,7 +107,6 @@ AC_SUBST(LIBS)
 AC_SUBST(LOGDIR)
 AC_SUBST(DLLEXT)
 AC_SUBST(DLLPREFIX)
-AC_SUBST(STATIC_LDFLAGS)
 AC_SUBST(LDFLAGS)
 
 dnl ---------------------------------------------------------------------------
@@ -224,6 +222,7 @@ if test "$app_cv_static_ipc3270" == "auto"; then
 fi
 
 if test "$app_cv_static_ipc3270" == "yes"; then
+	LDFLAGS="-static -static-libgcc -static-libstdc++ $LDFLAGS"
 	PKG_CHECK_MODULES( [IPC3270], [ipc3270-static], AC_DEFINE(USING_STATIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
 else
 	PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(USING_SHARED_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
