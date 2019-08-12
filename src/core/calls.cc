@@ -50,7 +50,7 @@
  {
  	try {
 
- 		getSession().connect((const char *) uri, false);
+ 		getSession().connect((const char *) uri, (wait != 0));
 
  		if(wait)
 			return hllapi_wait_for_ready(wait);
@@ -278,51 +278,81 @@
 	return *datadir;
  }
 
- /*
+ HLLAPI_API_CALL hllapi_wait(WORD seconds) {
 
- HLLAPI_API_CALL hllapi_wait(WORD seconds)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
+ 	try {
 
-	session::get_default()->wait(seconds);
+		TN3270::Host &host = getSession();
 
-	return hllapi_get_state();
- }
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
 
- HLLAPI_API_CALL hllapi_cmp_text_at(WORD row, WORD col, LPSTR text)
- {
+		host.wait(seconds);
 
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
+		return hllapi_get_state();
 
- 	int rc = HLLAPI_STATUS_SYSTEM_ERROR;
+	} catch(std::exception &e) {
 
-	try
-	{
-		rc = session::get_default()->cmp_string_at(row,col,text);
-	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
+		hllapi_lasterror = e.what();
+
 	}
 
- 	return rc;
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
  }
 
- HLLAPI_API_CALL hllapi_find_text(LPSTR text)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
+ HLLAPI_API_CALL hllapi_cmp_text_at(WORD row, WORD col, LPSTR text) {
 
- 	return (int) session::get_default()->find_string((const char *) text, false);
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
+
+		string contents = host.toString(row, col, strlen(text), 0);
+
+		return strncmp(contents.c_str(),text,strlen(text));
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
  }
 
+ HLLAPI_API_CALL hllapi_find_text(LPSTR text) {
 
- void hllapi_free(void *p)
- {
- 	free(p);
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected()) {
+			hllapi_lasterror = "Not connected";
+			return -1;
+		}
+
+		string contents = host.toString(0,-1,0);
+
+		size_t pos = contents.find(text);
+
+		if(pos == string::npos) {
+			hllapi_lasterror = "Not found";
+			return -1;
+		}
+
+		return pos;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return -1;
+
  }
 
-
-*/

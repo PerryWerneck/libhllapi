@@ -40,6 +40,8 @@
 
  int main(int argc, char **argv) {
 
+	char buffer[SCREEN_LENGTH+1];
+
  	const char *host	= "";
  	const char *session = ""; // "pw3270:A";
 
@@ -77,13 +79,63 @@
 		return rc;
 	}
 
-	cout << "TN3270 library revision is " << ((int) hllapi_get_revision()) << endl;
+	cout << "TN3270 library revision is " << ((int) hllapi_get_revision()) << endl << ">";
 
-	rc = hllapi_connect(host,1);
- 	if(rc) {
-		cout << "hllapi_connect returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
-		return rc;
+	cout.flush();
+
+ 	string cmdline;
+	while(std::getline(std::cin, cmdline)) {
+
+		if(cmdline.empty())
+			break;
+
+		memset(buffer,' ',SCREEN_LENGTH);
+		buffer[SCREEN_LENGTH] = 0;
+
+		if(strcasecmp(cmdline.c_str(),"connect") == 0) {
+
+			cout << "Connecting..." << endl;
+			rc = hllapi_connect(host,1);
+			cout << "hllapi_connect returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+
+		} else if(strcasecmp(cmdline.c_str(),"wait") == 0) {
+
+			rc = hllapi_wait_for_ready(10);
+			cout << "hllapi_wait_for_ready returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+
+		} else if(strcasecmp(cmdline.c_str(),"disconnect") == 0) {
+
+			cout << "Disconnecting..." << endl;
+			rc = hllapi_disconnect();
+			cout << "hllapi_disconnect returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+
+		} else if(strcasecmp(cmdline.c_str(),"luname") == 0) {
+
+			rc = hllapi_get_lu_name(buffer,SCREEN_LENGTH);
+			if(rc == HLLAPI_STATUS_SUCCESS) {
+				cout << "LU Name is " << buffer << endl;
+			} else {
+				cout << "hllapi_get_lu_name returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+			}
+
+		} else if(strcasecmp(cmdline.c_str(),"contents") == 0) {
+
+			rc = hllapi_get_screen(0,buffer,SCREEN_LENGTH);
+			cout << "hllapi_get_screen returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl
+					<< buffer << endl << endl;
+
+		} else {
+
+			cout << "Unknown command" << endl;
+		}
+
+
+		cout << endl << ">";
+		cout.flush();
 	}
+
+ 	/*
+
 
 	rc = hllapi_wait_for_ready(10);
  	if(rc) {
@@ -95,7 +147,6 @@
 
 		cout << "Host is connected" << endl;
 
-		char buffer[SCREEN_LENGTH+1];
 		memset(buffer,' ',SCREEN_LENGTH);
 		buffer[SCREEN_LENGTH] = 0;
 
@@ -113,6 +164,11 @@
 
 	}
 
+	rc = hllapi_get_lu_name(buffer,SCREEN_LENGTH);
+	if(rc == HLLAPI_STATUS_SUCCESS) {
+		cout << "LU Name is " << buffer << endl;
+	}
+
 	rc = hllapi_disconnect();
  	if(rc) {
 		cout << "hllapi_disconnect returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
@@ -121,19 +177,6 @@
 
 	cout << "HLLAPI Last error was \"" << hllapi_get_last_error() << "\"" << endl;
 
-	/*
-	printf("Library revision is %d\n",(int) hllapi_get_revision());
-
-	if(host) {
-
-		printf("connect=%d\n",(int) hllapi_connect((char *) host,1));
-		printf("wait_for_ready=%d\n",(int) hllapi_wait_for_ready(10));
-		printf("connected=%s\n",(int) hllapi_is_connected() ? "Yes" : "No");
-
-		printf("disconnect=%d\n",(int) hllapi_disconnect());
-	}
-
-	printf("connected=%s\n",(int) hllapi_is_connected() ? "Yes" : "No");
 	*/
 
 	rc = hllapi_deinit();
