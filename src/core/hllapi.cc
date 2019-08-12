@@ -27,6 +27,7 @@
  *
  */
 
+ #include "private.h"
  #include <lib3270/hllapi.h>
 
  /*--[ Prototipes ]-----------------------------------------------------------------------------------*/
@@ -84,21 +85,26 @@
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
-/*
-HLLAPI_API_CALL hllapi(const LPWORD func, LPSTR buffer, LPWORD length, LPWORD rc)
-{
-	unsigned int f;
+HLLAPI_API_CALL hllapi(const LPWORD func, LPSTR buffer, LPWORD length, LPWORD rc) {
 
-	trace("%s(%d)",__FUNCTION__,*func);
+	for(unsigned int f=0;f < (sizeof (hllapi_call) / sizeof ((hllapi_call)[0]));f++) {
 
-	for(f=0;f< (sizeof (hllapi_call) / sizeof ((hllapi_call)[0]));f++)
-	{
-		if(hllapi_call[f].func == *func)
-		{
-			int status = hllapi_call[f].exec(buffer,length,rc);
-			trace("hllapi(%d) exits with rc=%d",*func,status);
-			return status;
+		if(hllapi_call[f].func == *func) {
+
+			try {
+
+				return hllapi_call[f].exec(buffer,length,rc);
+
+			} catch(std::exception &e) {
+
+				hllapi_lasterror = e.what();
+				*rc = HLLAPI_STATUS_SYSTEM_ERROR;
+				return *rc;
+
+			}
+
 		}
+
 	}
 
 	trace("hllapi(%d) failed",*func);
@@ -108,14 +114,13 @@ HLLAPI_API_CALL hllapi(const LPWORD func, LPSTR buffer, LPWORD length, LPWORD rc
 
 }
 
-static int invalid_request(char *buffer, unsigned short *length, unsigned short *rc)
-{
+static int invalid_request(char *buffer, unsigned short *length, unsigned short *rc) {
 	*rc = HLLAPI_STATUS_BAD_PARAMETER;
 	return *rc;
 }
 
-static int connect_ps(char *buffer, unsigned short *length, unsigned short *rc)
-{
+static int connect_ps(char *buffer, unsigned short *length, unsigned short *rc) {
+
 	char *tempbuffer = NULL;
 
 	trace("%s: len=%d buflen=%d",__FUNCTION__,*length,(int) strlen(buffer));
@@ -140,64 +145,87 @@ static int connect_ps(char *buffer, unsigned short *length, unsigned short *rc)
 	if(tempbuffer)
 		free(tempbuffer);
 
-	return 0;
+	return HLLAPI_STATUS_SUCCESS;
+
 }
 
-static int disconnect_ps(char *buffer, unsigned short *length, unsigned short *rc)
-{
+static int disconnect_ps(char *buffer, unsigned short *length, unsigned short *rc) {
 	*rc = hllapi_deinit();
-	return 0;
+	return HLLAPI_STATUS_SUCCESS;
 }
 
-static int get_library_revision(char *buffer, unsigned short *length, unsigned short *rc)
-{
+static int get_library_revision(char *buffer, unsigned short *length, unsigned short *rc) {
 	*rc = hllapi_get_revision();
-	return 0;
+	return HLLAPI_STATUS_SUCCESS;
 }
 
-static int get_cursor_position(char *buffer, unsigned short *length, unsigned short *rc)
-{
-	int pos = hllapi_getcursor();
+static int get_cursor_position(char *buffer, unsigned short *length, unsigned short *rc) {
 
-	trace("%s(%d)",__FUNCTION__,pos);
+ 	try {
 
-	if(pos < 0)
-		return -1;
+		TN3270::Host &host = getSession();
 
-	*rc = pos;
-	return 0;
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
+
+		*rc = (unsigned short) (host.getCursorAddress()+1);
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	}
+
+	return HLLAPI_STATUS_SUCCESS;
+
 }
 
-static int set_cursor_position(char *buffer, unsigned short *length, unsigned short *rc)
-{
-	trace("%s(%d)",__FUNCTION__,*rc);
-	*rc = hllapi_setcursor(*rc);
-	return 0;
+static int set_cursor_position(char *buffer, unsigned short *length, unsigned short *rc) {
+
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
+
+		host.setCursor((unsigned short) *rc -1);
+
+		return HLLAPI_STATUS_SUCCESS;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
 }
 
-static int copy_ps_to_str(char *buffer, unsigned short *length, unsigned short *rc)
-{
+static int copy_ps_to_str(char *buffer, unsigned short *length, unsigned short *rc) {
 
 	// Length		Length of the target data string.
 	// PS Position	Position within the host presentation space of the first byte in your target data string.
 	*rc = hllapi_get_screen(*rc,buffer,*length);
 
-	return 0;
+	return HLLAPI_STATUS_SUCCESS;
 }
 
-static int input_string(char *buffer, unsigned short *length, unsigned short *rc)
-{
+static int input_string(char *buffer, unsigned short *length, unsigned short *rc) {
 	*rc = hllapi_input_string(buffer,*length);
-	return 0;
+	return HLLAPI_STATUS_SUCCESS;
 }
 
-static int search_ps(char *buffer, unsigned short *length, unsigned short *ps)
-{
+static int search_ps(char *buffer, unsigned short *length, unsigned short *ps) {
+
 	//
 	// Data String	Target string for search.
 	// Length	Length of the target data string. Overridden in EOT mode.
-	//  PS Position	Position within the host presentation space where the search is to begin (SRCHFRWD option) or to end
-	//  (SRCHBKWD option). Overridden in SRCHALL (default) mode.
+	//
+	// PS Position	Position within the host presentation space where the search is to begin (SRCHFRWD option) or to end
+	// (SRCHBKWD option). Overridden in SRCHALL (default) mode.
 	//
 	//  Return in *ps:
 	//
@@ -206,65 +234,95 @@ static int search_ps(char *buffer, unsigned short *length, unsigned short *ps)
 	//
 	//  Return code:
 	//
-	//  0	The Search Presentation Space function was successful.
-	//  1	Your program is not connected to a host session.
-	//  2	An error was made in specifying parameters.
-	//  7	The host presentation space position is not valid.
-	//  9	A system error was encountered.
-	// 24	The search string was not found.
+	//  0	HLLAPI_STATUS_SUCCESS		The Search Presentation Space function was successful.
+	//  1	HLLAPI_STATUS_DISCONNECTED	Your program is not connected to a host session.
+	//  2	HLLAPI_STATUS_BAD_PARAMETER	An error was made in specifying parameters.
+	//  7	HLLAPI_STATUS_BAD_POSITION	The host presentation space position is not valid.
+	//  9	HLLAPI_STATUS_SYSTEM_ERROR	A system error was encountered.
+	// 24	HLLAPI_STATUS_NOT_FOUND		The search string was not found.
 	//
 	//
-	size_t   szBuffer = strlen(buffer);
-	char   * text;
-	int		 rc = HLLAPI_STATUS_SYSTEM_ERROR;
 
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
+ 	try {
 
-	if(*length < szBuffer)
-		szBuffer = *length;
+		TN3270::Host &host = getSession();
 
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
 
-	text = hllapi_get_string(*ps,szBuffer);
-	if(!text)
-		return HLLAPI_STATUS_SYSTEM_ERROR;
+		string contents = host.toString(0,-1,0);
 
-	if(strncmp(text,buffer,szBuffer))
-	{
-		// String not found
-		*ps = 0;
-		rc = HLLAPI_STATUS_NOT_FOUND;
+		if( ((size_t) *ps) >= contents.size())
+			return HLLAPI_STATUS_BAD_POSITION;
+
+		size_t pos = contents.find(buffer, ((size_t) *ps));
+
+		if(pos == string::npos) {
+			*ps = 0;
+			return HLLAPI_STATUS_NOT_FOUND;
+		}
+
+		*ps = pos;
+
+		return HLLAPI_STATUS_SUCCESS;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
 	}
-	else
-	{
-		// String found
-		*ps = 1;
-		rc = HLLAPI_STATUS_SUCCESS;
-	}
 
-	hllapi_free(text);
+	return HLLAPI_STATUS_SYSTEM_ERROR;
 
-	return rc;
 }
 
-static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc)
-{
+static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc) {
+
 	//
-	// Data String	Preallocated target string the size of your host presentation space. This can vary depending on how your host presentation space is configured. When the Set Session Parameters (9) function with the EAB option is issued, the length of the data string must be at least twice the length of the presentation space.
-	//				DBCS Only: When the EAD option is specified, the length of the data string must be at least three times the length of the presentation space. When both the EAB and EAD options are specified, the length of the data string must be at least four times the length of the presentation space.
+	// Data String	Preallocated target string the size of your host presentation space. This can vary depending on how your host presentation space
+	//				is configured. When the Set Session Parameters (9) function with the EAB option is issued, the length of the data string must be
+	//				at least twice the length of the presentation space.
+	//				DBCS Only: When the EAD option is specified, the length of the data string must be at least three times the length of the
+	//				presentation space. When both the EAB and EAD options are specified, the length of the data string must be at least four times
+	//				the length of the presentation space.
 	//
 	// Length		NA (the length of the host presentation space is implied).
 	// PS Position	NA.
 	//
 	// Return values:
 	//
-	// 0	The host presentation space contents were copied to the application program. The target presentation space was active, and the keyboard was unlocked.
-	// 1	Your program is not connected to a host session.
-	// 4	The host presentation space contents were copied. The connected host presentation space was waiting for host response.
-	// 5	The host presentation space was copied. The keyboard was locked.
-	// 9	A system error was encountered.
+	// 0	HLLAPI_STATUS_SUCCESS			The host presentation space contents were copied to the application program. The target presentation space was active, and the keyboard was unlocked.
+	// 1	HLLAPI_STATUS_DISCONNECTED		Your program is not connected to a host session.
+	// 4	HLLAPI_STATUS_TIMEOUT			The host presentation space contents were copied. The connected host presentation space was waiting for host response.
+	// 5	HLLAPI_STATUS_KEYBOARD_LOCKED	The host presentation space was copied. The keyboard was locked.
+	// 9	HLLAPI_STATUS_SYSTEM_ERROR		A system error was encountered.
 	//
 	//
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
+
+		string contents = host.toString(0,-1,0);
+
+		size_t szBuffer = std::min(contents.size(), ((size_t) *length));
+		*length = (unsigned short) szBuffer;
+
+		strncpy(buffer,contents.c_str(),szBuffer);
+
+		return hllapi_get_state();
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	/*
 	size_t	  			  szBuffer	= strlen(buffer);
 	char				* text;
 
@@ -281,10 +339,13 @@ static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc)
 	hllapi_free(text);
 
 	return hllapi_get_state();
+	*/
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
 }
 
-static int wait_system(char *buffer, unsigned short *length, unsigned short *rc)
-{
+static int wait_system(char *buffer, unsigned short *length, unsigned short *rc) {
+
 	//
 	// Checks the status of the host-connected presentation space. If the session is
 	// waiting for a host response (indicated by XCLOCK (X []) or XSYSTEM), the Wait
@@ -303,13 +364,13 @@ static int wait_system(char *buffer, unsigned short *length, unsigned short *rc)
 	//
 	//
 
-	 int state = hllapi_wait_for_ready(60);
-	 return (state == HLLAPI_STATUS_WAITING ? HLLAPI_STATUS_TIMEOUT : state);
+	int state = hllapi_wait_for_ready(60);
+	return (state == HLLAPI_STATUS_WAITING ? HLLAPI_STATUS_TIMEOUT : state);
 
 }
 
-static int copy_str_to_ps(char *text, unsigned short *length, unsigned short *ps)
-{
+static int copy_str_to_ps(char *text, unsigned short *length, unsigned short *ps) {
+	/*
 	//
 	// Call Parameters
 	//
@@ -357,16 +418,17 @@ static int copy_str_to_ps(char *text, unsigned short *length, unsigned short *ps
 	}
 
 	return hllapi_emulate_input(text,szText,0);
+	*/
 }
 
-static int reset_system(char *buffer, unsigned short *length, unsigned short *rc)
-{
-	return hllapi_reset();
+static int reset_system(char *buffer, unsigned short *length, unsigned short *rc) {
+	return hllapi_kybdreset();
 }
 
 
-static int pause_system(char *buffer, unsigned short *length, unsigned short *rc)
-{
+static int pause_system(char *buffer, unsigned short *length, unsigned short *rc) {
+
+	/*
 	if(!*length)
 	{
 		// If you use the IPAUSE option and the pause value is zero, then the function
@@ -392,6 +454,7 @@ static int pause_system(char *buffer, unsigned short *length, unsigned short *rc
 	// #warning Mudar comportamento na lib!
 
 	return hllapi_wait_for_ready((*length) / 2);
+	*/
 }
 
 static int set_session_parameters(char *buffer, unsigned short *length, unsigned short *rc)
@@ -403,41 +466,38 @@ static int set_session_parameters(char *buffer, unsigned short *length, unsigned
 
 	*rc = hllapi_set_session_parameter(buffer, *length, *rc);
 
-	return 0;
+	return HLLAPI_STATUS_SUCCESS;
 }
 
 HLLAPI_API_CALL hllapi_set_session_parameter(LPSTR param, WORD len, WORD value)
 {
  	if(!param)
-	{
 		return HLLAPI_STATUS_BAD_PARAMETER;
-	}
 
 	if(!len)
-	{
 		len = strlen(param);
-	}
 
-	if(!strncasecmp(param,"IPAUSE",len))
-	{
+	if(!strncasecmp(param,"IPAUSE",len)) {
+
 		// IPAUSE
 		pause_mode = PAUSE_MODE_IPAUSE;
-	}
-	else if(!strncasecmp(param,"FPAUSE",len))
-	{
+
+	} else if(!strncasecmp(param,"FPAUSE",len)) {
+
 		// FPAUSE
 		pause_mode = PAUSE_MODE_FPAUSE;
-	}
-	else if(!strncasecmp(param,"UNLOCKDELAY",len))
-	{
+
+	} else if(!strncasecmp(param,"UNLOCKDELAY",len)) {
+
 		// UNLOCKDELAY
 		hllapi_set_unlock_delay(value);
-	}
-	else
-	{
+
+	} else {
+
 		return HLLAPI_STATUS_BAD_PARAMETER;
+
 	}
 
 	return HLLAPI_STATUS_SUCCESS;
 }
-*/
+

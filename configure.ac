@@ -72,17 +72,14 @@ dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
 
-DLLPREFIX="lib"
-
 case "$host" in
 	*-mingw32|*-pc-msys)
 		app_cv_osname="windows"
 
 		CFLAGS="$CFLAGS -pthread -D_WIN32_WINNT=0x0600"
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
-		STATIC_LDFLAGS="-static-libgcc -static-libstdc++"
+		LDFLAGS="$LDFLAGS -static-libgcc -static-libstdc++"
 		DLLEXT=".dll"
-		DLLPREFIX=""
 
 		app_win32_revision=$(date +%-y.%-m.%-d.%-H)
 		AC_SUBST(WIN32_VERSION,$app_win32_revision)
@@ -90,7 +87,7 @@ case "$host" in
 		app_win32_file_version=$(date +%-y,%-m,%-d,%-H)
 		AC_SUBST(WIN32_FILE_VERSION,$app_win32_file_version)
 
-		AC_CONFIG_FILES(src/hllapi/windows/resources.rc)
+		AC_CONFIG_FILES(src/core/windows/resources.rc)
 		;;
 
  	*)
@@ -205,7 +202,32 @@ dnl ---------------------------------------------------------------------------
 dnl Check for IPC3270
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(HAVE_IPC3270), AC_MSG_ERROR([LIB3270 not present.]))
+AC_ARG_WITH([static-ipc3270],
+        [AS_HELP_STRING([--with-static-ipc3270], [Uses static version of ipc3270])],
+[
+	app_cv_static_ipc3270=$withval
+],[
+	app_cv_static_ipc3270="auto"
+])
+
+if test "$app_cv_static_ipc3270" == "auto"; then
+	case "$host" in
+	*-mingw32|*-pc-msys)
+		app_cv_static_ipc3270="yes"
+		;;
+
+	*)
+		app_cv_static_ipc3270="no"
+
+	esac
+
+fi
+
+if test "$app_cv_static_ipc3270" == "yes"; then
+	PKG_CHECK_MODULES( [IPC3270], [ipc3270-static], AC_DEFINE(USING_STATIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
+else
+	PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(USING_SHARED_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
+fi
 
 AC_SUBST(IPC3270_LIBS)
 AC_SUBST(IPC3270_CFLAGS)

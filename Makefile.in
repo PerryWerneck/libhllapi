@@ -94,6 +94,8 @@ CFLAGS= \
 	-DBUILD_DATE=`date +%Y%m%d` \
 	@IPC3270_CFLAGS@
 
+LDFLAGS=@LDFLAGS@
+
 LIBS= \
 	@LIBS@ \
 	@IPC3270_LIBS@

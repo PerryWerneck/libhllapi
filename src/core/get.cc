@@ -90,3 +90,52 @@
 
  }
 
+ HLLAPI_API_CALL hllapi_get_lu_name(LPSTR buffer, WORD len) {
+
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
+
+		if(!(buffer && *buffer))
+			return HLLAPI_STATUS_BAD_PARAMETER;
+
+
+		if(len == 0)
+			return HLLAPI_STATUS_BAD_PARAMETER;
+
+		string luname = host.getLUName();
+
+		memset(buffer,' ',len);
+		strncpy((char *) buffer, luname.c_str(), std::min((size_t) len,luname.size()));
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	}
+
+ 	return HLLAPI_STATUS_SUCCESS;
+
+ }
+
+
+ /*
+ char * hllapi_get_string(int offset, size_t len)
+ {
+	try
+	{
+		string str = session::get_default()->get_string(offset-1,len);
+		char * ret = strdup(str.c_str());
+		return ret;
+	}
+	catch(std::exception &e)
+	{
+	}
+
+	return NULL;
+ }
+ */

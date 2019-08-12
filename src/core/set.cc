@@ -29,9 +29,12 @@
 
  #include "private.h"
 
+ #include <string>
+
+
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
- HLLAPI_API_CALL hllapi_set_cursor_address(WORD pos) {
+ HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text) {
 
  	try {
 
@@ -40,46 +43,72 @@
 		if(!host.isConnected())
 			return HLLAPI_STATUS_DISCONNECTED;
 
-		host.setCursor((unsigned short) pos -1);
+		if(!(text && *text))
+			return HLLAPI_STATUS_BAD_PARAMETER;
 
-		return 0;
+		host.push(row,col,(const char *) text);
+
 
 	} catch(std::exception &e) {
 
 		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	}
 
-	return HLLAPI_STATUS_SYSTEM_ERROR;
+ 	return HLLAPI_STATUS_SUCCESS;
 
  }
 
- HLLAPI_API_CALL hllapi_setcursor(WORD pos) {
- 	return hllapi_set_cursor_address(pos);
- }
-
- HLLAPI_API_CALL hllapi_get_cursor_address() {
+ HLLAPI_API_CALL hllapi_input_string(LPSTR text, WORD length)
+ {
 
  	try {
 
 		TN3270::Host &host = getSession();
 
 		if(!host.isConnected())
-			return 0;
+			return HLLAPI_STATUS_DISCONNECTED;
 
-		return (DWORD) (host.getCursorAddress()+1);
+		if(!(text && *text))
+			return HLLAPI_STATUS_BAD_PARAMETER;
+
+		if(!length)
+			length = strlen(text);
+
+		host.input((const char *) text, (size_t) length);
 
 	} catch(std::exception &e) {
 
 		hllapi_lasterror = e.what();
-		return -1;
+		return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	}
 
-	return -1;
+ 	return HLLAPI_STATUS_SUCCESS;
+
+
  }
 
- HLLAPI_API_CALL hllapi_getcursor() {
- 	return hllapi_get_cursor_address();
+
+
+ /*
+ HLLAPI_API_CALL hllapi_emulate_input(const LPSTR buffer, WORD len, WORD pasting)
+ {
+	if(!hllapi_is_connected())
+		return HLLAPI_STATUS_DISCONNECTED;
+
+	try
+	{
+		session::get_default()->input_string(buffer);
+	}
+	catch(std::exception &e)
+	{
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+	}
+
+	return HLLAPI_STATUS_SUCCESS;
  }
 
+
+ */

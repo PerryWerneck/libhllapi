@@ -76,7 +76,8 @@
 		hllapi_lasterror = e.what();
 	}
 
-	return 0;
+	return HLLAPI_STATUS_SUCCESS;
+
  }
 
  HLLAPI_API_CALL hllapi_get_state(void) {
@@ -137,7 +138,7 @@
 
 	}
 
-	return 0;
+	return HLLAPI_STATUS_SUCCESS;
 
  }
 
@@ -190,7 +191,7 @@
 
 		host.pfkey((unsigned short) key);
 
-		return 0;
+		return HLLAPI_STATUS_SUCCESS;
 
 	} catch(std::exception &e) {
 
@@ -213,7 +214,7 @@
 
 		host.pakey((unsigned short) key);
 
-		return 0;
+		return HLLAPI_STATUS_SUCCESS;
 
 	} catch(std::exception &e) {
 
@@ -223,6 +224,58 @@
 
 	return HLLAPI_STATUS_SYSTEM_ERROR;
 
+ }
+
+ HLLAPI_API_CALL hllapi_set_unlock_delay(WORD ms) {
+
+  	try {
+
+		getSession().setUnlockDelay((unsigned short) ms);
+		return HLLAPI_STATUS_SUCCESS;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+ }
+
+ HLLAPI_API_CALL hllapi_set_charset(LPSTR text) {
+
+   	try {
+
+		getSession().setCharSet((const char *) text);
+		return HLLAPI_STATUS_SUCCESS;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+ }
+
+ HLLAPI_API_CALL hllapi_get_datadir(LPSTR datadir) {
+
+ #ifdef _WIN32
+	HKEY 			hKey	= 0;
+ 	unsigned long	datalen = strlen(datadir);
+
+	*datadir = 0;
+
+	if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,"Software\\pw3270",0,KEY_QUERY_VALUE,&hKey) == ERROR_SUCCESS)
+	{
+		unsigned long datatype;					// #defined in winnt.h (predefined types 0-11)
+		if(RegQueryValueExA(hKey,"datadir",NULL,&datatype,(LPBYTE) datadir,&datalen) != ERROR_SUCCESS)
+			*datadir = 0;
+		RegCloseKey(hKey);
+	}
+#endif // _WIN32
+
+	return *datadir;
  }
 
  /*
@@ -235,23 +288,6 @@
 	session::get_default()->wait(seconds);
 
 	return hllapi_get_state();
- }
-
- HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	try
-	{
-		session::get_default()->set_string_at(row,col,text);
-	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-
- 	return HLLAPI_STATUS_SUCCESS;
  }
 
  HLLAPI_API_CALL hllapi_cmp_text_at(WORD row, WORD col, LPSTR text)
@@ -282,374 +318,11 @@
  	return (int) session::get_default()->find_string((const char *) text, false);
  }
 
- HLLAPI_API_CALL hllapi_set_unlock_delay(WORD ms)
- {
-	session::get_default()->set_unlock_delay(ms);
-	return 0;
- }
-
- HLLAPI_API_CALL hllapi_set_charset(LPSTR text)
- {
- 	try
- 	{
-
-		session::get_default()->set_display_charset(NULL, (const char *) text);
-
- 	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-
-	return 0;
- }
-
- HLLAPI_API_CALL hllapi_get_datadir(LPSTR datadir)
- {
- #ifdef _WIN32
-	HKEY 			hKey	= 0;
- 	unsigned long	datalen = strlen(datadir);
-
-	*datadir = 0;
-
-	if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,"Software\\pw3270",0,KEY_QUERY_VALUE,&hKey) == ERROR_SUCCESS)
-	{
-		unsigned long datatype;					// #defined in winnt.h (predefined types 0-11)
-		if(RegQueryValueExA(hKey,"datadir",NULL,&datatype,(LPBYTE) datadir,&datalen) != ERROR_SUCCESS)
-			*datadir = 0;
-		RegCloseKey(hKey);
-	}
-#endif // _WIN32
-
-	return *datadir;
- }
-
- HLLAPI_API_CALL hllapi_emulate_input(const LPSTR buffer, WORD len, WORD pasting)
- {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	try
-	{
-		session::get_default()->input_string(buffer);
-	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-
-	return HLLAPI_STATUS_SUCCESS;
- }
-
- char * hllapi_get_string(int offset, size_t len)
- {
-	try
-	{
-		string str = session::get_default()->get_string(offset-1,len);
-		char * ret = strdup(str.c_str());
-		return ret;
-	}
-	catch(std::exception &e)
-	{
-	}
-
-	return NULL;
- }
 
  void hllapi_free(void *p)
  {
  	free(p);
  }
 
- HLLAPI_API_CALL hllapi_input_string(LPSTR input, WORD length)
- {
-	static const char control_char = '@';
-
-	size_t	  szText;
-	char 	* text;
-	int		  rc	= 0;
-
-	if(!hllapi_is_connected()) {
-		return HLLAPI_STATUS_DISCONNECTED;
-	}
-
-	if(!input)
-	{
-		return HLLAPI_STATUS_BAD_PARAMETER;
-	}
-
-	if(length > 0 )
-		szText = length;
-	else
-		szText = strlen(input);
-
-	text = (char *) malloc(szText+2);
-	memcpy(text,input,szText);
-	text[szText] = 0;
-
-	trace("input[%s]",text);
-
-	if(strchr(text,control_char))
-	{
-		// Convert control char
-		char	* buffer = text;
-		char	* ptr;
-
-		for(ptr = strchr(text,control_char);ptr;ptr = strchr(buffer,control_char))
-		{
-			*(ptr++) = 0;
-
-			trace("input[%s]",buffer);
-			hllapi_emulate_input(buffer,-1,0);
-
-			switch(*(ptr++))
-			{
-			case 'P':	// Print
-				rc = hllapi_print();
-				break;
-
-			case 'E':	// Enter
-				hllapi_enter();
-				break;
-
-			case 'F':	// Erase EOF
-				hllapi_erase_eof();
-				break;
-
-			case '1':	// PF1
-				hllapi_pfkey(1);
-				break;
-
-			case '2':	// PF2
-				hllapi_pfkey(2);
-				break;
-
-			case '3':	// PF3
-				hllapi_pfkey(3);
-				break;
-
-			case '4':	// PF4
-				hllapi_pfkey(4);
-				break;
-
-			case '5':	// PF5
-				hllapi_pfkey(5);
-				break;
-
-			case '6':	// PF6
-				hllapi_pfkey(6);
-				break;
-
-			case '7':	// PF7
-				hllapi_pfkey(7);
-				break;
-
-			case '8':	// PF8
-				hllapi_pfkey(8);
-				break;
-
-			case '9':	// PF9
-				hllapi_pfkey(9);
-				break;
-
-			case 'a':	// PF10
-				hllapi_pfkey(10);
-				break;
-
-			case 'b':	// PF11
-				hllapi_pfkey(11);
-				break;
-
-			case 'c':	// PF12
-				hllapi_pfkey(12);
-				break;
-
-			case 'd':	// PF13
-				hllapi_pfkey(13);
-				break;
-
-			case 'e':	// PF14
-				hllapi_pfkey(14);
-				break;
-
-			case 'f':	// PF15
-				hllapi_pfkey(15);
-				break;
-
-			case 'g':	// PF16
-				hllapi_pfkey(16);
-				break;
-
-			case 'h':	// PF17
-				hllapi_pfkey(17);
-				break;
-
-			case 'i':	// PF18
-				hllapi_pfkey(18);
-				break;
-
-			case 'j':	// PF19
-				hllapi_pfkey(19);
-				break;
-
-			case 'k':	// PF20
-				hllapi_pfkey(20);
-				break;
-
-			case 'l':	// PF21
-				hllapi_pfkey(21);
-				break;
-
-			case 'm':	// PF22
-				hllapi_pfkey(22);
-				break;
-
-			case 'n':	// PF23
-				hllapi_pfkey(23);
-				break;
-
-			case 'o':	// PF24
-				hllapi_pfkey(24);
-				break;
-
-			case '@':	// Send '@' character
-				hllapi_emulate_input((LPSTR) "@",-1,0);
-				break;
-
-			case 'x':	// PA1
-				hllapi_pakey(1);
-				break;
-
-			case 'y':	// PA2
-				hllapi_pakey(2);
-				break;
-
-			case 'z':	// PA3
-				hllapi_pakey(3);
-				break;
-
-			case 'B':	// PC_LEFTTAB = "@B"
-				break;
-
-			case 'T':	// PC_RIGHTTAB = "@T"
-				break;
-
-			case 'N':	// PC_NEWLINE = "@N"
-				break;
-
-			case 'C':	// PC_CLEAR = "@C"
-				hllapi_erase_input();
-				break;
-
-			case 'D':	// PC_DELETE = "@D"
-				break;
-
-			case 'H':	// PC_HELP = "@H"
-				break;
-
-			case 'I':	// PC_INSERT = "@I"
-				break;
-
-			case 'L':	// PC_CURSORLEFT = "@L"
-				break;
-
-			case 'R':	// PC_RESET = "@R"
-				hllapi_reset();
-				break;
-
-			case 'U':	// PC_CURSORUP = "@U"
-				break;
-
-			case 'V':	// PC_CURSORDOWN = "@V"
-				break;
-
-			case 'Z':	// PC_CURSORRIGHT = "@Z"
-				break;
-
-			case '0':	// PC_HOME = "@0"
-				break;
-
-			case 'p':	// PC_PLUSKEY = "@p"
-				break;
-
-			case 'q':	// PC_END = "@q"
-				break;
-
-			case 's':	// PC_SCRLK = "@s"
-				break;
-
-			case 't':	// PC_NUMLOCK = "@t"
-				break;
-
-			case 'u':	// PC_PAGEUP = "@u"
-				break;
-
-			case 'v':	// PC_PAGEDOWN = "@v"
-				break;
-
-			case '/':	// PC_OVERRUNOFQUEUE = "@/"   ' Queue overflow, used in Get Key only
-				break;
-
-			case '$':	// PC_ALTCURSOR = "@$"        ' Presentation Manager only, unused in VB environment
-				break;
-
-			case '<':	// PC_BACKSPACE = "@<"
-				break;
-
-
-// Global Const PC_TEST = "@A@C"
-// Global Const PC_WORDDELETE = "@A@D"
-// Global Const PC_FIELDEXIT = "@A@E"
-// Global Const PC_ERASEINPUT = "@A@F"
-// Global Const PC_SYSTEMREQUEST = "@A@H"
-// Global Const PC_INSERTTOGGLE = "@A@I"
-// Global Const PC_CURSORSELECT = "@A@J"
-// Global Const PC_CURSLEFTFAST = "@A@L"
-// Global Const PC_GETCURSOR = "@A@N"
-// Global Const PC_LOCATECURSOR = "@A@O"
-// Global Const PC_ATTENTION = "@A@Q"
-// Global Const PC_DEVICECANCEL = "@A@R"
-// Global Const PC_PRINTPS = "@A@T"
-// Global Const PC_CURSUPFAST = "@A@U"
-// Global Const PC_CURSDOWNFAST = "@A@V"
-// Global Const PC_HEX = "@A@X"
-// Global Const PC_FUNCTIONKEY = "@A@Y"
-// Global Const PC_CURSRIGHTFAST = "@A@Z"
-
-// Global Const PC_REVERSEVIDEO = "@A@9"
-// Global Const PC_UNDERSCORE = "@A@b"
-// Global Const PC_BLINK = "@A@c"
-// Global Const PC_RED = "@A@d"
-// Global Const PC_PINK = "@A@e"
-// Global Const PC_GREEN = "@A@f"
-// Global Const PC_YELLOW = "@A@g"
-// Global Const PC_BLUE = "@A@h"
-// Global Const PC_TURQOISE = "@A@i"
-// Global Const PC_WHITE = "@A@j"
-// Global Const PC_RSTHOSTCOLORS = "@A@l"
-// Global Const PC_PRINTPC = "@A@t"
-
-// Global Const PC_FIELDMINUS = "@A@-"
-// Global Const PC_FIELDPLUS = "@A@+"
-
-			}
-
-			buffer = ptr;
-
-		}
-
-		if(*buffer)
-			hllapi_emulate_input(buffer,-1,0);
-
-	}
-	else
-	{
-		hllapi_emulate_input(text,szText,0);
-	}
-
-	free(text);
-
-	return rc;
- }
 
 */
