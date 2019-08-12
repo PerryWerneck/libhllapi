@@ -319,7 +319,7 @@
 
 	case HLLAPI_PACKET_INPUT_STRING:
 		send_result(source,lib3270_input_string(lib3270_get_default_session_handle(),
-												(unsigned char *) ((struct hllapi_packet_text *) source->buffer)->text));
+												(unsigned char *) ((struct hllapi_packet_text *) source->buffer)->text,-1));
 		break;
 
 	case HLLAPI_PACKET_EMULATE_INPUT:
