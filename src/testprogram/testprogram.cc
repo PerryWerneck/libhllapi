@@ -95,7 +95,7 @@
 		if(strcasecmp(cmdline.c_str(),"connect") == 0) {
 
 			cout << "Connecting..." << endl;
-			rc = hllapi_connect(host,1);
+			rc = hllapi_connect((LPSTR) host,1);
 			cout << "hllapi_connect returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
 
 		} else if(strcasecmp(cmdline.c_str(),"wait") == 0) {
