@@ -18,3 +18,5 @@ dbus-glue.h
 *.bak
 *.[0-9]
 vgcore.*
+*.nsi
+*.exe

@@ -87,6 +87,18 @@ case "$host" in
 		AC_SUBST(WIN32_FILE_VERSION,$app_win32_file_version)
 
 		AC_CONFIG_FILES(src/core/windows/resources.rc)
+		AC_CONFIG_FILES(win/hllapi.nsi)
+
+		if test "$host_cpu" = "x86_64"; then
+			app_cv_programfiles="PROGRAMFILES64"
+			app_cv_winarch="64"
+		else
+			app_cv_programfiles="PROGRAMFILES"
+			app_cv_winarch="32"
+		fi
+
+		AC_SUBST(PROGRAMFILES,$app_cv_programfiles)
+		AC_SUBST(WINARCH,$app_cv_winarch)
 		;;
 
  	*)
@@ -108,6 +120,7 @@ AC_SUBST(LOGDIR)
 AC_SUBST(DLLEXT)
 AC_SUBST(DLLPREFIX)
 AC_SUBST(LDFLAGS)
+AC_SUBST(DLL_LDFLAGS)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for other programs
