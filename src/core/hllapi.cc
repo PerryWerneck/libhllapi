@@ -428,7 +428,6 @@ static int reset_system(char *buffer, unsigned short *length, unsigned short *rc
 
 static int pause_system(char *buffer, unsigned short *length, unsigned short *rc) {
 
-	/*
 	if(!*length)
 	{
 		// If you use the IPAUSE option and the pause value is zero, then the function
@@ -450,11 +449,8 @@ static int pause_system(char *buffer, unsigned short *length, unsigned short *rc
 	}
 
 	// Pause "flexivel", aguarda mudança no conteúdo da tela!!!
+	return hllapi_wait_for_change((*length) / 2);
 
-	// #warning Mudar comportamento na lib!
-
-	return hllapi_wait_for_ready((*length) / 2);
-	*/
 }
 
 static int set_session_parameters(char *buffer, unsigned short *length, unsigned short *rc)

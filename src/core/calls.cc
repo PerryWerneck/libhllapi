@@ -180,6 +180,27 @@
 
  }
 
+ HLLAPI_API_CALL hllapi_wait_for_change(WORD seconds) {
+
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		if(host.isConnected())
+			host.waitForChange((unsigned int) seconds);
+
+		return hllapi_get_state();
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }
+
  HLLAPI_API_CALL hllapi_pfkey(WORD key) {
 
  	try {

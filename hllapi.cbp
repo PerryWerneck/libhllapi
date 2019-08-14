@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="pw3270 HLLAPI v5.1 compatibility plugin" />
+		<Option title="HLLAPI Language binding for pw3270/lib3270" />
 		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />

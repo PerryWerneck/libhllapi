@@ -27,6 +27,18 @@
  *
  */
 
+/**
+ * @file config.h
+ *
+ * @brief Configuração para o aplicativo.
+ *
+ * Gerado automaticamente pelo processo ./configure esse arquivo descreve
+ * as configurações de ambiente detectadas automaticamente.
+ *
+ * @author perry.werneck@gmail.com
+ *
+ */
+
 #ifndef CONFIG_H_INCLUDED
 
 	#define CONFIG_H_INCLUDED 1
