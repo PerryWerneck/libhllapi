@@ -28,69 +28,104 @@
  */
 
  #include "private.h"
+ #include <lib3270/keyboard.h>
 
  #include <string>
+ #include <functional>
 
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
- HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text) {
+ DWORD hllapi_translate_keyboard_state(LIB3270_KEYBOARD_LOCK_STATE state, HLLAPI_STATUS def = HLLAPI_STATUS_SYSTEM_ERROR) {
 
- 	try {
+	// Is unlocked.
+	if(state == LIB3270_KL_UNLOCKED)
+		return def;
+
+	// Is connected?
+	if((state & LIB3270_KL_NOT_CONNECTED) != 0)
+		return HLLAPI_STATUS_DISCONNECTED;
+
+	if( (state & (LIB3270_KL_AWAITING_FIRST|LIB3270_KL_OIA_TWAIT)) != 0)
+		return HLLAPI_STATUS_WAITING;
+
+	return HLLAPI_STATUS_KEYBOARD_LOCKED;
+
+ }
+
+ static DWORD set(std::function<void(TN3270::Host &)> worker) noexcept {
+
+	LIB3270_KEYBOARD_LOCK_STATE kLock = LIB3270_KL_UNLOCKED;
+
+	try {
 
 		TN3270::Host &host = getSession();
 
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
+		kLock = host.waitForKeyboardUnlock();
+		if(kLock == LIB3270_KL_UNLOCKED) {
 
-		if(!(text && *text))
-			return HLLAPI_STATUS_BAD_PARAMETER;
+			try {
 
-		host.push(row,col,(const char *) text);
+				worker(host);
+				return HLLAPI_STATUS_SUCCESS;
+
+			} catch(const std::exception &e) {
+
+				// Worker has failed!
+				hllapi_lasterror = e.what();
+			}
+
+			// Failed! Get lock state.
+			kLock = host.getKeyboardLockState();
+
+		}
 
 
-	} catch(std::exception &e) {
+	} catch(const std::exception &e) {
 
+		// Error getting session or lock state
 		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	} catch(...) {
+
+		// Unexpected error getting session or lock state
+		hllapi_lasterror = "Unexpected error";
 		return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	}
 
- 	return HLLAPI_STATUS_SUCCESS;
+	return hllapi_translate_keyboard_state(kLock);
+
+ }
+
+ HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text) {
+
+	if(!(text && *text))
+		return HLLAPI_STATUS_BAD_PARAMETER;
+
+	return set([row,col,text](TN3270::Host &host) {
+
+		host.push(row,col,(const char *) text);
+
+	});
+
 
  }
 
  HLLAPI_API_CALL hllapi_input_string(LPSTR text, WORD length)
  {
 
- 	try {
+	if(!(text && *text))
+		return HLLAPI_STATUS_BAD_PARAMETER;
 
-		TN3270::Host &host = getSession();
+	return set([text,length](TN3270::Host &host) {
 
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
+		host.input((const char *) text, (int) length, '@');
 
-		if(!(text && *text))
-			return HLLAPI_STATUS_BAD_PARAMETER;
-
-		if(!length)
-			length = strlen(text);
-
-		host.input((const char *) text, (size_t) length);
-
-	} catch(std::exception &e) {
-
-		hllapi_lasterror = e.what();
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-
-	}
-
- 	return HLLAPI_STATUS_SUCCESS;
-
+	});
 
  }
-
-
 
  /*
  HLLAPI_API_CALL hllapi_emulate_input(const LPSTR buffer, WORD len, WORD pasting)

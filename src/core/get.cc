@@ -31,8 +31,48 @@
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
+ static DWORD get(std::function<void(TN3270::Host &)> worker) noexcept {
+
+	try {
+
+		TN3270::Host &host = getSession();
+
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
+
+		worker(host);
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	} catch(...) {
+
+		hllapi_lasterror = "Unexpected error";
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	}
+
+ 	return HLLAPI_STATUS_SUCCESS;
+
+ }
+
  HLLAPI_API_CALL hllapi_get_screen_at(WORD row, WORD col, LPSTR buffer) {
 
+	if(!(buffer && *buffer))
+		return HLLAPI_STATUS_BAD_PARAMETER;
+
+	return get([row,col,buffer](TN3270::Host &host) {
+
+		size_t length = strlen(buffer);
+		string contents = host.toString( (int) row, (int) col, length);
+
+		strncpy((char *) buffer, contents.c_str(), std::min(length,contents.size()));
+
+	});
+
+	/*
 	try {
 
 		TN3270::Host &host = getSession();
@@ -56,11 +96,29 @@
 	}
 
  	return HLLAPI_STATUS_SUCCESS;
+ 	*/
 
  }
 
  HLLAPI_API_CALL hllapi_get_screen(WORD offset, LPSTR buffer, WORD len) {
 
+	if(!(buffer && *buffer))
+		return HLLAPI_STATUS_BAD_PARAMETER;
+
+	if(len == 0)
+		return HLLAPI_STATUS_BAD_PARAMETER;
+
+	return get([offset,buffer,len](TN3270::Host &host) {
+
+		string contents = host.toString((int) offset, (size_t) len);
+
+		memset(buffer,' ',len);
+		strncpy((char *) buffer, contents.c_str(), std::min((size_t) len,contents.size()));
+
+	});
+
+
+	/*
  	try {
 
 		TN3270::Host &host = getSession();
@@ -87,11 +145,27 @@
 	}
 
  	return HLLAPI_STATUS_SUCCESS;
+	*/
 
  }
 
  HLLAPI_API_CALL hllapi_get_lu_name(LPSTR buffer, WORD len) {
 
+	if(!(buffer && *buffer))
+		return HLLAPI_STATUS_BAD_PARAMETER;
+
+	if(len == 0)
+		return HLLAPI_STATUS_BAD_PARAMETER;
+
+	return get([buffer,len](TN3270::Host &host) {
+
+		string luname = host.getLUName();
+		memset(buffer,' ',len);
+		strncpy((char *) buffer, luname.c_str(), std::min((size_t) len,luname.size()));
+
+	});
+
+	/*
  	try {
 
 		TN3270::Host &host = getSession();
@@ -107,7 +181,6 @@
 			return HLLAPI_STATUS_BAD_PARAMETER;
 
 		string luname = host.getLUName();
-
 		memset(buffer,' ',len);
 		strncpy((char *) buffer, luname.c_str(), std::min((size_t) len,luname.size()));
 
@@ -119,6 +192,8 @@
 	}
 
  	return HLLAPI_STATUS_SUCCESS;
+
+	*/
 
  }
 

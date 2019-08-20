@@ -37,7 +37,7 @@
 
  		return atoi(getSession().getRevision().c_str());
 
-	} catch(std::exception &e) {
+	} catch(const std::exception &e) {
 
 		hllapi_lasterror = e.what();
 
@@ -50,15 +50,21 @@
  {
  	try {
 
- 		getSession().connect((const char *) uri, (wait != 0));
+ 		getSession().connect((const char *) uri);
 
  		if(wait)
 			return hllapi_wait_for_ready(wait);
 
-	} catch(std::exception &e) {
+	} catch(const std::exception &e) {
 
 		hllapi_lasterror = e.what();
 		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	} catch(...) {
+
+		hllapi_lasterror = "Unexpected error";
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
 	}
 
 	return hllapi_get_state();
@@ -170,7 +176,7 @@
 
 		return hllapi_get_state();
 
-	} catch(std::exception &e) {
+	} catch(const std::exception &e) {
 
 		hllapi_lasterror = e.what();
 
