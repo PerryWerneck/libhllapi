@@ -355,7 +355,7 @@
 		break;
 
 	case HLLAPI_PACKET_GET_SSL_STATE:
-		send_result(source,lib3270_get_secure(lib3270_get_default_session_handle()));
+		send_result(source,lib3270_get_ssl_state(lib3270_get_default_session_handle()));
 		break;
 
 	case HLLAPI_PACKET_SET_UNLOCK_DELAY:

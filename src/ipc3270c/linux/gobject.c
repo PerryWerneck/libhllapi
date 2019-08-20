@@ -145,7 +145,7 @@ void pw3270_dbus_get_connection_state(PW3270Dbus *object, DBusGMethodInvocation 
 void pw3270_dbus_get_secure_state(PW3270Dbus *object, DBusGMethodInvocation *context)
 {
 	trace("%s object=%p context=%p",__FUNCTION__,object,context);
-	dbus_g_method_return(context,lib3270_get_secure(pw3270_dbus_get_session_handle(object)));
+	dbus_g_method_return(context,lib3270_get_ssl_state(pw3270_dbus_get_session_handle(object)));
 }
 
 GError * pw3270_dbus_get_error_from_errno(int code)
@@ -256,7 +256,7 @@ void pw3270_dbus_set_text_at(PW3270Dbus *object, int row, int col, const gchar *
 
 	text = g_convert_with_fallback(utftext,-1,lib3270_get_display_charset(hSession),"UTF-8","?",NULL,NULL,NULL);
 
-	int sz = lib3270_set_string_at(hSession,row,col,(const unsigned char *) text);
+	int sz = lib3270_set_string_at(hSession,row,col,(const unsigned char *) text, -1);
 
 	trace("%s returns %d",__FUNCTION__,sz);
 	dbus_g_method_return(context,sz);
