@@ -38,6 +38,7 @@
 		<Unit filename="src/core/cursor.cc" />
 		<Unit filename="src/core/get.cc" />
 		<Unit filename="src/core/hllapi.cc" />
+		<Unit filename="src/core/keyboard.cc" />
 		<Unit filename="src/core/private.h" />
 		<Unit filename="src/core/set.cc" />
 		<Unit filename="src/core/windows/resources.rc" />

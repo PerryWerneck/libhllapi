@@ -36,23 +36,6 @@
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
- DWORD hllapi_translate_keyboard_state(LIB3270_KEYBOARD_LOCK_STATE state, HLLAPI_STATUS def = HLLAPI_STATUS_SYSTEM_ERROR) {
-
-	// Is unlocked.
-	if(state == LIB3270_KL_UNLOCKED)
-		return def;
-
-	// Is connected?
-	if((state & LIB3270_KL_NOT_CONNECTED) != 0)
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	if( (state & (LIB3270_KL_AWAITING_FIRST|LIB3270_KL_OIA_TWAIT)) != 0)
-		return HLLAPI_STATUS_WAITING;
-
-	return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
- }
-
  static DWORD set(std::function<void(TN3270::Host &)> worker) noexcept {
 
 	LIB3270_KEYBOARD_LOCK_STATE kLock = LIB3270_KL_UNLOCKED;

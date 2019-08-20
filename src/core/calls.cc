@@ -207,68 +207,6 @@
 
  }
 
- HLLAPI_API_CALL hllapi_pfkey(WORD key) {
-
- 	try {
-
-		TN3270::Host &host = getSession();
-
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
-
-		host.pfkey((unsigned short) key);
-
-		return HLLAPI_STATUS_SUCCESS;
-
-	} catch(std::exception &e) {
-
-		hllapi_lasterror = e.what();
-
-	}
-
-	return HLLAPI_STATUS_SYSTEM_ERROR;
-
- }
-
- HLLAPI_API_CALL hllapi_pakey(WORD key) {
-
-  	try {
-
-		TN3270::Host &host = getSession();
-
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
-
-		host.pakey((unsigned short) key);
-
-		return HLLAPI_STATUS_SUCCESS;
-
-	} catch(std::exception &e) {
-
-		hllapi_lasterror = e.what();
-
-	}
-
-	return HLLAPI_STATUS_SYSTEM_ERROR;
-
- }
-
- HLLAPI_API_CALL hllapi_set_unlock_delay(WORD ms) {
-
-  	try {
-
-		getSession().setUnlockDelay((unsigned short) ms);
-		return HLLAPI_STATUS_SUCCESS;
-
-	} catch(std::exception &e) {
-
-		hllapi_lasterror = e.what();
-
-	}
-
-	return HLLAPI_STATUS_SYSTEM_ERROR;
- }
-
  HLLAPI_API_CALL hllapi_set_charset(LPSTR text) {
 
    	try {
@@ -380,6 +318,23 @@
 	}
 
 	return -1;
+
+ }
+
+ DWORD hllapi_translate_keyboard_state(LIB3270_KEYBOARD_LOCK_STATE state, HLLAPI_STATUS def) {
+
+	// Is unlocked.
+	if(state == LIB3270_KL_UNLOCKED)
+		return def;
+
+	// Is connected?
+	if((state & LIB3270_KL_NOT_CONNECTED) != 0)
+		return HLLAPI_STATUS_DISCONNECTED;
+
+	if( (state & (LIB3270_KL_AWAITING_FIRST|LIB3270_KL_OIA_TWAIT)) != 0)
+		return HLLAPI_STATUS_WAITING;
+
+	return HLLAPI_STATUS_KEYBOARD_LOCKED;
 
  }
 

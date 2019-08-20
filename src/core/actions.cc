@@ -28,10 +28,11 @@
  */
 
  #include "private.h"
+ #include <functional>
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
- static DWORD action(const TN3270::Action id) {
+ static DWORD action(std::function<void(TN3270::Host &)> worker) noexcept {
 
  	try {
 
@@ -40,17 +41,29 @@
 		if(!host.isConnected())
 			return HLLAPI_STATUS_DISCONNECTED;
 
-		host.push(id);
+		worker(host);
 
-		return 0;
+		return HLLAPI_STATUS_SUCCESS;
 
-	} catch(std::exception &e) {
+	} catch(const std::exception &e) {
 
 		hllapi_lasterror = e.what();
+
+	} catch(...) {
+
+		hllapi_lasterror = "Unexpected error";
 
 	}
 
 	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }
+
+ static DWORD action(const TN3270::Action id) noexcept {
+
+	return action([id](TN3270::Host &host) {
+		host.push(id);
+	});
 
  }
 
@@ -80,28 +93,16 @@
 
  HLLAPI_API_CALL hllapi_action(LPSTR action_name) {
 
- 	try {
-
-		getSession().action((const char *) action_name);
-
-		return HLLAPI_STATUS_SUCCESS;
-
-	} catch(std::exception &e) {
-
-		hllapi_lasterror = e.what();
-
-	}
-
-	return HLLAPI_STATUS_SYSTEM_ERROR;
+ 	return action([action_name](TN3270::Host &host) {
+		host.action(action_name);
+	});
 
  }
 
-/*
+ HLLAPI_API_CALL hllapi_print(void) {
 
- HLLAPI_API_CALL hllapi_print(void)
- {
-	return session::get_default()->print();
+ 	return action([](TN3270::Host &host) {
+		host.print();
+	});
+
  }
-
- */
-

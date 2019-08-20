@@ -31,7 +31,7 @@
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
- HLLAPI_API_CALL hllapi_set_cursor_address(WORD pos) {
+ static DWORD set(std::function<void(TN3270::Host &)> worker) noexcept {
 
  	try {
 
@@ -40,13 +40,17 @@
 		if(!host.isConnected())
 			return HLLAPI_STATUS_DISCONNECTED;
 
-		host.setCursor((unsigned short) pos -1);
+		worker(host);
 
-		return 0;
+		return HLLAPI_STATUS_SUCCESS;
 
-	} catch(std::exception &e) {
+	} catch(const std::exception &e) {
 
 		hllapi_lasterror = e.what();
+
+	} catch(...) {
+
+		hllapi_lasterror = "Unexpected error";
 
 	}
 
@@ -54,8 +58,29 @@
 
  }
 
+ HLLAPI_API_CALL hllapi_set_cursor_address(WORD pos) {
+
+	return set([pos](TN3270::Host &host) {
+		host.setCursor((unsigned short) pos -1);
+	});
+
+
+ }
+
  HLLAPI_API_CALL hllapi_setcursor(WORD pos) {
- 	return hllapi_set_cursor_address(pos);
+
+	return set([pos](TN3270::Host &host) {
+		host.setCursor((unsigned short) pos -1);
+	});
+
+ }
+
+ HLLAPI_API_CALL hllapi_set_cursor_position(WORD row, WORD col) {
+
+	return set([row,col](TN3270::Host &host) {
+		host.setCursor((unsigned short) row, (unsigned short) col);
+	});
+
  }
 
  HLLAPI_API_CALL hllapi_get_cursor_address() {

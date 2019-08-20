@@ -229,6 +229,9 @@
 
 	HLLAPI_API_CALL hllapi_set_unlock_delay(WORD ms);
 
+	HLLAPI_API_CALL hllapi_set_cursor_address(WORD pos);
+	HLLAPI_API_CALL hllapi_set_cursor_position(WORD row, WORD col);
+
 	/**
 	 * @brief Get cursor address.
 	 *

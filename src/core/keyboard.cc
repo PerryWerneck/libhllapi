@@ -27,27 +27,75 @@
  *
  */
 
-#ifndef PRIVATE_H_INCLUDED
+ #include "private.h"
 
-	#define PRIVATE_H_INCLUDED 1
+/*--[ Implement ]------------------------------------------------------------------------------------*/
 
-	#include <exception>
-	#include <stdexcept>
-	#include <string>
-	#include <cerrno>
-	#include <cstring>
-	#include <lib3270/ipc.h>
-	#include <lib3270/log.h>
-	#include <lib3270/hllapi.h>
+static DWORD set(std::function<void(TN3270::Host &)> worker) noexcept {
 
-	using std::runtime_error;
-	using std::string;
-	using TN3270::Host;
-	using std::exception;
+	try {
 
-	extern TN3270_PRIVATE std::string hllapi_lasterror;
+		TN3270::Host &host = getSession();
 
-	TN3270_PRIVATE TN3270::Host & getSession();
-	TN3270_PRIVATE DWORD hllapi_translate_keyboard_state(LIB3270_KEYBOARD_LOCK_STATE state, HLLAPI_STATUS def = HLLAPI_STATUS_SYSTEM_ERROR);
+		if(!host.isConnected())
+			return HLLAPI_STATUS_DISCONNECTED;
 
-#endif // PRIVATE_H_INCLUDED
+		host.waitForReady();
+
+		worker(host);
+
+	} catch(const std::exception &e) {
+
+		// Worker has failed!
+		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	} catch(...) {
+
+		// Unexpected error getting session or lock state
+		hllapi_lasterror = "Unexpected error";
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }
+
+
+ HLLAPI_API_CALL hllapi_pfkey(WORD key) {
+
+ 	return set([key](TN3270::Host &host) {
+
+		host.pfkey((unsigned short) key);
+
+	});
+
+
+ }
+
+ HLLAPI_API_CALL hllapi_pakey(WORD key) {
+
+  	return set([key](TN3270::Host &host) {
+
+		host.pakey((unsigned short) key);
+
+	});
+
+ }
+
+ HLLAPI_API_CALL hllapi_set_unlock_delay(WORD ms) {
+
+  	try {
+
+		getSession().setUnlockDelay((unsigned short) ms);
+		return HLLAPI_STATUS_SUCCESS;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+ }
+
