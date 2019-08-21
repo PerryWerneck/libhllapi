@@ -30,6 +30,7 @@
  #include <iostream>
  #include <getopt.h>
  #include <cstring>
+ #include <cstdio>
  #include <lib3270/hllapi.h>
 
  #define SCREEN_LENGTH 2000
@@ -43,7 +44,7 @@
 	char buffer[SCREEN_LENGTH+1];
 
  	const char *host	= "";
- 	const char *session = ""; // "pw3270:A";
+ 	const char *session = "pw3270:a";
 
 	#pragma GCC diagnostic push
 	static struct option options[] =
@@ -92,11 +93,12 @@
 		memset(buffer,' ',SCREEN_LENGTH);
 		buffer[SCREEN_LENGTH] = 0;
 
+		rc = HLLAPI_STATUS_SUCCESS;
+
 		if(strcasecmp(cmdline.c_str(),"connect") == 0) {
 
 			cout << "Connecting..." << endl;
 			rc = hllapi_connect((LPSTR) host,1);
-			cout << "hllapi_connect returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
 
 		} else if(strcasecmp(cmdline.c_str(),"wait") == 0) {
 
@@ -107,15 +109,12 @@
 
 			cout << "Disconnecting..." << endl;
 			rc = hllapi_disconnect();
-			cout << "hllapi_disconnect returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
 
 		} else if(strcasecmp(cmdline.c_str(),"luname") == 0) {
 
 			rc = hllapi_get_lu_name(buffer,SCREEN_LENGTH);
 			if(rc == HLLAPI_STATUS_SUCCESS) {
 				cout << "LU Name is " << buffer << endl;
-			} else {
-				cout << "hllapi_get_lu_name returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
 			}
 
 		} else if(strcasecmp(cmdline.c_str(),"contents") == 0) {
@@ -124,11 +123,84 @@
 			cout << "hllapi_get_screen returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl
 					<< buffer << endl << endl;
 
+		} else if(strncasecmp(cmdline.c_str(),"cursor",6) == 0) {
+
+			unsigned int row, col;
+
+			switch(std::sscanf(cmdline.c_str()+6,"%u,%u",&row,&col)) {
+			case 1:
+				cout << "Moving cursor to " << row << endl;
+				rc = hllapi_set_cursor_address((WORD) row);
+				break;
+
+			case 2:
+				cout << "Moving cursor to " << row << "," << col << endl;
+				rc = hllapi_set_cursor_position((WORD) row, (WORD) col);
+				break;
+			}
+
+		} else if(strncasecmp(cmdline.c_str(),"at",2) == 0) {
+
+			unsigned int row, col, len;
+
+			switch(std::sscanf(cmdline.c_str()+3,"%u,%u,%u",&row,&col,&len)) {
+			case 3:
+				{
+					cout << "Getting " << len << " bytes from " << row << "," << col << endl;
+
+					char * buffer = new char[len+1];
+					memset(buffer,' ',len+1);
+					buffer[len] = 0;
+
+					rc = hllapi_get_screen_at(row,col,buffer);
+					if(rc == HLLAPI_STATUS_SUCCESS) {
+						cout << "Contents:" << endl << buffer << endl;
+					}
+
+					delete[] buffer;
+				}
+				break;
+
+			case 2:
+				{
+					cout << "Getting " << col << " bytes from " << row << endl;
+
+					char * buffer = new char[col+1];
+					memset(buffer,' ',col+1);
+					buffer[col] = 0;
+
+					rc = hllapi_get_screen(row,buffer,col);
+					if(rc == HLLAPI_STATUS_SUCCESS) {
+						cout << "Contents:" << endl << buffer << endl;
+					}
+
+					delete[] buffer;
+
+				}
+				break;
+			}
+
+		} else if(strncasecmp(cmdline.c_str(),"enter",5) == 0) {
+
+			rc = hllapi_enter();
+
+		} else if(strncasecmp(cmdline.c_str(),"pf ",3) == 0) {
+
+			rc = hllapi_pfkey(atoi(cmdline.c_str()+3));
+
+		} else if(strncasecmp(cmdline.c_str(),"input ",6) == 0) {
+
+			rc = hllapi_input_string((LPSTR) cmdline.c_str()+6,0);
+
 		} else {
 
-			cout << "Unknown command" << endl;
+			cout << "Unknown command \"" << cmdline << "\""<< endl;
 		}
 
+		if(rc != HLLAPI_STATUS_SUCCESS) {
+			cout << "rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+			rc = HLLAPI_STATUS_SUCCESS;
+		}
 
 		cout << endl << ">";
 		cout.flush();

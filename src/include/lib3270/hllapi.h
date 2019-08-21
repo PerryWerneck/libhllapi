@@ -199,7 +199,6 @@
 	HLLAPI_API_CALL hllapi_get_state(void);
 	HLLAPI_API_CALL hllapi_get_screen_at(WORD row, WORD col, LPSTR buffer);
 	HLLAPI_API_CALL hllapi_get_screen(WORD pos, LPSTR buffer, WORD len);
-	HLLAPI_API_CALL hllapi_enter(void);
 	HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text);
 	HLLAPI_API_CALL hllapi_cmp_text_at(WORD row, WORD col, LPSTR text);
 	HLLAPI_API_CALL hllapi_find_text(LPSTR text);
@@ -213,6 +212,7 @@
 
 	HLLAPI_API_CALL hllapi_set_session_parameter(LPSTR param, WORD len, WORD value);
 
+	HLLAPI_API_CALL hllapi_enter(void);
 	HLLAPI_API_CALL hllapi_erase(void);
 	HLLAPI_API_CALL hllapi_erase_eof(void);
 	HLLAPI_API_CALL hllapi_erase_eol(void);

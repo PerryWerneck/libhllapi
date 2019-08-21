@@ -37,10 +37,12 @@
 
 		TN3270::Host &host = getSession();
 
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
-
+		host.waitForReady();
 		worker(host);
+
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(std::exception &e) {
 
@@ -66,7 +68,7 @@
 	return get([row,col,buffer](TN3270::Host &host) {
 
 		size_t length = strlen(buffer);
-		string contents = host.toString( (int) row, (int) col, length);
+		string contents = host.toString( (unsigned int) row, (unsigned int) col, (int) length);
 
 		strncpy((char *) buffer, contents.c_str(), std::min(length,contents.size()));
 

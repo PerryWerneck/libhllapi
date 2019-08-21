@@ -64,6 +64,10 @@ static DWORD set(std::function<void(TN3270::Host &)> worker) noexcept {
 
  HLLAPI_API_CALL hllapi_pfkey(WORD key) {
 
+#ifdef DEBUG
+	clog << __FUNCTION__ << "(" << key << ")" << endl;
+#endif // DEBUG
+
  	return set([key](TN3270::Host &host) {
 
 		host.pfkey((unsigned short) key);

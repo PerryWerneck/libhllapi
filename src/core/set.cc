@@ -45,6 +45,7 @@
 		TN3270::Host &host = getSession();
 
 		kLock = host.waitForKeyboardUnlock();
+
 		if(kLock == LIB3270_KL_UNLOCKED) {
 
 			try {
@@ -63,6 +64,9 @@
 
 		}
 
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(const std::exception &e) {
 
@@ -78,7 +82,7 @@
 
 	}
 
-	return hllapi_translate_keyboard_state(kLock);
+	return hllapi_translate_error(kLock);
 
  }
 
@@ -101,6 +105,9 @@
 
 	if(!(text && *text))
 		return HLLAPI_STATUS_BAD_PARAMETER;
+
+	if(!length)
+		length = strlen(text);
 
 	return set([text,length](TN3270::Host &host) {
 

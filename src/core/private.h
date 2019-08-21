@@ -36,6 +36,8 @@
 	#include <string>
 	#include <cerrno>
 	#include <cstring>
+	#include <iostream>
+	#include <system_error>
 	#include <lib3270/ipc.h>
 	#include <lib3270/log.h>
 	#include <lib3270/hllapi.h>
@@ -44,10 +46,14 @@
 	using std::string;
 	using TN3270::Host;
 	using std::exception;
+	using std::clog;
+	using std::endl;
 
 	extern TN3270_PRIVATE std::string hllapi_lasterror;
 
 	TN3270_PRIVATE TN3270::Host & getSession();
-	TN3270_PRIVATE DWORD hllapi_translate_keyboard_state(LIB3270_KEYBOARD_LOCK_STATE state, HLLAPI_STATUS def = HLLAPI_STATUS_SYSTEM_ERROR);
+
+	TN3270_PRIVATE DWORD hllapi_translate_error(LIB3270_KEYBOARD_LOCK_STATE state);
+	TN3270_PRIVATE DWORD hllapi_translate_error(const std::system_error &error);
 
 #endif // PRIVATE_H_INCLUDED

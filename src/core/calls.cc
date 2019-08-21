@@ -223,25 +223,6 @@
 	return HLLAPI_STATUS_SYSTEM_ERROR;
  }
 
- HLLAPI_API_CALL hllapi_get_datadir(LPSTR datadir) {
-
- #ifdef _WIN32
-	HKEY 			hKey	= 0;
- 	unsigned long	datalen = strlen(datadir);
-
-	*datadir = 0;
-
-	if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,"Software\\pw3270",0,KEY_QUERY_VALUE,&hKey) == ERROR_SUCCESS)
-	{
-		unsigned long datatype;					// #defined in winnt.h (predefined types 0-11)
-		if(RegQueryValueExA(hKey,"datadir",NULL,&datatype,(LPBYTE) datadir,&datalen) != ERROR_SUCCESS)
-			*datadir = 0;
-		RegCloseKey(hKey);
-	}
-#endif // _WIN32
-
-	return *datadir;
- }
 
  HLLAPI_API_CALL hllapi_wait(WORD seconds) {
 
@@ -318,23 +299,6 @@
 	}
 
 	return -1;
-
- }
-
- DWORD hllapi_translate_keyboard_state(LIB3270_KEYBOARD_LOCK_STATE state, HLLAPI_STATUS def) {
-
-	// Is unlocked.
-	if(state == LIB3270_KL_UNLOCKED)
-		return def;
-
-	// Is connected?
-	if((state & LIB3270_KL_NOT_CONNECTED) != 0)
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	if( (state & (LIB3270_KL_AWAITING_FIRST|LIB3270_KL_OIA_TWAIT)) != 0)
-		return HLLAPI_STATUS_WAITING;
-
-	return HLLAPI_STATUS_KEYBOARD_LOCKED;
 
  }
 

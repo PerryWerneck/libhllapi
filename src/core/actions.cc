@@ -45,6 +45,10 @@
 
 		return HLLAPI_STATUS_SUCCESS;
 
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
+
 	} catch(const std::exception &e) {
 
 		hllapi_lasterror = e.what();
