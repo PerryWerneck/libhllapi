@@ -16,3 +16,5 @@ dbus-glue.h
 *.cache
 *.zip
 *.bak
+*.exe
+vgcore.*
