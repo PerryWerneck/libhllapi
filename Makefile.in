@@ -148,9 +148,7 @@ $(OBJRLS)/%.o: \
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
-	$(BINRLS)/$(SONAME) \
-	$(BINRLS)/static/$(LIBNAME).a \
-	$(POTDIR)/$(LIBNAME).pot
+	$(BINRLS)/$(SONAME)
 
 Release: \
 	$(BINRLS)/$(SONAME)
