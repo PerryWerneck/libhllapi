@@ -281,7 +281,7 @@
 			return -1;
 		}
 
-		string contents = host.toString(0,-1,0);
+		string contents = host.toString(0,-1,'\0');
 
 		size_t pos = contents.find(text);
 

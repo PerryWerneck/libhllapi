@@ -112,7 +112,7 @@
 
 	return get([offset,buffer,len](TN3270::Host &host) {
 
-		string contents = host.toString((int) offset, (size_t) len);
+		string contents = host.toString((int) offset, (int) len);
 
 		memset(buffer,' ',len);
 		strncpy((char *) buffer, contents.c_str(), std::min((size_t) len,contents.size()));

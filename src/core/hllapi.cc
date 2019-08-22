@@ -250,7 +250,7 @@ static int search_ps(char *buffer, unsigned short *length, unsigned short *ps) {
 		if(!host.isConnected())
 			return HLLAPI_STATUS_DISCONNECTED;
 
-		string contents = host.toString(0,-1,0);
+		string contents = host.toString(0,-1, '\0');
 
 		if( ((size_t) *ps) >= contents.size())
 			return HLLAPI_STATUS_BAD_POSITION;
@@ -305,7 +305,7 @@ static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc) {
 		if(!host.isConnected())
 			return HLLAPI_STATUS_DISCONNECTED;
 
-		string contents = host.toString(0,-1,0);
+		string contents = host.toString(0,-1,'\0');
 
 		size_t szBuffer = std::min(contents.size(), ((size_t) *length));
 		*length = (unsigned short) szBuffer;
