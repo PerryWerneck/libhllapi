@@ -370,7 +370,6 @@ static int wait_system(char *buffer, unsigned short *length, unsigned short *rc)
 }
 
 static int copy_str_to_ps(char *text, unsigned short *length, unsigned short *ps) {
-	/*
 	//
 	// Call Parameters
 	//
@@ -418,7 +417,6 @@ static int copy_str_to_ps(char *text, unsigned short *length, unsigned short *ps
 	}
 
 	return hllapi_emulate_input(text,szText,0);
-	*/
 }
 
 static int reset_system(char *buffer, unsigned short *length, unsigned short *rc) {

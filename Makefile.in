@@ -55,6 +55,7 @@ GENMARSHAL=@GENMARSHAL@
 CONVERT=@CONVERT@
 OPTIPNG=@OPTIPNG@
 ZIP=@ZIP@
+DOXYGEN=@DOXYGEN@
 
 #---[ Paths ]----------------------------------------------------------------------------
 
@@ -186,6 +187,8 @@ install: \
 		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
 		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@
 
+doc:
+	@$(DOXYGEN) ./doxygen/doxyfile
 
 #---[ Debug Targets ]--------------------------------------------------------------------
 

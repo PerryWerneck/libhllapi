@@ -20,3 +20,7 @@ dbus-glue.h
 vgcore.*
 *.nsi
 *.exe
+doxyfile
+doxygen/html
+doxygen/rtf
+

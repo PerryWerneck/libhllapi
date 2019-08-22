@@ -60,6 +60,9 @@ SubSection "@PACKAGE@" SecMain
 
 		file "/oname=$SYSDIR\hllapi.dll" "..\.bin\Release\hllapi.dll"
 
+		# For compatibility with old scripts.
+		file "/oname=$SYSDIR\libhllapi.dll" "..\.bin\Release\hllapi.dll"
+
 		# define uninstaller name
 		SetRegView 32
 
@@ -97,6 +100,7 @@ Section "Uninstall"
 
 	# delete installed files
 	delete $SYSDIR\hllapi.dll
+	delete $SYSDIR\libhllapi.dll
 
 	# Remove registry
 	SetRegView 32

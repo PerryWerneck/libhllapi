@@ -117,23 +117,18 @@
 
  }
 
- /*
- HLLAPI_API_CALL hllapi_emulate_input(const LPSTR buffer, WORD len, WORD pasting)
+ HLLAPI_API_CALL hllapi_emulate_input(const LPSTR text, WORD length, WORD pasting)
  {
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
+	if(!(text && *text))
+		return HLLAPI_STATUS_BAD_PARAMETER;
 
-	try
-	{
-		session::get_default()->input_string(buffer);
-	}
-	catch(std::exception &e)
-	{
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
+	if(!length)
+		length = strlen(text);
 
-	return HLLAPI_STATUS_SUCCESS;
+	return set([text,length](TN3270::Host &host) {
+
+		host.input((const char *) text, (int) length, '@');
+
+	});
+
  }
-
-
- */

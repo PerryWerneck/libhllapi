@@ -173,8 +173,20 @@
 
 	HLLAPI_API_CALL hllapi(const LPWORD func, LPSTR str, LPWORD length, LPWORD rc);
 
+	/**
+	 * @brief Initialize HLLAPI engine.
+	 *
+	 * @param mode name of the required session (or "" to create a hidden on).
+	 *
+	 */
 	HLLAPI_API_CALL hllapi_init(LPSTR mode);
+
+	/**
+	 * @brief Deinitialize HLLAPI engine.
+	 *
+	 */
 	HLLAPI_API_CALL hllapi_deinit(void);
+
 	HLLAPI_API_CALL hllapi_get_revision(void);
 
 	HLLAPI_API_CALL hllapi_kybdreset(void);
@@ -202,7 +214,7 @@
 	HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text);
 	HLLAPI_API_CALL hllapi_cmp_text_at(WORD row, WORD col, LPSTR text);
 	HLLAPI_API_CALL hllapi_find_text(LPSTR text);
-	HLLAPI_API_CALL hllapi_emulate_input(const LPSTR buffer, WORD len, WORD pasting);
+	HLLAPI_API_CALL hllapi_emulate_input(const LPSTR text, WORD length, WORD pasting);
 	HLLAPI_API_CALL hllapi_input_string(LPSTR buffer, WORD len);
 	HLLAPI_API_CALL hllapi_wait_for_ready(WORD seconds);
 	HLLAPI_API_CALL hllapi_wait_for_change(WORD seconds);
