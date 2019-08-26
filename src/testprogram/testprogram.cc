@@ -199,7 +199,7 @@
 		} else if(strncasecmp(cmdline.c_str(),"find ",5) == 0) {
 
 			cout << "Searching for \"" << (cmdline.c_str()+5) << "\"" << endl;
-			rc = hllapi_find_text(cmdline.c_str()+5);
+			rc = hllapi_find_text((LPSTR) (cmdline.c_str()+5));
 
 		} else {
 
