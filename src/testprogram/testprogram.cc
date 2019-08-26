@@ -192,6 +192,15 @@
 
 			rc = hllapi_input_string((LPSTR) cmdline.c_str()+6,0);
 
+		} else if(strncasecmp(cmdline.c_str(),"wait ",5) == 0) {
+
+			rc = hllapi_wait_for_ready(5);
+
+		} else if(strncasecmp(cmdline.c_str(),"find ",5) == 0) {
+
+			cout << "Searching for \"" << (cmdline.c_str()+5) << "\"" << endl;
+			rc = hllapi_find_text(cmdline.c_str()+5);
+
 		} else {
 
 			cout << "Unknown command \"" << cmdline << "\""<< endl;

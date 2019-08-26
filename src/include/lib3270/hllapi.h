@@ -206,16 +206,122 @@
 	 */
 	HLLAPI_API_CALL hllapi_disconnect(void);
 
+	/**
+	 * @brief Get program message.
+	 *
+	 * @return Current program message or -1 on error.
+	 *
+	 */
 	HLLAPI_API_CALL hllapi_get_message_id(void);
+
 	HLLAPI_API_CALL hllapi_is_connected(void);
 	HLLAPI_API_CALL hllapi_get_state(void);
 	HLLAPI_API_CALL hllapi_get_screen_at(WORD row, WORD col, LPSTR buffer);
 	HLLAPI_API_CALL hllapi_get_screen(WORD pos, LPSTR buffer, WORD len);
 	HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text);
+
+	/**
+	 * @brief Compare contents at position.
+	 *
+	 * @param row
+	 * @param col
+	 * @param text
+	 *
+	 * @return Result of the strcmp of the string and the contents of position.
+	 *
+	 * @retval HLLAPI_STATUS_SYSTEM_ERROR	The query has failed.
+	 * @retval 0							The string at the position is the same.
+	 * @retval -1
+	 * @retval 1
+	 *
+	 */
 	HLLAPI_API_CALL hllapi_cmp_text_at(WORD row, WORD col, LPSTR text);
-	HLLAPI_API_CALL hllapi_find_text(LPSTR text);
+
+	/**
+	 * @brief Compare contents at position.
+	 *
+	 * @param row
+	 * @param col
+	 * @param text
+	 *
+	 * @return Result of the strcmp of the string and the contents of position.
+	 *
+	 * @retval HLLAPI_STATUS_SYSTEM_ERROR	The query has failed.
+	 * @retval 0							The string at the position is the same.
+	 * @retval -1
+	 * @retval 1
+	 *
+	 */
+	HLLAPI_API_CALL hllapi_cmp_text_at_address(WORD addr, LPSTR text);
+
+	/**
+	 * @brief Find string in the screen.
+	 *
+	 * @return Position of the text inside the screen or -1 if failed.
+	 *
+	 */
+	HLLAPI_API_CALL hllapi_find_text(const LPSTR text);
+
+	/**
+	 * @brief Interpret string with action codes prefixed by '@'.
+	 *
+	 * Insert string parsing the action codes prefixed with '@' character.
+	 *
+	 * Value | Action      | Description                                                |
+	 * :----:|:------------|:-----------------------------------------------------------|
+	 *  @@P  | -           | Print the screen contents (if available)                   |
+	 *  @@@@ | -           | Input the @@ char.                                         |
+	 *  @@E  | ENTER       | -                                                          |
+	 *  @@F  | ERASE_EOF   | -                                                          |
+	 *  @@1  | PF1         | Send the PF1 key.                                          |
+	 *  @@2  | PF2         | Send the PF2 key.                                          |
+	 *  @@3  | PF3         | Send the PF3 key.                                          |
+	 *  @@4  | PF4         | Send the PF4 key.                                          |
+	 *  @@5  | PF5         | Send the PF5 key.                                          |
+	 *  @@6  | PF6         | Send the PF6 key.                                          |
+	 *  @@7  | PF7         | Send the PF7 key.                                          |
+	 *  @@8  | PF8         | Send the PF8 key.                                          |
+	 *  @@9  | PF9         | Send the PF9 key.                                          |
+	 *  @@a  | PF10        | Send the PF10 key.                                         |
+	 *  @@b  | PF11        | Send the PF11 key.                                         |
+	 *  @@c  | PF12        | Send the PF12 key.                                         |
+	 *  @@d  | PF13        | Send the PF13 key.                                         |
+	 *  @@e  | PF14        | Send the PF14 key.                                         |
+	 *  @@f  | PF15        | Send the PF15 key.                                         |
+	 *  @@g  | PF16        | Send the PF16 key.                                         |
+	 *  @@h  | PF17        | Send the PF17 key.                                         |
+	 *  @@u  | PF18        | Send the PF18 key.                                         |
+	 *  @@j  | PF19        | Send the PF19 key.                                         |
+	 *  @@k  | PF20        | Send the PF20 key.                                         |
+	 *  @@l  | PF21        | Send the PF21 key.                                         |
+	 *  @@m  | PF22        | Send the PF22 key.                                         |
+	 *  @@n  | PF23        | Send the PF23 key.                                         |
+	 *  @@o  | PF24        | Send the PF24 key.                                         |
+	 *  @@x  | PA1         | Send the PA1 key.                                          |
+	 *  @@y  | PA2         | Send the PA2 key.                                          |
+	 *  @@z  | PA3         | Send the PA3 key.                                          |
+	 *  @@D  | CHAR_DELETE |                                                            |
+	 *  @@N  | NEWLINE     |                                                            |
+	 *  @@C  | CLEAR       |                                                            |
+	 *  @@R  | KYBD_RESET  |                                                            |
+	 *  @@<  | BACKSPACE   |                                                            |
+	 *
+	 * @param text		Text to input.
+	 * @param length	Length of the text (-1 to use the string length).
+	 * @param pasting	Unused (kept for compatibility).
+	 *
+	 */
 	HLLAPI_API_CALL hllapi_emulate_input(const LPSTR text, WORD length, WORD pasting);
+
+	/**
+	 * @brief Input string.
+	 *
+	 * @param buffer	String to input.
+	 * @param length	Length of the string (-1 ou 0 to auto detect).
+	 *
+	 */
 	HLLAPI_API_CALL hllapi_input_string(LPSTR buffer, WORD len);
+
 	HLLAPI_API_CALL hllapi_wait_for_ready(WORD seconds);
 	HLLAPI_API_CALL hllapi_wait_for_change(WORD seconds);
 	HLLAPI_API_CALL hllapi_wait(WORD seconds);

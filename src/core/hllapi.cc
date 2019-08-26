@@ -245,17 +245,17 @@ static int search_ps(char *buffer, unsigned short *length, unsigned short *ps) {
 
  	try {
 
-		TN3270::Host &host = getSession();
+		size_t pos = string::npos;
 
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
+		if(length > 0) {
 
-		string contents = host.toString(0,-1, '\0');
+			pos = getSession().find(string((const char *) buffer,(size_t) length).c_str());
 
-		if( ((size_t) *ps) >= contents.size())
-			return HLLAPI_STATUS_BAD_POSITION;
+		} else {
 
-		size_t pos = contents.find(buffer, ((size_t) *ps));
+			pos = getSession().find(buffer);
+
+		}
 
 		if(pos == string::npos) {
 			*ps = 0;
@@ -265,6 +265,10 @@ static int search_ps(char *buffer, unsigned short *length, unsigned short *ps) {
 		*ps = pos;
 
 		return HLLAPI_STATUS_SUCCESS;
+
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(std::exception &e) {
 
@@ -323,6 +327,7 @@ static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc) {
 	return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	/*
+
 	size_t	  			  szBuffer	= strlen(buffer);
 	char				* text;
 
@@ -339,9 +344,11 @@ static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc) {
 	hllapi_free(text);
 
 	return hllapi_get_state();
-	*/
 
 	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+	*/
+
 }
 
 static int wait_system(char *buffer, unsigned short *length, unsigned short *rc) {
@@ -388,35 +395,8 @@ static int copy_str_to_ps(char *text, unsigned short *length, unsigned short *ps
 	// HLLAPI_STATUS_SYSTEM_ERROR		9	A system error was encountered.
 	//
 	//
-	size_t szText = strlen(text);
-
-	if(*length < szText)
-		szText = *length;
-
-	if(!szText)
-		return HLLAPI_STATUS_BAD_PARAMETER;
-
-	switch(hllapi_get_message_id())
-	{
-		case LIB3270_MESSAGE_NONE:
-			break;
-
-		case LIB3270_MESSAGE_DISCONNECTED:
-			return HLLAPI_STATUS_DISCONNECTED;
-
-		case LIB3270_MESSAGE_MINUS:
-		case LIB3270_MESSAGE_PROTECTED:
-		case LIB3270_MESSAGE_NUMERIC:
-		case LIB3270_MESSAGE_OVERFLOW:
-		case LIB3270_MESSAGE_INHIBIT:
-		case LIB3270_MESSAGE_KYBDLOCK:
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		default:
-			return HLLAPI_STATUS_SYSTEM_ERROR;
-	}
-
-	return hllapi_emulate_input(text,szText,0);
+	*ps = 0;
+	return hllapi_emulate_input(text,*length,0);
 }
 
 static int reset_system(char *buffer, unsigned short *length, unsigned short *rc) {

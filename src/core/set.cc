@@ -56,6 +56,7 @@
 			} catch(const std::exception &e) {
 
 				// Worker has failed!
+
 				hllapi_lasterror = e.what();
 			}
 
@@ -106,7 +107,7 @@
 	if(!(text && *text))
 		return HLLAPI_STATUS_BAD_PARAMETER;
 
-	if(!length)
+	if(length < 1)
 		length = strlen(text);
 
 	return set([text,length](TN3270::Host &host) {

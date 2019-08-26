@@ -128,23 +128,15 @@
 
  	try {
 
-		TN3270::Host & session = getSession();
-
-		if(!session.isConnected()) {
-			hllapi_lasterror = strerror(ENOTCONN);
-			return HLLAPI_STATUS_DISCONNECTED;
-		}
-
-		return (DWORD) session.getProgramMessage();
+		return (DWORD) getSession().getProgramMessage();
 
 	} catch(std::exception &e) {
 
 		hllapi_lasterror = e.what();
-		return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	}
 
-	return HLLAPI_STATUS_SUCCESS;
+	return -1;
 
  }
 
@@ -251,14 +243,7 @@
 
  	try {
 
-		TN3270::Host &host = getSession();
-
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
-
-		string contents = host.toString(row, col, strlen(text), 0);
-
-		return strncmp(contents.c_str(),text,strlen(text));
+		return getSession().compare((unsigned int) row, (unsigned int) col, text);
 
 	} catch(std::exception &e) {
 
@@ -270,27 +255,34 @@
 
  }
 
- HLLAPI_API_CALL hllapi_find_text(LPSTR text) {
+ HLLAPI_API_CALL hllapi_cmp_text_at_address(WORD addr, LPSTR text) {
 
  	try {
 
-		TN3270::Host &host = getSession();
+		return getSession().compare((int) addr, text);
 
-		if(!host.isConnected()) {
-			hllapi_lasterror = "Not connected";
-			return -1;
-		}
+	} catch(std::exception &e) {
 
-		string contents = host.toString(0,-1,'\0');
+		hllapi_lasterror = e.what();
 
-		size_t pos = contents.find(text);
+	}
 
-		if(pos == string::npos) {
-			hllapi_lasterror = "Not found";
-			return -1;
-		}
+	return HLLAPI_STATUS_SYSTEM_ERROR;
 
-		return pos;
+ }
+
+
+ HLLAPI_API_CALL hllapi_find_text(const LPSTR text) {
+
+ 	try {
+
+ 		if(text && *text) {
+
+			size_t pos = getSession().find(text);
+			if(pos != string::npos)
+				return pos;
+
+ 		}
 
 	} catch(std::exception &e) {
 

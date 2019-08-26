@@ -54,6 +54,7 @@
 	TN3270_PRIVATE TN3270::Host & getSession();
 
 	TN3270_PRIVATE DWORD hllapi_translate_error(LIB3270_KEYBOARD_LOCK_STATE state);
+	TN3270_PRIVATE DWORD hllapi_translate_error(LIB3270_MESSAGE state);
 	TN3270_PRIVATE DWORD hllapi_translate_error(const std::system_error &error);
 
 #endif // PRIVATE_H_INCLUDED
