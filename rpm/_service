@@ -3,11 +3,10 @@
 	<!-- https://github.com/openSUSE/obs-service-tar_scm/blob/master/tar_scm.py -->
 	<service name="tar_scm">
         <param name="changesgenerate">enable</param>
-		<param name="sslverify">disable</param>
+      	<param name="changesauthor">perry.werneck@gmail.com</param>
 		<param name="versionformat">@PARENT_TAG@</param>
-		<param name="url">https://softwarepublico.gov.br/gitlab/pw3270/pw3270-plugin-hllapi.git</param>
+		<param name="url">https://github.com/PerryWerneck/lib3270-hllapi-bindings.git</param>
 		<param name="scm">git</param>
-        <param name="filename">pw3270-plugin-dbus</param>
 	</service>
 
 	<!-- https://github.com/openSUSE/obs-service-extract_file -->
@@ -24,3 +23,4 @@
 	<service name="set_version" />
 
 </services>
+

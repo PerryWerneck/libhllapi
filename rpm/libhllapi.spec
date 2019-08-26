@@ -24,19 +24,16 @@
 #---[ Main package ]--------------------------------------------------------------------------------------------------
 
 Summary:	HLLAPI client library for lib3270/pw3270
-Name:		lib3270-hllapi-bindings
+Name:		libhllapi5_2
 Version:	5.2
 Release:	0
 License:	LGPL-3.0
-Source:		%{name}-%{version}.tar.xz
+Source:		lib3270-hllapi-bindings-%{version}.tar.xz
 
-Url:		https://portal.softwarepublico.gov.br/social/pw3270/
+Url:		https://github.com/PerryWerneck/lib3270-hllapi-bindings.git
 
 Group:		System/X11/Terminals
 BuildRoot:	/var/tmp/%{name}-%{version}
-
-Provides:	pw3270-plugin-hllapi
-Conflicts:	otherproviders(pw3270-plugin-hllapi)
 
 BuildRequires:  autoconf >= 2.61
 BuildRequires:  automake
@@ -47,16 +44,37 @@ BuildRequires:  gettext-devel
 BuildRequires:  m4
 BuildRequires:  pkgconfig(ipc3270)
 
+%if 0%{?fedora} ||  0%{?suse_version} > 1200
+
+BuildRequires:	gcc-c++
+BuildRequires:  pkgconfig(ipc3270)
+
+%else
+
+BuildRequires:  gcc-c++ >= 4.8
+BuildRequires:  libipc3270-devel
+
+%endif
+
+
 %description
 
-Client library for compatibility with the old HLLAPI.
+HLLAPI client library for pw3270/lib3270
 
 See more details at https://softwarepublico.gov.br/social/pw3270/
+
+%package devel
+Summary: HLLAPI Development files.
+
+%description devel
+
+Development files for lib3270/pw3270 HLLAPI client library.
+
 
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
 %prep
-%setup
+%setup -n lib3270-hllapi-bindings-%{version}
 
 NOCONFIGURE=1 ./autogen.sh
 
@@ -77,7 +95,25 @@ make \
 %defattr(-,root,root)
 %doc AUTHORS LICENSE README.md
 
-%{_libdir}/pw3270-plugins/*.so
+%{_libdir}/libhllapi.so.%{MAJOR_VERSION}
+%{_libdir}/libhllapi.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/libhllapi.so
+%{_includedir}/lib3270/hllapi.h
+
+%pre
+/sbin/ldconfig
+exit 0
+
+%post
+/sbin/ldconfig
+exit 0
+
+%postun
+/sbin/ldconfig
+exit 0
 
 %changelog
 
