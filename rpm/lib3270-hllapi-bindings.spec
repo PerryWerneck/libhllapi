@@ -19,13 +19,13 @@
 #---[ Versions ]------------------------------------------------------------------------------------------------------
 
 %define MAJOR_VERSION 5
-%define MINOR_VERSION 1
+%define MINOR_VERSION 2
 
 #---[ Main package ]--------------------------------------------------------------------------------------------------
 
-Summary:	HLLAPI plugin and client library for pw3270
-Name:		pw3270-plugin-hllapi
-Version:	5.1
+Summary:	HLLAPI client library for lib3270/pw3270
+Name:		lib3270-hllapi-bindings
+Version:	5.2
 Release:	0
 License:	LGPL-3.0
 Source:		%{name}-%{version}.tar.xz
@@ -35,12 +35,9 @@ Url:		https://portal.softwarepublico.gov.br/social/pw3270/
 Group:		System/X11/Terminals
 BuildRoot:	/var/tmp/%{name}-%{version}
 
-Provides:	pw3270-plugin-dbus
-Conflicts:	otherproviders(pw3270-plugin-dbus)
+Provides:	pw3270-plugin-hllapi
+Conflicts:	otherproviders(pw3270-plugin-hllapi)
 
-BuildRequires:	lib3270-devel >= 5.2
-BuildRequires:	libv3270-devel >= 5.2
-BuildRequires:	pw3270-devel >= 5.2
 BuildRequires:  autoconf >= 2.61
 BuildRequires:  automake
 BuildRequires:  binutils
@@ -48,24 +45,11 @@ BuildRequires:  coreutils
 BuildRequires:  gcc-c++
 BuildRequires:  gettext-devel
 BuildRequires:  m4
-
-%if 0%{?fedora} ||  0%{?suse_version} > 1200
-
-BuildRequires:  pkgconfig(dbus-1)
-BuildRequires:  pkgconfig(dbus-glib-1)
-BuildRequires:	pkgconfig(gtk+-3.0)
-
-%else
-
-BuildRequires:  openssl-devel
-BuildRequires:  dbus-1-devel
-BuildRequires:	gtk3-devel
-
-%endif
+BuildRequires:  pkgconfig(ipc3270)
 
 %description
 
-Plugin and client library for compatibility with the old HLLAPI.
+Client library for compatibility with the old HLLAPI.
 
 See more details at https://softwarepublico.gov.br/social/pw3270/
 
@@ -76,8 +60,7 @@ See more details at https://softwarepublico.gov.br/social/pw3270/
 
 NOCONFIGURE=1 ./autogen.sh
 
-%configure \
-	--with-sdk-version=%{version}
+%configure
 
 %build
 make clean
@@ -95,22 +78,6 @@ make \
 %doc AUTHORS LICENSE README.md
 
 %{_libdir}/pw3270-plugins/*.so
-
-%{_libdir}/libhllapi.so
-%{_libdir}/libhllapi.so.%{MAJOR_VERSION}
-%{_libdir}/libhllapi.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
-
-%pre
-/sbin/ldconfig
-exit 0
-
-%post
-/sbin/ldconfig
-exit 0
-
-%postun
-/sbin/ldconfig
-exit 0
 
 %changelog
 

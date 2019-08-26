@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="pw3270 HLLAPI v5.1 compatibility plugin" />
+		<Option title="HLLAPI Language binding for pw3270/lib3270" />
 		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
@@ -32,45 +32,20 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="src/daemon/linux/daemon.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/daemon/linux/iocallback.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/hllapi/calls.cc" />
-		<Unit filename="src/hllapi/client.h" />
-		<Unit filename="src/hllapi/hllapi.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/hllapi/remotectl.h" />
+		<Unit filename="src/core/actions.cc" />
+		<Unit filename="src/core/calls.cc" />
+		<Unit filename="src/core/controller.cc" />
+		<Unit filename="src/core/cursor.cc" />
+		<Unit filename="src/core/get.cc" />
+		<Unit filename="src/core/hllapi.cc" />
+		<Unit filename="src/core/keyboard.cc" />
+		<Unit filename="src/core/private.h" />
+		<Unit filename="src/core/set.cc" />
+		<Unit filename="src/core/tools.cc" />
+		<Unit filename="src/core/windows/resources.rc" />
 		<Unit filename="src/include/config.h" />
-		<Unit filename="src/include/dbus-glue.h" />
-		<Unit filename="src/ipc3270c/linux/daemon.h" />
-		<Unit filename="src/ipc3270c/linux/globals.h" />
-		<Unit filename="src/ipc3270c/linux/gobject.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/ipc3270c/linux/main.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/ipc3270c/linux/misc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/ipc3270c/linux/service.h" />
-		<Unit filename="src/ipc3270c/windows/main.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/ipc3270c/windows/private.h" />
-		<Unit filename="src/ipc3270c/windows/resources.rc" />
-		<Unit filename="src/plugin/windows/private.h" />
-		<Unit filename="src/plugin/windows/resources.rc" />
-		<Unit filename="src/testprograms/hllapi.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/testprograms/ipc3270c.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="src/include/lib3270/hllapi.h" />
+		<Unit filename="src/testprogram/testprogram.cc" />
 		<Extensions>
 			<code_completion />
 			<envvars />

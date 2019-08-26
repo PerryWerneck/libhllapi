@@ -15,33 +15,46 @@
  * obter mais detalhes.
  *
  * Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este
- * programa; se não, escreva para a Free Software Foundation, Inc., 51 Franklin
- * St, Fifth Floor, Boston, MA  02110-1301  USA
+ * programa;  se  não, escreva para a Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA, 02111-1307, USA
  *
- * Este programa está nomeado como misc.c e possui - linhas de código.
+ * Este programa está nomeado como - e possui - linhas de código.
  *
  * Contatos:
  *
  * perry.werneck@gmail.com	(Alexandre Perry de Souza Werneck)
  * erico.mendonca@gmail.com	(Erico Mascarenhas Mendonça)
- * licinio@bb.com.br		(Licínio Luis Branco)
- * kraucer@bb.com.br		(Kraucer Fernandes Mazuco)
- *
- * Referencias:
- *
- * https://live.gnome.org/DBusGlibBindings
  *
  */
 
-#include "globals.h"
+#ifndef PRIVATE_H_INCLUDED
 
-/*---[ Implement ]-------------------------------------------------------------------------------*/
+	#define PRIVATE_H_INCLUDED 1
 
-gpointer pw3270_dbus_register_object(DBusGConnection *connection,DBusGProxy G_GNUC_UNUSED(*proxy),GType object_type,const DBusGObjectInfo *info,const gchar *path)
-{
-	GObject *object = G_OBJECT(g_object_new(object_type, NULL));
-	dbus_g_object_type_install_info (object_type, info);
-	dbus_g_connection_register_g_object (connection, path, object);
-	return object;
-}
+	#include <exception>
+	#include <stdexcept>
+	#include <string>
+	#include <cerrno>
+	#include <cstring>
+	#include <iostream>
+	#include <system_error>
+	#include <lib3270/ipc.h>
+	#include <lib3270/log.h>
+	#include <lib3270/hllapi.h>
 
+	using std::runtime_error;
+	using std::string;
+	using TN3270::Host;
+	using std::exception;
+	using std::clog;
+	using std::endl;
+
+	extern TN3270_PRIVATE std::string hllapi_lasterror;
+
+	TN3270_PRIVATE TN3270::Host & getSession();
+
+	TN3270_PRIVATE DWORD hllapi_translate_error(LIB3270_KEYBOARD_LOCK_STATE state);
+	TN3270_PRIVATE DWORD hllapi_translate_error(LIB3270_MESSAGE state);
+	TN3270_PRIVATE DWORD hllapi_translate_error(const std::system_error &error);
+
+#endif // PRIVATE_H_INCLUDED

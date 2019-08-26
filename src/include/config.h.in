@@ -27,15 +27,24 @@
  *
  */
 
-#ifndef LIBV3270_CONFIG_INCLUDED
+/**
+ * @file config.h
+ *
+ * @brief Configuração para o aplicativo.
+ *
+ * Gerado automaticamente pelo processo ./configure esse arquivo descreve
+ * as configurações de ambiente detectadas automaticamente.
+ *
+ * @author perry.werneck@gmail.com
+ *
+ */
 
-	#define LIBV3270_CONFIG_INCLUDED 1
+#ifndef CONFIG_H_INCLUDED
+
+	#define CONFIG_H_INCLUDED 1
 
 	#undef PACKAGE_NAME
 	#undef PACKAGE_VERSION
 	#undef PACKAGE_RELEASE
 
-	#undef HAVE_GNOME
-	#undef HAVE_GTKMAC
-
-#endif /* LIBV3270_CONFIG_INCLUDED */
+#endif /* CONFIG_H_INCLUDED */

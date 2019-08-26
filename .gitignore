@@ -16,5 +16,11 @@ dbus-glue.h
 *.cache
 *.zip
 *.bak
-*.exe
+*.[0-9]
 vgcore.*
+*.nsi
+*.exe
+doxyfile
+doxygen/html
+doxygen/rtf
+
