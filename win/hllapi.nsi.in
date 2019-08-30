@@ -30,7 +30,7 @@ VIAddVersionKey "LegalCopyright" "GPL-2.0"
 
 !define MUI_ABORTWARNING
 # !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "..\LICENSE"
+!insertmacro MUI_PAGE_LICENSE "LICENSE"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -58,10 +58,10 @@ SubSection "@PACKAGE@" SecMain
 		setOutPath $SYSDIR
 		SetShellVarContext all
 
-		file "/oname=$SYSDIR\hllapi.dll" "..\.bin\Release\hllapi.dll"
+		file "/oname=$SYSDIR\hllapi.dll" "libhllapi.dll"
 
 		# For compatibility with old scripts.
-		file "/oname=$SYSDIR\libhllapi.dll" "..\.bin\Release\hllapi.dll"
+		file "/oname=$SYSDIR\libhllapi.dll" "libhllapi.dll"
 
 		# define uninstaller name
 		SetRegView 32

@@ -17,10 +17,10 @@ RequestExecutionLevel admin
 
 # Properties
 VIProductVersion "5.2.19.8"
-VIFileVersion "19.8.13.14"
+VIFileVersion "19.8.30.16"
 
 VIAddVersionKey "ProductVersion" "5.2.19.8"
-VIAddVersionKey "FileVersion" "19.8.13.14"
+VIAddVersionKey "FileVersion" "19.8.30.16"
 
 VIAddVersionKey "ProductName" "hllapi"
 VIAddVersionKey "FileDescription" "PW3270 HLLAPI Module"
@@ -30,7 +30,7 @@ VIAddVersionKey "LegalCopyright" "GPL-2.0"
 
 !define MUI_ABORTWARNING
 # !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "..\LICENSE"
+!insertmacro MUI_PAGE_LICENSE "LICENSE"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -58,7 +58,10 @@ SubSection "hllapi" SecMain
 		setOutPath $SYSDIR
 		SetShellVarContext all
 
-		file "/oname=$SYSDIR\hllapi.dll" "..\.bin\Release\hllapi.dll"
+		file "/oname=$SYSDIR\hllapi.dll" "libhllapi.dll"
+
+		# For compatibility with old scripts.
+		file "/oname=$SYSDIR\libhllapi.dll" "libhllapi.dll"
 
 		# define uninstaller name
 		SetRegView 32
@@ -97,6 +100,7 @@ Section "Uninstall"
 
 	# delete installed files
 	delete $SYSDIR\hllapi.dll
+	delete $SYSDIR\libhllapi.dll
 
 	# Remove registry
 	SetRegView 32

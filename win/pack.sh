@@ -1,5 +1,5 @@
 #!/bin/bash
-cd $(dirname $(dirname $(readlink -f $0)))
+PROJECT_DIR=$(readlink -f $(dirname $(dirname $(readlink -f $0))))
 
 PUBLISH=0
 
@@ -7,10 +7,22 @@ pack() {
 
 	echo -e "\e]2;hllapi-${1}\a"
 
+	cd ${PROJECT_DIR}
+
+	BUILDDIR=$(mktemp -d)
+
 	./configure --cache=.${1}.cache \
 		--host=${1}-w64-mingw32 \
 		--prefix=/usr/${1}-w64-mingw32/sys-root/mingw \
-		--libdir=/usr/${1}-w64-mingw32/sys-root/mingw/lib
+                --bindir=${BUILDDIR} \
+                --libdir=${BUILDDIR} \
+                --localedir=${BUILDDIR} \
+                --includedir=${BUILDDIR} \
+                --sysconfdir=${BUILDDIR} \
+                --datadir=${BUILDDIR} \
+                --datarootdir=${BUILDDIR} \
+		--with-application-datadir=${BUILDDIR}
+
 
 	if [ "$?" != "0" ]; then
 		exit -1
@@ -26,24 +38,45 @@ pack() {
 		exit -1
 	fi
 
-	makensis win/hllapi.nsi
+	make install
+	if [ "$?" != "0" ]; then
+		exit -1
+	fi
+
+	NSI=$(readlink -f win/hllapi.nsi)
+
+	cp LICENSE ${BUILDDIR}
+
+	cd ${BUILDDIR}
+
+	makensis -NOCD ${NSI}
+	if [ "$?" != "0" ]; then
+		exit -1
+	fi
 
 	if [ -d ~/public_html ]; then
 		mkdir -p ~/public_html/win
-		cp -v ./win/*.exe ~/public_html/win
+		cp -v *.exe ~/public_html/win
 		if [ "$?" != "0" ]; then
 			exit -1
 		fi
 	fi
 
 	if [ "${PUBLISH}" == "1" ] && [ ! -z ${WIN_PACKAGE_SERVER} ]; then
-		scp ./win/*.exe ${WIN_PACKAGE_SERVER}
+		scp *.exe ${WIN_PACKAGE_SERVER}
 		if [ "$?" != "0" ]; then
 			exit -1
 		fi
 	fi
 
-	rm -fr $TEMPDIR
+	mv -f *.exe ${PROJECT_DIR}
+	if [ "$?" != "0" ]; then
+		exit -1
+	fi
+
+
+	cd ${PROJECT_DIR}
+	rm -fr ${BUILDDIR}
 	rm -fr .${1}.cache
 
 }

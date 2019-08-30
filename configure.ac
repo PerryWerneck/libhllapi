@@ -69,6 +69,39 @@ DLL_LDFLAGS="-shared -Wl,-soname,\$(@F)"
 DEPENDS=""
 
 dnl ---------------------------------------------------------------------------
+dnl Version info
+dnl ---------------------------------------------------------------------------
+
+AC_SUBST(PACKAGE_DESCRIPTION,"PW3270 HLLAPI Module")
+
+app_vrs_major=$(echo $VERSION | cut -d. -f1)
+app_vrs_minor=$(echo $VERSION | cut -d. -f2)
+
+AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_VERSION, $app_vrs_major)
+AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor)
+
+AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
+AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
+
+AC_ARG_WITH([release], [AS_HELP_STRING([--with-release], [Set release])], [ app_cv_release="$withval" ],[ app_cv_release="`date +%-y`.`date +%-m`.`date +%-d`" ])
+
+app_rls_major=$(echo $app_cv_release.0.0 | cut -d. -f1)
+app_rls_minor=$(echo $app_cv_release.0.0 | cut -d. -f2)
+
+AC_DEFINE_UNQUOTED(PACKAGE_RELEASE, $app_cv_release)
+AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_RELEASE, $app_rls_major)
+AC_DEFINE_UNQUOTED(PACKAGE_MINOR_RELEASE, $app_rls_minor)
+
+AC_SUBST(PACKAGE_RELEASE,$app_cv_release)
+AC_SUBST(PACKAGE_MAJOR_RELEASE,$app_rls_major)
+AC_SUBST(PACKAGE_MINOR_RELEASE,$app_rls_minor)
+
+AC_ARG_WITH([application-datadir], [AS_HELP_STRING([--with-application-datadir], [Set path for configuration file])], [ app_cv_source_appdatadir="$withval" ],[ app_cv_source_appdatadir="\$(datarootdir)/\$(PACKAGE_NAME)" ])
+
+AC_DEFINE_UNQUOTED(APPDATADIR, $app_cv_source_appdatadir)
+AC_SUBST(APPDATADIR,$app_cv_source_appdatadir)
+
+dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
 
@@ -99,6 +132,8 @@ case "$host" in
 
 		AC_SUBST(PROGRAMFILES,$app_cv_programfiles)
 		AC_SUBST(WINARCH,$app_cv_winarch)
+                AC_SUBST(SONAME,hllapi.dll)
+
 		;;
 
  	*)
@@ -109,6 +144,7 @@ case "$host" in
 		app_cv_osname="linux"
 		LOGDIR="/var/log"
 		DLLEXT=".so"
+                AC_SUBST(SONAME,libhllapi.so.$app_vrs_major.$app_vrs_minor)
 
 esac
 
@@ -131,48 +167,6 @@ AC_PATH_TOOL([WINDRES], [windres], [no])
 AC_PATH_TOOL([VALGRIND], [valgrind], [no])
 
 PKG_CHECK_EXISTS
-
-dnl ---------------------------------------------------------------------------
-dnl Version info
-dnl ---------------------------------------------------------------------------
-
-AC_SUBST(PACKAGE_DESCRIPTION,"PW3270 HLLAPI Module")
-
-app_vrs_major=$(echo $VERSION | cut -d. -f1)
-app_vrs_minor=$(echo $VERSION | cut -d. -f2)
-
-AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_VERSION, $app_vrs_major)
-AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor)
-
-AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
-AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
-
-AC_ARG_WITH([release], [AS_HELP_STRING([--with-release], [Set release])], [ app_cv_release="$withval" ],[ app_cv_release="`date +%-y`.`date +%-m`.`date +%-d`" ])
-
-app_rls_major=$(echo $app_cv_release.0.0 | cut -d. -f1)
-app_rls_minor=$(echo $app_cv_release.0.0 | cut -d. -f2)
-
-AC_DEFINE_UNQUOTED(PACKAGE_RELEASE, $app_cv_release)
-AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_RELEASE, $app_rls_major)
-AC_DEFINE_UNQUOTED(PACKAGE_MINOR_RELEASE, $app_rls_minor)
-
-AC_SUBST(PACKAGE_RELEASE,$app_cv_release)
-AC_SUBST(PACKAGE_MAJOR_RELEASE,$app_rls_major)
-AC_SUBST(PACKAGE_MINOR_RELEASE,$app_rls_minor)
-
-case "$host" in
-        *-mingw32|*-pc-msys)
-                AC_SUBST(SONAME,hllapi.dll)
-                ;;
-
-        s390x-*)
-                AC_SUBST(SONAME,libhllapi.so)
-                ;;
-
-        *)
-                AC_SUBST(SONAME,libhllapi.so.$app_vrs_major.$app_vrs_minor)
-
-esac
 
 dnl ---------------------------------------------------------------------------
 dnl Check for doxygen
