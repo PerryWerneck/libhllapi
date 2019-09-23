@@ -114,7 +114,7 @@ HLLAPI_API_CALL hllapi(const LPWORD func, LPSTR buffer, LPWORD length, LPWORD rc
 
 }
 
-static int invalid_request(char *buffer, unsigned short *length, unsigned short *rc) {
+static int invalid_request(char GNUC_UNUSED(*buffer), unsigned short GNUC_UNUSED(*length), unsigned short *rc) {
 	*rc = HLLAPI_STATUS_BAD_PARAMETER;
 	return *rc;
 }
@@ -149,17 +149,17 @@ static int connect_ps(char *buffer, unsigned short *length, unsigned short *rc) 
 
 }
 
-static int disconnect_ps(char *buffer, unsigned short *length, unsigned short *rc) {
+static int disconnect_ps(char GNUC_UNUSED(*buffer), unsigned short GNUC_UNUSED(*length), unsigned short *rc) {
 	*rc = hllapi_deinit();
 	return HLLAPI_STATUS_SUCCESS;
 }
 
-static int get_library_revision(char *buffer, unsigned short *length, unsigned short *rc) {
+static int get_library_revision(char GNUC_UNUSED(*buffer), unsigned short GNUC_UNUSED(*length), unsigned short *rc) {
 	*rc = hllapi_get_revision();
 	return HLLAPI_STATUS_SUCCESS;
 }
 
-static int get_cursor_position(char *buffer, unsigned short *length, unsigned short *rc) {
+static int get_cursor_position(char GNUC_UNUSED(*buffer), unsigned short GNUC_UNUSED(*length), unsigned short *rc) {
 
  	try {
 
@@ -181,7 +181,7 @@ static int get_cursor_position(char *buffer, unsigned short *length, unsigned sh
 
 }
 
-static int set_cursor_position(char *buffer, unsigned short *length, unsigned short *rc) {
+static int set_cursor_position(char GNUC_UNUSED(*buffer), unsigned short GNUC_UNUSED(*length), unsigned short *rc) {
 
  	try {
 
@@ -247,7 +247,7 @@ static int search_ps(char *buffer, unsigned short *length, unsigned short *ps) {
 
 		size_t pos = string::npos;
 
-		if(length > 0) {
+		if(length) {
 
 			pos = getSession().find(string((const char *) buffer,(size_t) length).c_str());
 
@@ -280,7 +280,7 @@ static int search_ps(char *buffer, unsigned short *length, unsigned short *ps) {
 
 }
 
-static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc) {
+static int copy_ps(char *buffer, unsigned short *length, unsigned short GNUC_UNUSED(*rc)) {
 
 	//
 	// Data String	Preallocated target string the size of your host presentation space. This can vary depending on how your host presentation space
@@ -351,7 +351,7 @@ static int copy_ps(char *buffer, unsigned short *length, unsigned short *rc) {
 
 }
 
-static int wait_system(char *buffer, unsigned short *length, unsigned short *rc) {
+static int wait_system(char GNUC_UNUSED(*buffer), unsigned short GNUC_UNUSED(*length), unsigned short *rc) {
 
 	//
 	// Checks the status of the host-connected presentation space. If the session is
@@ -372,6 +372,7 @@ static int wait_system(char *buffer, unsigned short *length, unsigned short *rc)
 	//
 
 	int state = hllapi_wait_for_ready(60);
+	*rc = (unsigned short) state;
 	return (state == HLLAPI_STATUS_WAITING ? HLLAPI_STATUS_TIMEOUT : state);
 
 }
@@ -399,12 +400,14 @@ static int copy_str_to_ps(char *text, unsigned short *length, unsigned short *ps
 	return hllapi_emulate_input(text,*length,0);
 }
 
-static int reset_system(char *buffer, unsigned short *length, unsigned short *rc) {
-	return hllapi_kybdreset();
+static int reset_system(char GNUC_UNUSED(*buffer), unsigned short GNUC_UNUSED(*length), unsigned short *rc) {
+	int state = hllapi_kybdreset();
+	*rc = (unsigned short) state;
+	return state;
 }
 
 
-static int pause_system(char *buffer, unsigned short *length, unsigned short *rc) {
+static int pause_system(char GNUC_UNUSED(*buffer), unsigned short *length, unsigned short *rc) {
 
 	if(!*length)
 	{
@@ -427,7 +430,10 @@ static int pause_system(char *buffer, unsigned short *length, unsigned short *rc
 	}
 
 	// Pause "flexivel", aguarda mudança no conteúdo da tela!!!
-	return hllapi_wait_for_change((*length) / 2);
+	int state = hllapi_wait_for_change((*length) / 2);
+
+	*rc = (unsigned short) state;
+	return state;
 
 }
 

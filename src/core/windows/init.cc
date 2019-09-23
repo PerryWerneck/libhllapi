@@ -70,7 +70,7 @@
  static HANDLE hModule = 0;
  static HANDLE hEventLog = 0;
 
- BOOL WINAPI DllMain(HANDLE hInstance, DWORD dwcallpurpose, LPVOID lpvResvd) {
+ BOOL WINAPI DllMain(HANDLE hInstance, DWORD dwcallpurpose, LPVOID GNUC_UNUSED(lpvResvd)) {
     switch(dwcallpurpose) {
     case DLL_PROCESS_ATTACH:
         hModule = hInstance;

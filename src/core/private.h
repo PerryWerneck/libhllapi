@@ -42,6 +42,23 @@
 	#include <lib3270/log.h>
 	#include <lib3270/hllapi.h>
 
+	//
+	// Compiler-specific #defines.
+	//
+	// Reference: GLIBC gmacros.h
+	//
+	#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
+
+			#define GNUC_UNUSED \
+					__attribute__((__unused__))
+
+	#else
+
+			#define GNUC_UNUSED
+
+	#endif
+
+
 	using std::runtime_error;
 	using std::string;
 	using TN3270::Host;

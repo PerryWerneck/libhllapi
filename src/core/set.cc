@@ -118,7 +118,7 @@
 
  }
 
- HLLAPI_API_CALL hllapi_emulate_input(const LPSTR text, WORD length, WORD pasting)
+ HLLAPI_API_CALL hllapi_emulate_input(const LPSTR text, WORD length, WORD GNUC_UNUSED(pasting))
  {
 	if(!(text && *text))
 		return HLLAPI_STATUS_BAD_PARAMETER;

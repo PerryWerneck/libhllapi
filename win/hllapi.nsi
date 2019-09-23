@@ -4,11 +4,11 @@
 
 Name "hllapi"
 Caption "hllapi - PW3270 HLLAPI Module"
-outfile "hllapi-5.2.19.9-x86_64.exe"
+outfile "hllapi-5.2.19.9-i686.exe"
 
 XPStyle on
 
-installDir "$PROGRAMFILES64\hllapi"
+installDir "$PROGRAMFILES\hllapi"
 
 # Get installation folder from registry if available
 InstallDirRegKey HKLM "Software\hllapi" "InstallLocation"
@@ -17,10 +17,10 @@ RequestExecutionLevel admin
 
 # Properties
 VIProductVersion "5.2.19.9"
-VIFileVersion "19.9.23.14"
+VIFileVersion "19.9.23.15"
 
 VIAddVersionKey "ProductVersion" "5.2.19.9"
-VIAddVersionKey "FileVersion" "19.9.23.14"
+VIAddVersionKey "FileVersion" "19.9.23.15"
 
 VIAddVersionKey "ProductName" "hllapi"
 VIAddVersionKey "FileDescription" "PW3270 HLLAPI Module"
@@ -51,7 +51,7 @@ SubSection "hllapi" SecMain
 
 	Section "Core" SecCore
 
-		SetRegView 64
+		SetRegView 32
 		${DisableX64FSRedirection}
 
 		# define the output path for this file
@@ -107,7 +107,7 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\hllapi"
 	DeleteRegKey HKLM "Software\hllapi"
 	
-	SetRegView 64
+	SetRegView 32
 	DeleteRegKey HKLM "Software\hllapi"
 
 SectionEnd
