@@ -112,7 +112,7 @@ $(OBJDBG)/%.o: \
 
 	@$(CXX) \
 		$(CFLAGS) \
-		-Wall -Wextra -fstack-check \
+		-g -Wall -Wextra -fstack-check \
 		-DDEBUG=1 \
 		-o $@ \
 		-c $<
@@ -159,7 +159,7 @@ $(BINRLS)/$(SONAME): \
 	@$(MKDIR) $(dir $@)
 	@echo $< ...
 	@$(LD) \
-		@DLL_LDFLAGS@ \
+		-shared -Wl,-soname,$(@F) \
 		-o $@ \
 		$(LDFLAGS) \
 		$^ \

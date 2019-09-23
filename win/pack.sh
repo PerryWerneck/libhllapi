@@ -2,6 +2,7 @@
 PROJECT_DIR=$(readlink -f $(dirname $(dirname $(readlink -f $0))))
 
 PUBLISH=0
+CLEAR_OLD=0
 
 pack() {
 
@@ -11,7 +12,8 @@ pack() {
 
 	BUILDDIR=$(mktemp -d)
 
-	./configure --cache=.${1}.cache \
+	./configure \
+		--cache=.${1}.cache \
 		--host=${1}-w64-mingw32 \
 		--prefix=/usr/${1}-w64-mingw32/sys-root/mingw \
                 --bindir=${BUILDDIR} \
@@ -54,19 +56,27 @@ pack() {
 		exit -1
 	fi
 
-	if [ -d ~/public_html ]; then
-		mkdir -p ~/public_html/win
-		cp -v *.exe ~/public_html/win
-		if [ "$?" != "0" ]; then
-			exit -1
-		fi
-	fi
+	PRODUCT_NAME=$(${1}-w64-mingw32-pkg-config --variable=product_name lib3270)
 
-	if [ "${PUBLISH}" == "1" ] && [ ! -z ${WIN_PACKAGE_SERVER} ]; then
-		scp *.exe ${WIN_PACKAGE_SERVER}
-		if [ "$?" != "0" ]; then
-			exit -1
+	if [ ! -z ${PRODUCT_NAME} ]; then
+
+		if [ -d ~/public_html/win/${PRODUCT_NAME}/${2} ]; then
+
+			if [ "${CLEAR_OLD}" == "1" ]; then
+				rm -fr ~/public_html/win/${PRODUCT_NAME}/${2}/hllapi-*.exe
+			fi
+
+			cp -v *.exe ~/public_html/win/${PRODUCT_NAME}/${2}
+
 		fi
+
+		if [ "${PUBLISH}" == "1" ] && [ ! -z ${WIN_PACKAGE_SERVER} ]; then
+			echo scp *.exe ${WIN_PACKAGE_SERVER}/${PRODUCT_NAME}/${2}
+			if [ "$?" != "0" ]; then
+				exit -1
+			fi
+		fi
+
 	fi
 
 	mv -f *.exe ${PROJECT_DIR}
@@ -99,10 +109,7 @@ do
 			;;
 
 		CLEAR)
-			if [ -d ~/public_html/win ]; then
-				rm -fr ~/public_html/win/hllapi-*-{i686,x86_64}.exe
-			fi
-
+			CLEAR_OLD=1
 			;;
 		HELP)
 			echo "${0} nome_da_matriz"
@@ -137,7 +144,7 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-pack i686
-pack x86_64
+pack i686 x86_32
+pack x86_64 x86_64
 
 

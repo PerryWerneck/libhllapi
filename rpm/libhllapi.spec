@@ -1,5 +1,5 @@
 #
-# spec file for packages pw3270-plugin-ipc
+# spec file for package libhllapi
 #
 # Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
 # Copyright (C) <2008> <Banco do Brasil S.A.>
@@ -16,15 +16,10 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-#---[ Versions ]------------------------------------------------------------------------------------------------------
-
-%define MAJOR_VERSION 5
-%define MINOR_VERSION 2
-
-#---[ Main package ]--------------------------------------------------------------------------------------------------
+#---[ Package header ]------------------------------------------------------------------------------------------------
 
 Summary:	HLLAPI client library for lib3270/pw3270
-Name:		libhllapi5_2
+Name:		libhllapi
 Version:	5.2
 Release:	0
 License:	LGPL-3.0
@@ -32,8 +27,7 @@ Source:		lib3270-hllapi-bindings-%{version}.tar.xz
 
 Url:		https://github.com/PerryWerneck/lib3270-hllapi-bindings.git
 
-Group:		System/X11/Terminals
-BuildRoot:	/var/tmp/%{name}-%{version}
+Group:			Development/Libraries/C and C++
 
 BuildRequires:  autoconf >= 2.61
 BuildRequires:  automake
@@ -63,6 +57,24 @@ HLLAPI client library for pw3270/lib3270
 
 See more details at https://softwarepublico.gov.br/social/pw3270/
 
+#---[ Library ]-------------------------------------------------------------------------------------------------------
+
+%define MAJOR_VERSION %(echo %{version} | cut -d. -f1)
+%define MINOR_VERSION %(echo %{version} | cut -d. -f2)
+%define _libvrs %{MAJOR_VERSION}_%{MINOR_VERSION}
+
+%package -n %{name}%{_libvrs}
+Summary:		HLLAPI client library for lib3270/pw3270
+Group:			Development/Libraries/C and C++
+
+%description -n %{name}%{_libvrs}
+
+HLLAPI client library for pw3270/lib3270
+
+See more details at https://softwarepublico.gov.br/social/pw3270/
+
+#---[ Development package ]-------------------------------------------------------------------------------------------
+
 %package devel
 Summary: HLLAPI Development files.
 
@@ -76,7 +88,8 @@ Development files for lib3270/pw3270 HLLAPI client library.
 %prep
 %setup -n lib3270-hllapi-bindings-%{version}
 
-NOCONFIGURE=1 ./autogen.sh
+NOCONFIGURE=1 \
+	./autogen.sh
 
 %configure
 
@@ -87,33 +100,33 @@ make all
 %install
 rm -rf $RPM_BUILD_ROOT
 
-make \
-	DESTDIR=%{?buildroot:%{buildroot}} \
-	install
+%makeinstall
 
-%files
+%files -n %{name}%{_libvrs}
 %defattr(-,root,root)
-%doc AUTHORS LICENSE README.md
 
-%{_libdir}/libhllapi.so.%{MAJOR_VERSION}
-%{_libdir}/libhllapi.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
+# https://en.opensuse.org/openSUSE:Packaging_for_Leap#RPM_Distro_Version_Macros
+%if 0%{?sle_version} > 120200
+%doc AUTHORS README.md
+%license LICENSE
+%else
+%doc AUTHORS README.md LICENSE
+%endif
+
+%{_libdir}/%{name}.so.%{MAJOR_VERSION}
+%{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
 %files devel
 %defattr(-,root,root)
-%{_libdir}/libhllapi.so
+
+%{_libdir}/%{name}.so
 %{_includedir}/lib3270/hllapi.h
 
-%pre
-/sbin/ldconfig
-exit 0
+%pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 
-%post
-/sbin/ldconfig
-exit 0
+%post -n %{name}%{_libvrs} -p /sbin/ldconfig
 
-%postun
-/sbin/ldconfig
-exit 0
+%postun -n %{name}%{_libvrs} -p /sbin/ldconfig
 
 %changelog
 

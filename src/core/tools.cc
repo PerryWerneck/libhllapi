@@ -34,6 +34,54 @@
 
  HLLAPI_API_CALL hllapi_get_datadir(LPSTR datadir) {
 
+	LSTATUS			rc;
+	HKEY			hKey = 0;
+ 	unsigned long	szDatadir = strlen(datadir);
+
+	static const char * keys[] = {
+
+		"Software\\" LIB3270_STRINGIZE_VALUE_OF(PRODUCT_NAME),
+		"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  LIB3270_STRINGIZE_VALUE_OF(PRODUCT_NAME),
+
+#ifdef LIB3270_NAME
+		"Software\\" LIB3270_STRINGIZE_VALUE_OF(LIB3270_NAME),
+		"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"  LIB3270_STRINGIZE_VALUE_OF(LIB3270_NAME),
+#endif
+
+		"Software\\pw3270",
+		"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\pw3270"
+	};
+
+	size_t ix;
+
+	string installLocation;
+
+	*datadir = 0;
+
+	for(ix = 0; !*datadir && ix < (sizeof(keys)/sizeof(keys[0])); ix++) {
+
+		rc = RegOpenKeyEx(HKEY_LOCAL_MACHINE,keys[ix],0,KEY_QUERY_VALUE,&hKey);
+		if(rc == ERROR_SUCCESS) {
+
+			unsigned long datatype; // #defined in winnt.h (predefined types 0-11)
+			unsigned long datalen = (unsigned long) szDatadir;
+
+			memset(datadir,0,datalen);
+
+			rc = RegQueryValueExA(hKey,"InstallLocation",NULL,&datatype,(LPBYTE) datadir,&datalen);
+			if(rc != ERROR_SUCCESS) {
+				*datadir = 0; // Just in case
+			}
+
+			RegCloseKey(hKey);
+
+		}
+
+	}
+
+
+
+ /*
  #ifdef _WIN32
 	HKEY 			hKey	= 0;
  	unsigned long	datalen = strlen(datadir);
@@ -48,6 +96,7 @@
 		RegCloseKey(hKey);
 	}
 #endif // _WIN32
+*/
 
 	return *datadir;
  }

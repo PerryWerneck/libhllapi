@@ -57,18 +57,6 @@ AC_PROG_LN_S
 AC_LANG([C++])
 
 dnl ---------------------------------------------------------------------------
-dnl Initialize defaults
-dnl ---------------------------------------------------------------------------
-
-DBG_CFLAGS="-g -fstack-check -DDEBUG=1"
-RLS_CFLAGS="-DNDEBUG=1"
-PLUGINS=""
-APP_RESOURCES=""
-APP_LDFLAGS=""
-DLL_LDFLAGS="-shared -Wl,-soname,\$(@F)"
-DEPENDS=""
-
-dnl ---------------------------------------------------------------------------
 dnl Version info
 dnl ---------------------------------------------------------------------------
 
@@ -109,7 +97,9 @@ case "$host" in
 	*-mingw32|*-pc-msys)
 		app_cv_osname="windows"
 
-		CFLAGS="$CFLAGS -pthread -D_WIN32_WINNT=0x0600"
+		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0600"
+		LDFLAGS="-Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic -static-libgcc -static-libstdc++ $LDFLAGS"
+
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
 		DLLEXT=".dll"
 
@@ -137,8 +127,8 @@ case "$host" in
 		;;
 
  	*)
-		CFLAGS="$CFLAGS -pthread"
-		LDFLAGS="$LDFLAGS -pthread"
+		CFLAGS="$CFLAGS"
+		LDFLAGS="$LDFLAGS"
 		app_cv_datadir="/usr/share"
 		app_cv_confdir="/etc"
 		app_cv_osname="linux"
@@ -155,8 +145,6 @@ AC_SUBST(LIBS)
 AC_SUBST(LOGDIR)
 AC_SUBST(DLLEXT)
 AC_SUBST(DLLPREFIX)
-AC_SUBST(LDFLAGS)
-AC_SUBST(DLL_LDFLAGS)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for other programs
@@ -261,10 +249,9 @@ if test "$app_cv_static_ipc3270" == "auto"; then
 fi
 
 if test "$app_cv_static_ipc3270" == "yes"; then
-	LDFLAGS="-static -static-libgcc -static-libstdc++ $LDFLAGS"
 	PKG_CHECK_MODULES( [IPC3270], [ipc3270-static], AC_DEFINE(USING_STATIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
 else
-	PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(USING_SHARED_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
+	PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(USING_DYNAMIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
 fi
 
 AC_SUBST(IPC3270_LIBS)
@@ -309,12 +296,14 @@ dnl ---------------------------------------------------------------------------
 dnl Configure which files to generate.
 dnl ---------------------------------------------------------------------------
 
-AC_SUBST(DEPENDS)
 AC_CONFIG_FILES(Makefile)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.
 dnl ---------------------------------------------------------------------------
+
+AC_SUBST(LDFLAGS)
+
 AC_SUBST(BASEDIR,$ac_pwd)
 
 AC_OUTPUT
