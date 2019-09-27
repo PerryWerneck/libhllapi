@@ -31,7 +31,7 @@ AC_PREREQ(2.61)
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([hllapi], [5.2], [perry.werneck@gmail.com])
+AC_INIT([libhllapi], [5.2], [perry.werneck@gmail.com])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -60,7 +60,7 @@ dnl ---------------------------------------------------------------------------
 dnl Version info
 dnl ---------------------------------------------------------------------------
 
-AC_SUBST(PACKAGE_DESCRIPTION,"PW3270 HLLAPI Module")
+AC_SUBST(PACKAGE_DESCRIPTION,"LIB3270/PW3270 HLLAPI API Module")
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
@@ -98,7 +98,7 @@ case "$host" in
 		app_cv_osname="windows"
 
 		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0600"
-		LDFLAGS="-Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic -static-libgcc -static-libstdc++ $LDFLAGS"
+		LDFLAGS="$LDFLAGS"
 
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
 		DLLEXT=".dll"

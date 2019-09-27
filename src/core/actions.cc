@@ -63,7 +63,7 @@
 
  }
 
- static DWORD action(const TN3270::Action id) noexcept {
+ static DWORD action(const TN3270::KeyboardAction id) noexcept {
 
 	return action([id](TN3270::Host &host) {
 		host.push(id);
