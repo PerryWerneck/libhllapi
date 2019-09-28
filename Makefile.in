@@ -194,6 +194,7 @@ install-devel:
 		src/include/lib3270/*.h \
 		$(DESTDIR)$(includedir)/lib3270
 
+	@$(MKDIR) $(DESTDIR)$(libdir)
 	@$(LN_S) \
 		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
 		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@
