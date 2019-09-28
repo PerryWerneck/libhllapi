@@ -168,6 +168,11 @@ $(BINRLS)/$(SONAME): \
 #---[ Install Targets ]------------------------------------------------------------------
 
 install: \
+	install-shared \
+	install-devel
+
+
+install-shared: \
 	$(BINRLS)/$(SONAME)
 
 	# Install library
@@ -181,15 +186,18 @@ install: \
 		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
 		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@
 
-	@$(LN_S) \
-		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
-		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@
+install-devel:
 
 	# Install devel
 	@$(MKDIR) $(DESTDIR)$(includedir)/lib3270
 	@$(INSTALL_DATA) \
 		src/include/lib3270/*.h \
 		$(DESTDIR)$(includedir)/lib3270
+
+	@$(LN_S) \
+		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
+		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@
+
 
 doc:
 	@$(DOXYGEN) ./doxygen/doxyfile
