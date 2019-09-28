@@ -1,0 +1,30 @@
+Source: libhllapi
+Section: unknown
+Priority: optional
+Maintainer: Perry Werneck <perry.werneck@gmail.com>
+Build-Depends: debhelper (>= 7), autotools-dev, autoconf, automake, gettext, pkg-config, libipc3270-dev
+
+Package: libhllapi
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Recommends: pw3270-plugin-ipc
+Provides: libhllapi (= ${binary:Version})
+Description: HLLAPI client library for lib3270/pw3270.
+ HLLAPI client library for pw3270/lib3270
+
+Package: libhllapi-dev
+Architecture: any
+Provides: libhllapi-dev (= ${binary:Version})
+Section: libdevel
+Depends: ${misc:Depends}, libipc3270-dev, libhllapi (= ${binary:Version})
+Description: libhllapi development files.
+ HLLAPI client library for pw3270/lib3270 development files
+
+Package: libhllapi-dbg
+Architecture: any
+Depends: libhllapi (= ${binary:Version}), ${misc:Depends}
+Description: Debugging symbols for libhllapi
+ This package contains the debugging symbols for libhllapi.
+
+
