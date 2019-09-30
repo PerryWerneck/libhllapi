@@ -5,15 +5,44 @@
         <param name="changesgenerate">enable</param>
       	<param name="changesauthor">perry.werneck@gmail.com</param>
 		<param name="versionformat">@PARENT_TAG@</param>
-		<param name="url">https://github.com/PerryWerneck/lib3270-hllapi-bindings.git</param>
+		<param name="url">https://github.com/PerryWerneck/libhllapi.git</param>
 		<param name="scm">git</param>
 	</service>
 
 	<!-- https://github.com/openSUSE/obs-service-extract_file -->
-	<!-- service name="extract_file">
+	<service name="extract_file">
 		<param name="archive">*.tar</param>
-		<param name="files">*/rpm/*.spec</param>
-	</service -->
+		<param name="files">*/rpm/libhllapi.spec</param>
+	</service>
+
+	<service name="extract_file">
+		<param name="archive">*.tar</param>
+		<param name="files">*/debian/changelog</param>
+		<param name="outfilename">debian.changelog</param>
+	</service>
+  
+	<service name="extract_file">
+		<param name="archive">*.tar</param>
+		<param name="files">*/debian/*.dsc</param>
+	</service>
+
+	<service name="extract_file">
+		<param name="archive">*.tar</param>
+		<param name="files">*/debian/control</param>
+		<param name="outfilename">debian.control</param>
+	</service>
+
+	<service name="extract_file">
+		<param name="archive">*.tar</param>
+		<param name="files">*/debian/rules</param>
+		<param name="outfilename">debian.rules</param>
+	</service>
+
+  	<service name="extract_file">
+		<param name="archive">*.tar</param>
+		<param name="files">*/debian/compat</param>
+		<param name="outfilename">debian.compat</param>
+	</service>
 
 	<service name="recompress">
 		<param name="file">*.tar</param>

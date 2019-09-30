@@ -18,35 +18,35 @@
 
 #---[ Package header ]------------------------------------------------------------------------------------------------
 
-Summary:	HLLAPI client library for lib3270/pw3270
-Name:		libhllapi
-Version:	5.2
-Release:	0
-License:	LGPL-3.0
-Source:		lib3270-hllapi-bindings-%{version}.tar.xz
+Summary:		HLLAPI client library for lib3270/pw3270
+Name:			libhllapi
+Version:		5.2
+Release:		0
+License:		LGPL-3.0
+Source:			%{name}-%{version}.tar.xz
 
-Url:		https://github.com/PerryWerneck/lib3270-hllapi-bindings.git
+Url:			https://github.com/PerryWerneck/libhllapi.git
 
 Group:			Development/Libraries/C and C++
 
-BuildRequires:  autoconf >= 2.61
-BuildRequires:  automake
-BuildRequires:  binutils
-BuildRequires:  coreutils
-BuildRequires:  gcc-c++
-BuildRequires:  gettext-devel
-BuildRequires:  m4
+BuildRequires:	autoconf >= 2.61
+BuildRequires:	automake
+BuildRequires:	binutils
+BuildRequires:	coreutils
+BuildRequires:	gcc-c++
+BuildRequires:	gettext-devel
+BuildRequires:	m4
 BuildRequires:  pkgconfig(ipc3270)
 
 %if 0%{?fedora} ||  0%{?suse_version} > 1200
 
 BuildRequires:	gcc-c++
-BuildRequires:  pkgconfig(ipc3270)
+BuildRequires:	pkgconfig(ipc3270)
 
 %else
 
-BuildRequires:  gcc-c++ >= 4.8
-BuildRequires:  libipc3270-devel
+BuildRequires:	gcc-c++ >= 4.8
+BuildRequires:	libipc3270-devel
 
 %endif
 
@@ -86,7 +86,7 @@ Development files for lib3270/pw3270 HLLAPI client library.
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
 %prep
-%setup -n lib3270-hllapi-bindings-%{version}
+%setup
 
 NOCONFIGURE=1 \
 	./autogen.sh
