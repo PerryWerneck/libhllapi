@@ -151,7 +151,7 @@
 					savedpath.clear();
 				}
 
-				SetCurrentDirectory(curdir);
+				SetCurrentDirectory(datadir);
 
 			}
 
@@ -160,6 +160,7 @@
 
 	case dliNoteEndProcessing:
 		if(!savedpath.empty()) {
+
 			SetCurrentDirectory(savedpath.c_str());
 			savedpath.clear();
 
