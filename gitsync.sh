@@ -8,17 +8,25 @@
 #
 # Setup:
 #
-# git remote add https://github.com/PerryWerneck/pw3270-plugin-hllapi.git
+# git remote add github https://github.com/PerryWerneck/lib3270.git
 #
 #
 
 git push
 
 git fetch origin
-git checkout master
-git merge origin/master
+git merge
 
-for repo in $(git remote -v | grep -v origin | grep "(push)" | awk '{print $1}')
+REPOS=$(git remote -v | grep -v origin | grep "(push)" | awk '{print $1}')
+
+for repo in ${REPOS}
+do
+	echo "Getting updates from ${repo} ..."
+	git fetch ${repo}
+	git merge
+done
+
+for repo in ${REPOS}
 do
 	echo "Updating ${repo} ..."
 	git push ${repo}
