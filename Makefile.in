@@ -37,6 +37,8 @@ SOURCES= \
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)
 
+INSTALL_PACKAGES=@INSTALL_PACKAGES@
+
 #---[ Tools ]----------------------------------------------------------------------------
 
 CXX=@CXX@
@@ -56,6 +58,7 @@ CONVERT=@CONVERT@
 OPTIPNG=@OPTIPNG@
 ZIP=@ZIP@
 DOXYGEN=@DOXYGEN@
+DLLTOOL=@DLLTOOL@
 
 #---[ Paths ]----------------------------------------------------------------------------
 
@@ -159,17 +162,16 @@ $(BINRLS)/$(SONAME): \
 	@$(MKDIR) $(dir $@)
 	@echo $< ...
 	@$(LD) \
-		-shared -Wl,-soname,$(@F) \
-		-o $@ \
 		$(LDFLAGS) \
+		-Wl,-soname,$(@F) \
+		-o $@ \
 		$^ \
 		$(LIBS)
 
 #---[ Install Targets ]------------------------------------------------------------------
 
 install: \
-	install-shared \
-	install-devel
+	$(foreach PKG, $(INSTALL_PACKAGES), install-$(PKG))
 
 
 install-shared: \
@@ -186,7 +188,7 @@ install-shared: \
 		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
 		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@
 
-install-devel:
+install-dev:
 
 	# Install devel
 	@$(MKDIR) $(DESTDIR)$(includedir)/lib3270
@@ -198,6 +200,29 @@ install-devel:
 	@$(LN_S) \
 		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
 		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@
+
+
+install-winlib: \
+	$(BINRLS)/$(SONAME)
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(INSTALL_DATA) \
+		$(BINRLS)/$(LIBNAME).dll.a \
+		$(DESTDIR)$(libdir)
+
+	@$(DLLTOOL) \
+		--input-def $(BINRLS)/$(LIBNAME).def \
+		--dllname $(LIBNAME).dll \
+		--output-lib $(DESTDIR)$(libdir)/$(LIBNAME).lib
+
+	@$(MKDIR) \
+		$(DESTDIR)$(datarootdir)/$(PRODUCT_NAME)/def
+
+	@$(INSTALL_DATA) \
+		$(BINRLS)/$(LIBNAME).def \
+		$(DESTDIR)$(datarootdir)/$(PRODUCT_NAME)/def
 
 
 doc:
@@ -245,10 +270,10 @@ $(BINDBG)/$(SONAME): \
 	@$(MKDIR) $(dir $@)
 	@echo $< ...
 	@$(LD) \
-		-shared -Wl,-soname,$(@F) \
+		$(LDFLAGS) \
+		-Wl,-soname,$(@F) \
 		-o $@ \
 		-L$(BINDBG) \
-		$(LDFLAGS) \
 		$^ \
 		$(LIBS)
 

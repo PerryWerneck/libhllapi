@@ -92,13 +92,15 @@ AC_SUBST(APPDATADIR,$app_cv_source_appdatadir)
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
+INSTALL_PACKAGES="shared dev"
 
 case "$host" in
 	*-mingw32|*-pc-msys)
 		app_cv_osname="windows"
 
 		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0600"
-		LDFLAGS="$LDFLAGS"
+		LDFLAGS="$LDFLAGS -shared -Wl,--output-def,\$(@D)/\$(LIBNAME).def,--out-implib,\$(@D)/\$(LIBNAME).dll.a"
+		INSTALL_PACKAGES="$INSTALL_PACKAGES winlib"
 
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
 		DLLEXT=".dll"
@@ -128,7 +130,7 @@ case "$host" in
 
  	*)
 		CFLAGS="$CFLAGS"
-		LDFLAGS="$LDFLAGS"
+		LDFLAGS="$LDFLAGS -shared"
 		app_cv_datadir="/usr/share"
 		app_cv_confdir="/etc"
 		app_cv_osname="linux"
@@ -145,6 +147,7 @@ AC_SUBST(LIBS)
 AC_SUBST(LOGDIR)
 AC_SUBST(DLLEXT)
 AC_SUBST(DLLPREFIX)
+AC_SUBST(INSTALL_PACKAGES)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for other programs
@@ -153,6 +156,7 @@ dnl ---------------------------------------------------------------------------
 AC_PATH_TOOL([AR], [ar], [ar])
 AC_PATH_TOOL([WINDRES], [windres], [no])
 AC_PATH_TOOL([VALGRIND], [valgrind], [no])
+AC_PATH_TOOL([DLLTOOL], [dlltool], [no])
 
 PKG_CHECK_EXISTS
 
