@@ -60,7 +60,7 @@ install: build
 	find $(PWD)/debian/libhllapi -type f | sed -e "s@^$(PWD)/debian/libhllapi/@/@g" > $(PWD)/debian/libhllapi.install
 
 	# Install dev
-	make DESTDIR=$(PWD)/debian/libhllapi-dev install-devel
+	make DESTDIR=$(PWD)/debian/libhllapi-dev install-dev
 	find $(PWD)/debian/libhllapi-dev -type f | sed -e "s@^$(PWD)/debian/libhllapi-dev/@/@g" > $(PWD)/debian/libhllapi-dev.install
 
 	# --- end custom part for installing
