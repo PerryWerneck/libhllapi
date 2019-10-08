@@ -28,6 +28,7 @@
 
 LIBNAME=libhllapi
 SONAME=@SONAME@
+PRODUCT_NAME=@PRODUCT_NAME@
 
 SOURCES= \
 	$(wildcard src/core/*.cc) \
