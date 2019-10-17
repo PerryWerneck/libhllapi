@@ -73,10 +73,11 @@ HLLAPI client library for pw3270/lib3270
 
 See more details at https://softwarepublico.gov.br/social/pw3270/
 
-#---[ Development package ]-------------------------------------------------------------------------------------------
+#---[ Development ]---------------------------------------------------------------------------------------------------
 
 %package devel
 Summary: HLLAPI Development files.
+Requires: %{name}%{_libvrs} = %{version}
 
 %description devel
 
