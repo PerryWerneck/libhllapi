@@ -175,19 +175,23 @@ install: \
 	$(foreach PKG, $(INSTALL_PACKAGES), install-$(PKG))
 
 
-install-shared: \
+install-linux-lib: \
 	$(BINRLS)/$(SONAME)
 
-	# Install library
-	@$(MKDIR) $(DESTDIR)$(libdir)
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
 
 	@$(INSTALL_PROGRAM) \
 		$(BINRLS)/$(SONAME) \
 		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
-
+		
 	@$(LN_S) \
 		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
 		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@
+
+	@$(LN_S) \
+		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
+		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@
 
 install-dev:
 
@@ -197,26 +201,23 @@ install-dev:
 		src/include/lib3270/*.h \
 		$(DESTDIR)$(includedir)/lib3270
 
-	@$(MKDIR) $(DESTDIR)$(libdir)
-	@$(LN_S) \
-		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@ \
-		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@
-
-
-install-winlib: \
+install-windows-lib: \
 	$(BINRLS)/$(SONAME)
 
 	@$(MKDIR) \
-		$(DESTDIR)$(libdir)
+		$(DESTDIR)$(bindir)
 
-	@$(INSTALL_DATA) \
-		$(BINRLS)/$(LIBNAME).dll.a \
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/$(SONAME) \
+		$(DESTDIR)$(bindir)/$(LIBNAME)@DLLEXT@
+		
+	@$(MKDIR) \
 		$(DESTDIR)$(libdir)
 
 	@$(DLLTOOL) \
 		--input-def $(BINRLS)/$(LIBNAME).def \
 		--dllname $(LIBNAME).dll \
-		--output-lib $(DESTDIR)$(libdir)/$(LIBNAME).lib
+		--output-lib $(DESTDIR)$(libdir)/$(LIBNAME).dll.a
 
 	@$(MKDIR) \
 		$(DESTDIR)$(datarootdir)/$(PRODUCT_NAME)/def
@@ -245,7 +246,6 @@ $(BINDBG)/$(LIBNAME)@EXEEXT@: \
 		$^ \
 		-L$(BINDBG) \
 		-Wl,-rpath,$(BINDBG) \
-		$(LDFLAGS) \
 		$(LIBS)
  
 run: \

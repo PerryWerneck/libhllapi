@@ -44,7 +44,7 @@
 	char buffer[SCREEN_LENGTH+1];
 
  	const char *host	= "";
- 	const char *session = ""; // "pw3270:a";
+ 	const char *session = ":a";
 
 	#pragma GCC diagnostic push
 	static struct option options[] =

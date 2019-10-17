@@ -92,7 +92,7 @@ AC_SUBST(APPDATADIR,$app_cv_source_appdatadir)
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
-INSTALL_PACKAGES="shared dev"
+INSTALL_PACKAGES="dev"
 
 case "$host" in
 	*-mingw32|*-pc-msys)
@@ -100,7 +100,7 @@ case "$host" in
 
 		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0600"
 		LDFLAGS="$LDFLAGS -shared -Wl,--output-def,\$(@D)/\$(LIBNAME).def,--out-implib,\$(@D)/\$(LIBNAME).dll.a"
-		INSTALL_PACKAGES="$INSTALL_PACKAGES winlib"
+		INSTALL_PACKAGES="windows-lib $INSTALL_PACKAGES"
 
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
 		DLLEXT=".dll"
@@ -131,6 +131,8 @@ case "$host" in
  	*)
 		CFLAGS="$CFLAGS"
 		LDFLAGS="$LDFLAGS -shared"
+		INSTALL_PACKAGES="linux-lib $INSTALL_PACKAGES"
+
 		app_cv_datadir="/usr/share"
 		app_cv_confdir="/etc"
 		app_cv_osname="linux"
