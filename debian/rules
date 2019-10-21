@@ -55,14 +55,14 @@ install: build
 	# Build package
 	make all
 
-	# Install libhllapi
-	make DESTDIR=$(PWD)/debian/libhllapi install-shared
-	find $(PWD)/debian/libhllapi -type f | sed -e "s@^$(PWD)/debian/libhllapi/@/@g" > $(PWD)/debian/libhllapi.install
+	# Install library
+	make DESTDIR=$(PWD)/debian/$(PACKAGE_NAME) install-linux-lib
 
 	# Install dev
-	make DESTDIR=$(PWD)/debian/libhllapi-dev install-dev
-	find $(PWD)/debian/libhllapi-dev -type f | sed -e "s@^$(PWD)/debian/libhllapi-dev/@/@g" > $(PWD)/debian/libhllapi-dev.install
-
+	make DESTDIR=$(PWD)/debian/$(PACKAGE_NAME)-dev install-dev
+	mkdir -p $(PWD)/debian/$(PACKAGE_NAME)-dev/usr/lib
+	mv $(PWD)/debian/$(PACKAGE_NAME)/usr/lib/*.so $(PWD)/debian/$(PACKAGE_NAME)-dev/usr/lib
+  
 	# --- end custom part for installing
 
 # Build architecture-independent files here.
@@ -88,7 +88,7 @@ binary-arch: build install
 #	dh_undocumented
 	dh_installchangelogs
 	dh_link
-	dh_strip --dbg-package=libhllapi-dbg
+	dh_strip --dbg-package=$(PACKAGE_NAME)-dbg
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs
