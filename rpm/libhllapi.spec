@@ -114,7 +114,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHORS README.md LICENSE
 %endif
 
-%{_libdir}/%{name}.so.%{MAJOR_VERSION}
 %{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
 %files devel
