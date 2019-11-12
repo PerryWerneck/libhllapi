@@ -161,7 +161,7 @@
 
 	return get([buffer,len](TN3270::Host &host) {
 
-		string luname = host.getLUName();
+		string luname = host.getAssociatedLUName();
 		memset(buffer,' ',len);
 		strncpy((char *) buffer, luname.c_str(), std::min((size_t) len,luname.size()));
 
