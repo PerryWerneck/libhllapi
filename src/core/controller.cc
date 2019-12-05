@@ -46,7 +46,14 @@
 		if(hllapi_host)
 			delete hllapi_host;
 
-		hllapi_host = new TN3270::Host(*id ? id : nullptr,nullptr,hllapi_timeout);
+#ifdef _WIN32
+		// TODO: Detect the current value (maybee something like g_charset)
+		hllapi_host = new TN3270::Host(*id ? id : nullptr, "CP1252");
+#else
+		hllapi_host = new TN3270::Host(*id ? id : nullptr, "UTF-8");
+#endif // _WIN32
+
+		hllapi_host->setTimeout(hllapi_timeout);
 
 	}
 	catch(std::exception &e)
