@@ -263,7 +263,7 @@ fi
 AC_SUBST(IPC3270_LIBS)
 AC_SUBST(IPC3270_CFLAGS)
 
-AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product=`pkg-config --variable=product_name ipc3270` ])
+AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product=`pkg-config --variable=product_name lib3270` ])
 AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product)
 AC_SUBST(PRODUCT_NAME,$app_cv_product)
 
