@@ -117,14 +117,17 @@ case "$host" in
 		if test "$host_cpu" = "x86_64"; then
 			app_cv_programfiles="PROGRAMFILES64"
 			app_cv_winarch="64"
+			app_cv_nsisredir="DisableX64FSRedirection"
 		else
 			app_cv_programfiles="PROGRAMFILES"
 			app_cv_winarch="32"
+			app_cv_nsisredir="EnableX64FSRedirection"
 		fi
 
 		AC_SUBST(PROGRAMFILES,$app_cv_programfiles)
 		AC_SUBST(WINARCH,$app_cv_winarch)
                 AC_SUBST(SONAME,hllapi.dll)
+		AC_SUBST(NSISREDIR,$app_cv_nsisredir)
 
 		;;
 

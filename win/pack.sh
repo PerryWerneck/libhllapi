@@ -104,6 +104,10 @@ do
 			PUBLISH=0
 			;;
 
+		NO-PUBLISH)
+			PUBLISH=0
+			;;
+
 		PUBLISH)
 			PUBLISH=1
 			;;
@@ -118,7 +122,7 @@ do
 			echo ""
 
 			if [ ! -z ${WIN_PACKAGE_SERVER} ]; then
-				echo "  --nopublish	Don't publish in ${WIN_PACKAGE_SERVER}"
+				echo "  --no-publish	Don't publish in ${WIN_PACKAGE_SERVER}"
 				echo "  --publish	Publish in ${WIN_PACKAGE_SERVER}"
 			fi
 

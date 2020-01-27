@@ -51,12 +51,12 @@ SubSection "@PACKAGE@" SecMain
 
 	Section "Core" SecCore
 
-		SetRegView @WINARCH@
-		${DisableX64FSRedirection}
-
 		# define the output path for this file
 		setOutPath $SYSDIR
 		SetShellVarContext all
+
+		SetRegView @WINARCH@
+		${@NSISREDIR@}
 
 		file "/oname=$SYSDIR\hllapi.dll" "libhllapi.dll"
 
@@ -99,6 +99,7 @@ Section "Uninstall"
 	delete $INSTDIR\uninstaller.exe
 
 	# delete installed files
+	${@NSISREDIR@}
 	delete $SYSDIR\hllapi.dll
 	delete $SYSDIR\libhllapi.dll
 
