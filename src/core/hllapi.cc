@@ -187,8 +187,10 @@ static int set_cursor_position(char GNUC_UNUSED(*buffer), unsigned short GNUC_UN
 
 		TN3270::Host &host = getSession();
 
-		if(!host.isConnected())
+		if(!host.isConnected()) {
+			hllapi_lasterror = _( "Disconnected from host" );
 			return HLLAPI_STATUS_DISCONNECTED;
+		}
 
 		host.setCursor((unsigned short) *rc -1);
 
@@ -306,8 +308,10 @@ static int copy_ps(char *buffer, unsigned short *length, unsigned short GNUC_UNU
 
 		TN3270::Host &host = getSession();
 
-		if(!host.isConnected())
+		if(!host.isConnected()) {
+			hllapi_lasterror = _( "Disconnected from host" );
 			return HLLAPI_STATUS_DISCONNECTED;
+		}
 
 		string contents = host.toString(0,-1,'\0');
 
@@ -325,29 +329,6 @@ static int copy_ps(char *buffer, unsigned short *length, unsigned short GNUC_UNU
 	}
 
 	return HLLAPI_STATUS_SYSTEM_ERROR;
-
-	/*
-
-	size_t	  			  szBuffer	= strlen(buffer);
-	char				* text;
-
-	if(!hllapi_is_connected())
-		return HLLAPI_STATUS_DISCONNECTED;
-
-	text = hllapi_get_string(1, szBuffer);
-
-	if(!text)
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-
-	memcpy(buffer,text,szBuffer);
-
-	hllapi_free(text);
-
-	return hllapi_get_state();
-
-	return HLLAPI_STATUS_SYSTEM_ERROR;
-
-	*/
 
 }
 

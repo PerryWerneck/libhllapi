@@ -23,4 +23,6 @@ vgcore.*
 doxyfile
 doxygen/html
 doxygen/rtf
+*~
+
 

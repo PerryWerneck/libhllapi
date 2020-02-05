@@ -51,7 +51,7 @@
 
 	} catch(...) {
 
-		hllapi_lasterror = "Unexpected error";
+		hllapi_lasterror = _( "Unexpected error" );
 		return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	}
@@ -62,8 +62,10 @@
 
  HLLAPI_API_CALL hllapi_get_screen_at(WORD row, WORD col, LPSTR buffer) {
 
-	if(!(buffer && *buffer))
+	if(!(buffer && *buffer)) {
+		hllapi_lasterror = _( "Invalid parameter" );
 		return HLLAPI_STATUS_BAD_PARAMETER;
+	}
 
 	return get([row,col,buffer](TN3270::Host &host) {
 
@@ -74,41 +76,19 @@
 
 	});
 
-	/*
-	try {
-
-		TN3270::Host &host = getSession();
-
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
-
-		if(!(buffer && *buffer))
-			return HLLAPI_STATUS_BAD_PARAMETER;
-
-		size_t length = strlen(buffer);
-		string contents = host.toString( (int) row, (int) col, length);
-
-		strncpy((char *) buffer, contents.c_str(), std::min(length,contents.size()));
-
-	} catch(std::exception &e) {
-
-		hllapi_lasterror = e.what();
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-
-	}
-
- 	return HLLAPI_STATUS_SUCCESS;
- 	*/
-
  }
 
  HLLAPI_API_CALL hllapi_get_screen(WORD offset, LPSTR buffer, WORD len) {
 
-	if(!(buffer && *buffer))
+	if(!(buffer && *buffer)) {
+		hllapi_lasterror = _( "Invalid parameter" );
 		return HLLAPI_STATUS_BAD_PARAMETER;
+	}
 
-	if(len == 0)
+	if(len == 0) {
+		hllapi_lasterror = _( "Invalid parameter" );
 		return HLLAPI_STATUS_BAD_PARAMETER;
+	}
 
 	return get([offset,buffer,len](TN3270::Host &host) {
 
@@ -120,44 +100,19 @@
 	});
 
 
-	/*
- 	try {
-
-		TN3270::Host &host = getSession();
-
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
-
-		if(!(buffer && *buffer))
-			return HLLAPI_STATUS_BAD_PARAMETER;
-
-		if(len == 0)
-			return HLLAPI_STATUS_BAD_PARAMETER;
-
-		string contents = host.toString((int) offset, (size_t) len);
-
-		memset(buffer,' ',len);
-		strncpy((char *) buffer, contents.c_str(), std::min((size_t) len,contents.size()));
-
-	} catch(std::exception &e) {
-
-		hllapi_lasterror = e.what();
-		return HLLAPI_STATUS_SYSTEM_ERROR;
-
-	}
-
- 	return HLLAPI_STATUS_SUCCESS;
-	*/
-
  }
 
  HLLAPI_API_CALL hllapi_get_lu_name(LPSTR buffer, WORD len) {
 
-	if(!(buffer && *buffer))
+	if(!(buffer && *buffer)) {
+		hllapi_lasterror = _( "Invalid parameter" );
 		return HLLAPI_STATUS_BAD_PARAMETER;
+	}
 
-	if(len == 0)
+	if(len == 0){
+		hllapi_lasterror = _( "Invalid parameter" );
 		return HLLAPI_STATUS_BAD_PARAMETER;
+	}
 
 	return get([buffer,len](TN3270::Host &host) {
 
@@ -168,21 +123,3 @@
 	});
 
  }
-
-
- /*
- char * hllapi_get_string(int offset, size_t len)
- {
-	try
-	{
-		string str = session::get_default()->get_string(offset-1,len);
-		char * ret = strdup(str.c_str());
-		return ret;
-	}
-	catch(std::exception &e)
-	{
-	}
-
-	return NULL;
- }
- */

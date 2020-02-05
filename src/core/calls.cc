@@ -62,7 +62,7 @@
 
 	} catch(...) {
 
-		hllapi_lasterror = "Unexpected error";
+		hllapi_lasterror = _( "Unexpected error" );
 		return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	}
@@ -95,6 +95,7 @@
 			return HLLAPI_STATUS_SUCCESS;			// keyboard was unlocked and ready for input.
 
 		case LIB3270_MESSAGE_DISCONNECTED:			// 4 - Disconnected from host
+			hllapi_lasterror = _("Disconnected from host");
 			return HLLAPI_STATUS_DISCONNECTED;		// Your application program was not connected to a valid session.
 
 		case LIB3270_MESSAGE_MINUS:
@@ -103,6 +104,7 @@
 		case LIB3270_MESSAGE_OVERFLOW:
 		case LIB3270_MESSAGE_INHIBIT:
 		case LIB3270_MESSAGE_KYBDLOCK:
+			hllapi_lasterror = _("keyboard is locked");
 			return HLLAPI_STATUS_KEYBOARD_LOCKED;	// keyboard is locked.
 
 		case LIB3270_MESSAGE_SYSWAIT:
@@ -120,7 +122,7 @@
 		return HLLAPI_STATUS_SYSTEM_ERROR;
 	}
 
-	hllapi_lasterror = "Unexpected message id";
+	hllapi_lasterror = _( "Unexpected message id" );
 	return HLLAPI_STATUS_SYSTEM_ERROR;
  }
 

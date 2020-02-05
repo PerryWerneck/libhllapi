@@ -55,7 +55,7 @@
 
 	} catch(...) {
 
-		hllapi_lasterror = "Unexpected error";
+		hllapi_lasterror = _( "Unexpected error" );
 
 	}
 

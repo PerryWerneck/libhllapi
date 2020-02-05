@@ -76,6 +76,8 @@ sysconfdir=@sysconfdir@
 
 BASEDIR=@BASEDIR@
 
+POTDIR=$(BASEDIR)/.pot
+
 OBJDIR=$(BASEDIR)/.obj/$(LIBNAME)
 OBJDBG=$(OBJDIR)/Debug
 OBJRLS=$(OBJDIR)/Release
@@ -104,6 +106,20 @@ LDFLAGS=@LDFLAGS@
 LIBS= \
 	@LIBS@ \
 	@IPC3270_LIBS@
+
+$(POTDIR)/$(LIBNAME)/%.pot: \
+	%.cc
+
+	@echo $(notdir $@) ...
+	@$(MKDIR) $(@D)
+	@$(XGETTEXT) \
+		--language=C \
+		--keyword=_ \
+		--keyword=N_ \
+		--keyword=MSG_:2 \
+		--output=$@ \
+		$<
+	@touch $@
 
 #---[ Debug Rules ]----------------------------------------------------------------------
 
@@ -168,6 +184,25 @@ $(BINRLS)/$(SONAME): \
 		-o $@ \
 		$^ \
 		$(LIBS)
+
+$(POTDIR)/$(LIBNAME).pot: \
+	$(foreach SRC, $(basename $(SOURCES)), $(POTDIR)/$(LIBNAME)/$(SRC).pot)
+
+	@rm -f $@
+	@$(MKDIR) $(@D)
+	@$(MSGCAT) --sort-output $^ > $@
+
+locale: \
+	locale/$(LIBNAME).pot
+
+	@$(MAKE) -C locale all
+
+locale/$(LIBNAME).pot: \
+	$(POTDIR)/$(LIBNAME).pot
+
+	@rm -f $@
+	@$(MKDIR) $(@D)
+	@$(MSGCAT) --sort-output $^ > $@
 
 #---[ Install Targets ]------------------------------------------------------------------
 
@@ -285,11 +320,13 @@ cleanDebug:
 
 	@rm -fr $(OBJDBG)
 	@rm -fr $(BINDBG)
+	@rm -fr $(POTDIR)
 
 cleanRelease:
 
 	@rm -fr $(OBJRLS)
 	@rm -fr $(BINRLS)
+	@rm -fr $(POTDIR)
 
 clean: \
 	cleanDebug \

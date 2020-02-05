@@ -78,7 +78,7 @@
 	} catch(...) {
 
 		// Unexpected error getting session or lock state
-		hllapi_lasterror = "Unexpected error";
+		hllapi_lasterror = _( "Unexpected error" );
 		return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	}
@@ -89,8 +89,10 @@
 
  HLLAPI_API_CALL hllapi_set_text_at(WORD row, WORD col, LPSTR text) {
 
-	if(!(text && *text))
+	if(!(text && *text)) {
+		hllapi_lasterror = _( "Invalid parameter" );
 		return HLLAPI_STATUS_BAD_PARAMETER;
+	}
 
 	return set([row,col,text](TN3270::Host &host) {
 
@@ -104,8 +106,10 @@
  HLLAPI_API_CALL hllapi_input_string(LPSTR text, WORD length)
  {
 
-	if(!(text && *text))
+	if(!(text && *text)) {
+		hllapi_lasterror = _( "Invalid parameter" );
 		return HLLAPI_STATUS_BAD_PARAMETER;
+	}
 
 	if(length < 1)
 		length = strlen(text);
@@ -120,8 +124,11 @@
 
  HLLAPI_API_CALL hllapi_emulate_input(const LPSTR text, WORD length, WORD GNUC_UNUSED(pasting))
  {
-	if(!(text && *text))
+	if(!(text && *text)) {
+		hllapi_lasterror = _( "Invalid parameter" );
 		return HLLAPI_STATUS_BAD_PARAMETER;
+
+	}
 
 	if(!length)
 		length = strlen(text);

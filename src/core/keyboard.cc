@@ -53,7 +53,7 @@ static DWORD set(std::function<void(TN3270::Host &)> worker) noexcept {
 	} catch(...) {
 
 		// Unexpected error getting session or lock state
-		hllapi_lasterror = "Unexpected error";
+		hllapi_lasterror = _( "Unexpected error" );
 
 	}
 

@@ -37,8 +37,10 @@
 
 		TN3270::Host &host = getSession();
 
-		if(!host.isConnected())
+		if(!host.isConnected()) {
+			hllapi_lasterror = _( "Disconnected from host" );
 			return HLLAPI_STATUS_DISCONNECTED;
+		}
 
 		worker(host);
 
@@ -50,7 +52,7 @@
 
 	} catch(...) {
 
-		hllapi_lasterror = "Unexpected error";
+		hllapi_lasterror = _( "Unexpected error" );
 
 	}
 

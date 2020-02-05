@@ -138,7 +138,7 @@
  }
 
  static void dummyProc() {
-	throw std::runtime_error("Operation not supported");
+	throw std::runtime_error(_("Operation not supported"));
  }
 
  FARPROC WINAPI hllapi_delay_load_hook(unsigned reason, DelayLoadInfo * info) {

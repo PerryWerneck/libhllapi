@@ -270,19 +270,19 @@ dnl ---------------------------------------------------------------------------
 dnl Check for LIBINTL
 dnl ---------------------------------------------------------------------------
 
-dnl AC_CHECK_HEADER(libintl.h, [
-dnl 
-dnl 	AC_DEFINE(HAVE_LIBINTL, 1)
-dnl 
-dnl	case "$host" in
-dnl	*-mingw32|*-pc-msys)
-dnl		LIBS="$LIBS -lintl"
-dnl		;;
-dnl
-dnl	*)
-dnl	esac
-dnl 
-dnl ])
+AC_CHECK_HEADER(libintl.h, [
+ 
+ 	AC_DEFINE(HAVE_LIBINTL, 1)
+ 
+#	case "$host" in
+#	*-mingw32|*-pc-msys)
+#		LIBS="$LIBS -lintl"
+#		;;
+#
+#	*)
+#	esac
+ 
+])
 
 dnl ---------------------------------------------------------------------------
 dnl Check for pic
@@ -296,7 +296,7 @@ AC_ARG_ENABLE([pic],
 
 	case "$host_cpu" in
 	x86_64)
-		app_cv_pic="yes"mingw32-libipc3270-5_2
+		app_cv_pic="yes"
 		;;
 
 	aarch64)

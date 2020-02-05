@@ -31,6 +31,7 @@
 
 	#define PRIVATE_H_INCLUDED 1
 
+	#include <config.h>
 	#include <exception>
 	#include <stdexcept>
 	#include <string>
@@ -41,6 +42,15 @@
 	#include <lib3270/ipc.h>
 	#include <lib3270/log.h>
 	#include <lib3270/hllapi.h>
+
+	#ifdef HAVE_LIBINTL
+		#include <libintl.h>
+		#define _( x ) dgettext(PACKAGE_NAME, x)
+		#define N_( x ) x
+	#else
+		#define _( x ) x
+		#define N_( x ) x
+	#endif // HAVE_LIBINTL
 
 	//
 	// Compiler-specific #defines.

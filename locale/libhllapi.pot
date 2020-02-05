@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-02-05 15:52-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/core/hllapi.cc:191 src/core/hllapi.cc:312 src/core/cursor.cc:41
+#: src/core/calls.cc:98
+msgid "Disconnected from host"
+msgstr ""
+
+#: src/core/set.cc:93 src/core/set.cc:110 src/core/set.cc:128
+#: src/core/get.cc:66 src/core/get.cc:84 src/core/get.cc:89 src/core/get.cc:108
+#: src/core/get.cc:113
+msgid "Invalid parameter"
+msgstr ""
+
+#: src/core/controller.cc:110
+msgid "Not initialized"
+msgstr ""
+
+#: src/core/set.cc:81 src/core/keyboard.cc:56 src/core/get.cc:54
+#: src/core/cursor.cc:55 src/core/calls.cc:65 src/core/actions.cc:58
+msgid "Unexpected error"
+msgstr ""
+
+#: src/core/calls.cc:125
+msgid "Unexpected message id"
+msgstr ""
+
+#: src/core/calls.cc:107
+msgid "keyboard is locked"
+msgstr ""

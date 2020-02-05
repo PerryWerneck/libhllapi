@@ -41,7 +41,7 @@
  {
  	trace("%s(%s)",__FUNCTION__,id);
 
-#ifdef HAVE_LIBINTL
+#if defined(HAVE_LIBINTL) && defined(_WIN32)
 	{
 		static bool initialized = false;
 
@@ -55,7 +55,7 @@
 		}
 
 	}
-#endif // HAVE_LIBINTL
+#endif // HAVE_LIBINTL && _WIN32
 
 	try
 	{
@@ -107,7 +107,7 @@
  TN3270::Host & getSession() {
 
  	if(!hllapi_host) {
-		throw runtime_error("Not initialized");
+		throw runtime_error( _("Not initialized") );
  	}
 
  	return *hllapi_host;
