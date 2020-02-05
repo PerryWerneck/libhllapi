@@ -31,7 +31,7 @@ AC_PREREQ(2.61)
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libhllapi], [5.2], [perry.werneck@gmail.com])
+AC_INIT([libhllapi], [5.3], [perry.werneck@gmail.com])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -99,7 +99,7 @@ case "$host" in
 		app_cv_osname="windows"
 
 		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0600"
-		LDFLAGS="$LDFLAGS -shared -Wl,--output-def,\$(@D)/\$(LIBNAME).def,--out-implib,\$(@D)/\$(LIBNAME).dll.a"
+		LDFLAGS="$LDFLAGS -shared -static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic,--output-def,\$(@D)/\$(LIBNAME).def,--out-implib,\$(@D)/\$(LIBNAME).dll.a"
 		INSTALL_PACKAGES="windows-lib $INSTALL_PACKAGES"
 
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
@@ -219,18 +219,14 @@ AS_VAR_POPDEF([CACHEVAR])dnl
 AX_CHECK_COMPILE_FLAG([-std=gnu++11], [CFLAGS="$CFLAGS -std=gnu++11"])
 
 dnl ---------------------------------------------------------------------------
-dnl Check for libintl
+dnl Check for tools
 dnl ---------------------------------------------------------------------------
-
-INTL_LIBS=""
 
 AC_PATH_TOOL([XGETTEXT], [xgettext], [no])
 AC_PATH_TOOL([MSGCAT], [msgcat], [no])
 AC_PATH_TOOL([MSGINIT], [msginit], [no])
 AC_PATH_TOOL([MSGMERGE], [msgmerge], [no])
 AC_PATH_TOOL([MSGFMT], [msgfmt], [no])
-
-AC_SUBST(INTL_LIBS)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for IPC3270
@@ -258,7 +254,7 @@ if test "$app_cv_static_ipc3270" == "auto"; then
 fi
 
 if test "$app_cv_static_ipc3270" == "yes"; then
-	PKG_CHECK_MODULES( [IPC3270], [ipc3270-static], AC_DEFINE(USING_STATIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
+	PKG_CHECK_MODULES( [IPC3270], [ipc3270-static], AC_DEFINE(USING_STATIC_IPC3270), AC_MSG_ERROR([IPC3270 static not present.]))
 else
 	PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(USING_DYNAMIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
 fi
@@ -270,6 +266,23 @@ AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product 
 AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product)
 AC_SUBST(PRODUCT_NAME,$app_cv_product)
 
+dnl ---------------------------------------------------------------------------
+dnl Check for LIBINTL
+dnl ---------------------------------------------------------------------------
+
+dnl AC_CHECK_HEADER(libintl.h, [
+dnl 
+dnl 	AC_DEFINE(HAVE_LIBINTL, 1)
+dnl 
+dnl	case "$host" in
+dnl	*-mingw32|*-pc-msys)
+dnl		LIBS="$LIBS -lintl"
+dnl		;;
+dnl
+dnl	*)
+dnl	esac
+dnl 
+dnl ])
 
 dnl ---------------------------------------------------------------------------
 dnl Check for pic
@@ -283,7 +296,7 @@ AC_ARG_ENABLE([pic],
 
 	case "$host_cpu" in
 	x86_64)
-		app_cv_pic="yes"
+		app_cv_pic="yes"mingw32-libipc3270-5_2
 		;;
 
 	aarch64)
@@ -306,6 +319,7 @@ dnl Configure which files to generate.
 dnl ---------------------------------------------------------------------------
 
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(locale/Makefile)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.

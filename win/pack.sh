@@ -1,6 +1,7 @@
 #!/bin/bash
 PROJECT_DIR=$(readlink -f $(dirname $(dirname $(readlink -f $0))))
 
+TARGET_ARCHS="x86_64 x86_32"
 PUBLISH=0
 CLEAR_OLD=0
 
@@ -12,10 +13,16 @@ pack() {
 
 	BUILDDIR=$(mktemp -d)
 
+	if [ "${1}" == "x86_32" ]; then
+		ARCH="i686"
+	else
+		ARCH=${1}
+	fi
+
 	./configure \
 		--cache=.${1}.cache \
-		--host=${1}-w64-mingw32 \
-		--prefix=/usr/${1}-w64-mingw32/sys-root/mingw \
+		--host=${ARCH}-w64-mingw32 \
+		--prefix=/usr/${ARCH}-w64-mingw32/sys-root/mingw \
                 --bindir=${BUILDDIR} \
                 --libdir=${BUILDDIR} \
                 --localedir=${BUILDDIR} \
@@ -23,8 +30,8 @@ pack() {
                 --sysconfdir=${BUILDDIR} \
                 --datadir=${BUILDDIR} \
                 --datarootdir=${BUILDDIR} \
-		--with-application-datadir=${BUILDDIR}
-
+		--with-application-datadir=${BUILDDIR} \
+		--with-static-ipc3270
 
 	if [ "$?" != "0" ]; then
 		exit -1
@@ -56,22 +63,22 @@ pack() {
 		exit -1
 	fi
 
-	PRODUCT_NAME=$(${1}-w64-mingw32-pkg-config --variable=product_name lib3270)
+	PRODUCT_NAME=$(${ARCH}-w64-mingw32-pkg-config --variable=product_name lib3270)
 
 	if [ ! -z ${PRODUCT_NAME} ]; then
 
-		if [ -d ~/public_html/win/${PRODUCT_NAME}/${2} ]; then
+		if [ -d ~/public_html/win/${PRODUCT_NAME}/${1} ]; then
 
 			if [ "${CLEAR_OLD}" == "1" ]; then
-				rm -fr ~/public_html/win/${PRODUCT_NAME}/${2}/hllapi-*.exe
+				rm -fr ~/public_html/win/${PRODUCT_NAME}/${1}/hllapi-*.exe
 			fi
 
-			cp -v *.exe ~/public_html/win/${PRODUCT_NAME}/${2}
+			cp -v *.exe ~/public_html/win/${PRODUCT_NAME}/${1}
 
 		fi
 
 		if [ "${PUBLISH}" == "1" ] && [ ! -z ${WIN_PACKAGE_SERVER} ]; then
-			echo scp *.exe ${WIN_PACKAGE_SERVER}/${PRODUCT_NAME}/${2}
+			echo scp *.exe ${WIN_PACKAGE_SERVER}/${PRODUCT_NAME}/${1}
 			if [ "$?" != "0" ]; then
 				exit -1
 			fi
@@ -115,6 +122,19 @@ do
 		CLEAR)
 			CLEAR_OLD=1
 			;;
+
+		TARGET-ARCHS)
+			TARGET_ARCHS=${value}
+			;;
+
+		32)
+			TARGET_ARCHS="x86_32"
+			;;
+
+		64)
+			TARGET_ARCHS="x86_64"
+			;;
+
 		HELP)
 			echo "${0} nome_da_matriz"
 			echo ""
@@ -148,7 +168,10 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-pack i686 x86_32
-pack x86_64 x86_64
+for ARCH in ${TARGET_ARCHS}
+do
+	pack ${ARCH}
+
+done
 
 

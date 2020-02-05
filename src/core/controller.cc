@@ -41,6 +41,22 @@
  {
  	trace("%s(%s)",__FUNCTION__,id);
 
+#ifdef HAVE_LIBINTL
+	{
+		static bool initialized = false;
+
+		if(!initialized) {
+			initialized = true;
+
+			std::string localedir = TN3270::getInstallLocation();
+			localedir += "\\locale";
+
+			bindtextdomain(PACKAGE_NAME, localedir.c_str());
+		}
+
+	}
+#endif // HAVE_LIBINTL
+
 	try
 	{
 		if(hllapi_host)

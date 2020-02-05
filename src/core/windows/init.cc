@@ -47,12 +47,19 @@
  #include <stdexcept>
  #include <lib3270.h>
 
+#ifdef HAVE_LIBINTL
+ #include <libintl.h>
+#endif // HAVE_LIBINTL
+
  #ifdef USING_STATIC_IPC3270
 
  extern "C" {
 
 	extern __declspec (dllexport) PfnDliHook __pfnDliNotifyHook2;
 	extern __declspec (dllexport) PfnDliHook __pfnDliFailureHook2;
+
+	extern __declspec (dllexport) HRESULT DllRegisterServer();
+	extern __declspec (dllexport) HRESULT DllInstall(BOOL, PCWSTR);
 
 	FARPROC WINAPI hllapi_delay_load_hook(unsigned reason, DelayLoadInfo * info);
 
@@ -70,7 +77,16 @@
  static HANDLE hModule = 0;
  static HANDLE hEventLog = 0;
 
+ HRESULT DllRegisterServer() {
+ 	return S_OK;
+ }
+
+ HRESULT DllInstall(BOOL bInstall, PCWSTR pszCmdLine) {
+ 	return S_OK;
+ }
+
  BOOL WINAPI DllMain(HANDLE hInstance, DWORD dwcallpurpose, LPVOID GNUC_UNUSED(lpvResvd)) {
+
     switch(dwcallpurpose) {
     case DLL_PROCESS_ATTACH:
         hModule = hInstance;
