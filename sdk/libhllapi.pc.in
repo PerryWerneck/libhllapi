@@ -1,0 +1,16 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+version_major=@PACKAGE_MAJOR_VERSION@
+version_minor=@PACKAGE_MINOR_VERSION@
+
+Name: @PACKAGE_NAME@
+Description: @PACKAGE_DESCRIPTION@
+Version: @PACKAGE_VERSION@
+Requires: libipc3270 lib3270
+Libs: -lhllapi
+Libs.private: @LIBS@ @INTL_LIBS@ @IPC3270_LIBS@
+Cflags:
+

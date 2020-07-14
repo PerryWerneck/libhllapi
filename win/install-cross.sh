@@ -54,8 +54,10 @@ do
 		case $parameter in
 
 		ar)
-			zypper ar --refresh http://download.opensuse.org/repositories/windows:/mingw:/win32/openSUSE_42.3/ mingw32
-			zypper ar --refresh http://download.opensuse.org/repositories/windows:/mingw:/win64/openSUSE_42.3/ mingw64
+			sudo zypper ar obs://windows:mingw:win32 mingw32
+			sudo zypper ar obs://windows:mingw:win64 mingw64
+			sudo zypper ar obs://home:PerryWerneck:pw3270 pw3270
+			sudo zypper ref
 			;;
 
 		32)

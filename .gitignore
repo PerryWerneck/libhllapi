@@ -24,5 +24,5 @@ doxyfile
 doxygen/html
 doxygen/rtf
 *~
-
+*.pc
 
