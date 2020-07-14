@@ -103,3 +103,19 @@ static DWORD set(std::function<void(TN3270::Host &)> worker) noexcept {
 	return HLLAPI_STATUS_SYSTEM_ERROR;
  }
 
+ HLLAPI_API_CALL hllapi_set_timeout(WORD seconds) {
+
+  	try {
+
+		getSession().setTimeout((time_t) seconds);
+		return HLLAPI_STATUS_SUCCESS;
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }

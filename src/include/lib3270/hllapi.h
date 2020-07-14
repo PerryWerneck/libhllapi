@@ -137,7 +137,7 @@
 
 	#else
 
-		#include <cstdint>
+		#include <stdint.h>
 
 		// From wtypesbase.h
 		typedef uint8_t BYTE;
@@ -324,6 +324,7 @@
 
 	HLLAPI_API_CALL hllapi_wait_for_ready(WORD seconds);
 	HLLAPI_API_CALL hllapi_wait_for_change(WORD seconds);
+	HLLAPI_API_CALL hllapi_wait_for_text_at(WORD row, WORD col, LPSTR text);
 	HLLAPI_API_CALL hllapi_wait(WORD seconds);
 	HLLAPI_API_CALL hllapi_pfkey(WORD key);
 	HLLAPI_API_CALL hllapi_pakey(WORD key);
@@ -346,6 +347,7 @@
 	HLLAPI_API_CSTR hllapi_get_last_error();
 
 	HLLAPI_API_CALL hllapi_set_unlock_delay(WORD ms);
+	HLLAPI_API_CALL hllapi_set_timeout(WORD seconds);
 
 	HLLAPI_API_CALL hllapi_set_cursor_address(WORD pos);
 	HLLAPI_API_CALL hllapi_set_cursor_position(WORD row, WORD col);

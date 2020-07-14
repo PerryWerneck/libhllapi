@@ -88,6 +88,8 @@
 
  HLLAPI_API_CALL hllapi_get_state(void) {
 
+	debug("",__FUNCTION__);
+
  	try {
 
 		switch(hllapi_get_message_id()) {
@@ -144,6 +146,7 @@
 
  HLLAPI_API_CALL hllapi_disconnect(void) {
 
+	trace("%s",__FUNCTION__);
  	try {
 
 		getSession().disconnect();
@@ -222,12 +225,7 @@
 
  	try {
 
-		TN3270::Host &host = getSession();
-
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
-
-		host.wait(seconds);
+		getSession().wait(seconds);
 
 		return hllapi_get_state();
 
@@ -246,6 +244,24 @@
  	try {
 
 		return getSession().compare((unsigned int) row, (unsigned int) col, text);
+
+	} catch(std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }
+
+ HLLAPI_API_CALL hllapi_wait_for_text_at(WORD row, WORD col, LPSTR text) {
+
+ 	try {
+
+		getSession().wait((unsigned short) row, (unsigned short) col, (const char *) text);
+
+		return HLLAPI_STATUS_SUCCESS;
 
 	} catch(std::exception &e) {
 

@@ -32,7 +32,6 @@
 /*--[ Globals ]--------------------------------------------------------------------------------------*/
 
  static TN3270::Host	* hllapi_host		= nullptr;
- static time_t			  hllapi_timeout	= 120;
  std::string		  	  hllapi_lasterror	= "";
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
@@ -69,7 +68,7 @@
 		hllapi_host = new TN3270::Host(*id ? id : nullptr, "UTF-8");
 #endif // _WIN32
 
-		hllapi_host->setTimeout(hllapi_timeout);
+		hllapi_host->setTimeout(120);
 
 	}
 	catch(std::exception &e)
@@ -78,6 +77,7 @@
 		return HLLAPI_STATUS_SYSTEM_ERROR;
 	}
 
+	debug("hllapi_host=%p",hllapi_host);
  	return HLLAPI_STATUS_SUCCESS;
 
  }
@@ -110,6 +110,7 @@
 		throw runtime_error( _("Not initialized") );
  	}
 
+ 	trace("%s()=%p",__FUNCTION__,hllapi_host);
  	return *hllapi_host;
 
  }

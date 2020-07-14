@@ -9,7 +9,7 @@ version_minor=@PACKAGE_MINOR_VERSION@
 Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@
 Version: @PACKAGE_VERSION@
-Requires: libipc3270 lib3270
+Requires: ipc3270 lib3270
 Libs: -lhllapi
 Libs.private: @LIBS@ @INTL_LIBS@ @IPC3270_LIBS@
 Cflags:

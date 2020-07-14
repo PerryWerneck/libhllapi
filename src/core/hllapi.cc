@@ -453,6 +453,11 @@ HLLAPI_API_CALL hllapi_set_session_parameter(LPSTR param, WORD len, WORD value)
 		// UNLOCKDELAY
 		hllapi_set_unlock_delay(value);
 
+	} else if(!strncasecmp(param,"TIMEOUT",len)) {
+
+		// UNLOCKDELAY
+		hllapi_set_timeout(value);
+
 	} else {
 
 		return HLLAPI_STATUS_BAD_PARAMETER;
