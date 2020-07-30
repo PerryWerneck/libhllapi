@@ -204,11 +204,11 @@
 
  }
 
- HLLAPI_API_CALL hllapi_set_charset(LPSTR text) {
+ HLLAPI_API_CALL hllapi_set_charset(LPSTR charset) {
 
    	try {
 
-		getSession().setCharSet((const char *) text);
+		getSession().setCharSet((const char *) charset);
 		return HLLAPI_STATUS_SUCCESS;
 
 	} catch(std::exception &e) {

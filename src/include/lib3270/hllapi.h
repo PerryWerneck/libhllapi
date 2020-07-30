@@ -342,7 +342,14 @@
 	HLLAPI_API_CALL hllapi_print(void);
 
 	HLLAPI_API_CALL hllapi_get_datadir(LPSTR datadir);
-	HLLAPI_API_CALL hllapi_set_charset(LPSTR datadir);
+
+	/**
+	 * @brief Set local charset.
+	 *
+	 * @param charset	The local charset.
+	 *
+	 */
+	HLLAPI_API_CALL hllapi_set_charset(LPSTR charset);
 
 	HLLAPI_API_CSTR hllapi_get_last_error();
 
