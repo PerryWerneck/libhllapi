@@ -256,8 +256,10 @@ fi
 if test "$app_cv_static_ipc3270" == "yes"; then
 	PKG_CHECK_MODULES( [IPC3270], [ipc3270-static], AC_DEFINE(USING_STATIC_IPC3270), AC_MSG_ERROR([IPC3270 static not present.]))
 	AC_MSG_NOTICE([Not using libintl to avoid the dependency.])
+	app_cv_pkgconfig_requires="ipc3270-static"
 else
 	PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(USING_DYNAMIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
+	app_cv_pkgconfig_requires="ipc3270"
 
 	# Use libintl only if using dynamic ipc3270 to avoid an extra DLL dependency.
 	AC_CHECK_HEADER(libintl.h, [
@@ -286,6 +288,7 @@ AC_SUBST(IPC3270_CFLAGS)
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product=`pkg-config --variable=product_name lib3270` ])
 AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product)
 AC_SUBST(PRODUCT_NAME,$app_cv_product)
+AC_SUBST(PKGCONFIG_REQUIRES,$app_cv_pkgconfig_requires)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for pic

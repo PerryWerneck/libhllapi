@@ -232,6 +232,12 @@ install-dev:
 		src/include/lib3270/*.h \
 		$(DESTDIR)$(includedir)/lib3270
 
+	# Install PKG-CONFIG files
+	@$(MKDIR) $(DESTDIR)$(libdir)/pkgconfig
+	@$(INSTALL_DATA) \
+		sdk/hllapi.pc \
+		$(DESTDIR)$(libdir)/pkgconfig/hllapi.pc
+
 install-windows-lib: \
 	$(BINRLS)/$(SONAME)
 
