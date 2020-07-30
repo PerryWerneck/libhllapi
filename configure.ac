@@ -99,7 +99,7 @@ case "$host" in
 		app_cv_osname="windows"
 
 		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0600"
-		LDFLAGS="$LDFLAGS -shared -static-libgcc -static-libstdc++ -Wl,--add-stdcall-alias,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic,--output-def,\$(@D)/\$(LIBNAME).def,--out-implib,\$(@D)/\$(LIBNAME).dll.a"
+		LDFLAGS="$LDFLAGS -shared -static-libgcc -static-libstdc++ -Wl,--add-stdcall-alias,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic,--output-def,\$(@D)/\$(LIBNAME).def"
 		INSTALL_PACKAGES="windows-lib $INSTALL_PACKAGES"
 
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
