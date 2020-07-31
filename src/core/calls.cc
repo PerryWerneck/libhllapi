@@ -88,7 +88,7 @@
 
  HLLAPI_API_CALL hllapi_get_state(void) {
 
-	debug("",__FUNCTION__);
+//	debug("",__FUNCTION__);
 
  	try {
 

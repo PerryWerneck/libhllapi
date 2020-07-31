@@ -31,6 +31,7 @@
  #include <getopt.h>
  #include <cstring>
  #include <cstdio>
+ #include <ctime>
  #include <lib3270/hllapi.h>
 
  #define SCREEN_LENGTH 2000
@@ -200,6 +201,45 @@
 
 			cout << "Searching for \"" << (cmdline.c_str()+5) << "\"" << endl;
 			rc = hllapi_find_text((LPSTR) (cmdline.c_str()+5));
+
+		} else if(strcasecmp(cmdline.c_str(),"perftest") == 0) {
+
+			if(!hllapi_is_connected()) {
+
+				cout << "Connect to host first" << endl;
+
+			} else {
+
+				// Test "hllapi_wait_for_ready
+				cout << "Testing hllapi_wait_for_ready" << endl;
+				{
+					time_t start_time = time(0);
+					for(size_t ix = 0; ix < 100; ix++) {
+
+						hllapi_wait_for_ready(10);
+
+					}
+					cout << "Time for 100 iterations of hllapi_wait_for_ready was " << (time(0) - start_time) << " seconds" << endl;
+
+				}
+
+				// Teste hllapi_get_string_at
+				{
+					cout << "Testing hllapi_get_screen_at" << endl;
+					char buffer[81];
+					time_t start_time = time(0);
+					for(size_t ix = 0; ix < 100; ix++) {
+
+						memset(buffer,' ',sizeof(buffer));
+						buffer[80] = 0;
+						hllapi_get_screen_at(14,1,buffer);
+
+					}
+					cout << "Time for 100 iterations of hllapi_get_screen_at was " << (time(0) - start_time) << " seconds" << endl;
+
+				}
+
+			}
 
 		} else {
 
