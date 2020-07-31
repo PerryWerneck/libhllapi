@@ -50,10 +50,12 @@
  {
  	try {
 
- 		getSession().connect((const char *) uri);
+		TN3270::Host &host = getSession();
+
+ 		host.connect((const char *) uri);
 
  		if(wait)
-			return hllapi_wait_for_ready(wait);
+			host.wait(TN3270::CONNECTED_TN3270E);
 
 	} catch(const std::exception &e) {
 
@@ -172,6 +174,26 @@
 			host.waitForReady((unsigned int) seconds);
 
 		return hllapi_get_state();
+
+	} catch(const std::exception &e) {
+
+		hllapi_lasterror = e.what();
+
+	}
+
+	return HLLAPI_STATUS_SYSTEM_ERROR;
+
+ }
+
+ HLLAPI_API_CALL hllapi_wait_for_cstate(WORD seconds, WORD cstate) {
+
+ 	try {
+
+		TN3270::Host &host = getSession();
+
+		host.wait((TN3270::ConnectionState) cstate, (unsigned int) seconds);
+
+		return 0;
 
 	} catch(const std::exception &e) {
 
