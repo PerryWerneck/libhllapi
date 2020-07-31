@@ -35,14 +35,11 @@ static DWORD set(std::function<void(TN3270::Host &)> worker) noexcept {
 
 	try {
 
-		TN3270::Host &host = getSession();
+		worker(getSession());
 
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
+	} catch(const std::system_error &e) {
 
-		host.waitForReady();
-
-		worker(host);
+		return hllapi_translate_error(e);
 
 	} catch(const std::exception &e) {
 

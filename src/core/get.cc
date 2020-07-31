@@ -35,8 +35,7 @@
 
 	try {
 
-		TN3270::Host &host = getSession();
-		worker(host);
+		worker(getSession());
 
 	} catch(const std::system_error &e) {
 
@@ -96,8 +95,6 @@
 		strncpy((char *) buffer, contents.c_str(), std::min((size_t) len,contents.size()));
 
 	});
-
-
  }
 
  HLLAPI_API_CALL hllapi_get_lu_name(LPSTR buffer, WORD len) {
