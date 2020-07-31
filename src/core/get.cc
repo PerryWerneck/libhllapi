@@ -36,8 +36,6 @@
 	try {
 
 		TN3270::Host &host = getSession();
-
-		host.waitForReady();
 		worker(host);
 
 	} catch(const std::system_error &e) {
