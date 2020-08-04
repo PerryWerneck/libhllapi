@@ -36,12 +36,7 @@
 
  	try {
 
-		TN3270::Host &host = getSession();
-
-		if(!host.isConnected())
-			return HLLAPI_STATUS_DISCONNECTED;
-
-		worker(host);
+		worker(getSession());
 
 		return HLLAPI_STATUS_SUCCESS;
 

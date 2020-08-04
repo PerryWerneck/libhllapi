@@ -38,74 +38,9 @@
 
  static DWORD set(std::function<void(TN3270::Host &)> worker) noexcept {
 
-	LIB3270_KEYBOARD_LOCK_STATE kLock = LIB3270_KL_UNLOCKED;
-
 	try {
 
-		TN3270::Host &host = getSession();
-
-		switch(host.waitForKeyboardUnlock()) {
-		case LIB3270_KL_UNLOCKED:
-			worker(host);
-			break;
-
-		case LIB3270_KL_NOT_CONNECTED:
-			hllapi_lasterror = _("Not connected to host");
-			return HLLAPI_STATUS_DISCONNECTED;
-
-		case LIB3270_KL_OERR_MASK:
-			hllapi_lasterror = _("LIB3270_KL_OERR_MASK");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_OERR_PROTECTED:
-			hllapi_lasterror = _("LIB3270_KL_OERR_PROTECTED");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_OERR_NUMERIC:
-			hllapi_lasterror = _("LIB3270_KL_OERR_NUMERIC");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_OERR_OVERFLOW:
-			hllapi_lasterror = _("LIB3270_KL_OERR_OVERFLOW");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_OERR_DBCS:
-			hllapi_lasterror = _("LIB3270_KL_OERR_DBCS");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_AWAITING_FIRST:
-			hllapi_lasterror = _("LIB3270_KL_AWAITING_FIRST");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_OIA_TWAIT:
-			hllapi_lasterror = _("LIB3270_KL_OIA_TWAIT");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_OIA_LOCKED:
-			hllapi_lasterror = _("LIB3270_KL_OIA_LOCKED");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_DEFERRED_UNLOCK:
-			hllapi_lasterror = _("LIB3270_KL_DEFERRED_UNLOCK");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_ENTER_INHIBIT:
-			hllapi_lasterror = _("LIB3270_KL_ENTER_INHIBIT");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_SCROLLED:
-			hllapi_lasterror = _("LIB3270_KL_SCROLLED");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		case LIB3270_KL_OIA_MINUS:
-			hllapi_lasterror = _("LIB3270_KL_OIA_MINUS");
-			return HLLAPI_STATUS_KEYBOARD_LOCKED;
-
-		default:
-			hllapi_lasterror = _("Unexpected error waiting for keyboard unlock");
-			return HLLAPI_STATUS_SYSTEM_ERROR;
-		}
-
+		worker(getSession());
 		return HLLAPI_STATUS_SUCCESS;
 
 	} catch(const std::system_error &e) {
@@ -122,11 +57,10 @@
 
 		// Unexpected error getting session or lock state
 		hllapi_lasterror = _( "Unexpected error" );
-		return HLLAPI_STATUS_SYSTEM_ERROR;
 
 	}
 
-	return hllapi_translate_error(kLock);
+	return HLLAPI_STATUS_SYSTEM_ERROR;
 
  }
 

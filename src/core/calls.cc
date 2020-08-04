@@ -37,6 +37,10 @@
 
  		return atoi(getSession().getRevision().c_str());
 
+	} catch(const std::system_error &e) {
+
+		hllapi_translate_error(e);
+
 	} catch(const std::exception &e) {
 
 		hllapi_lasterror = e.what();
@@ -56,6 +60,10 @@
 
  		if(wait)
 			host.wait(TN3270::CONNECTED_TN3270E);
+
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(const std::exception &e) {
 
@@ -78,6 +86,10 @@
  	try {
 
  		return getSession().isConnected();
+
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(std::exception &e) {
 
@@ -120,6 +132,10 @@
 			return HLLAPI_STATUS_WAITING;			// time-out while still busy (in XCLOCK or XSYSTEM in X) for the 3270 terminal emulation.
 		}
 
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
+
 	} catch(std::exception &e) {
 
 		hllapi_lasterror = e.what();
@@ -135,6 +151,10 @@
  	try {
 
 		return (DWORD) getSession().getProgramMessage();
+
+	} catch(const std::system_error &e) {
+
+		hllapi_translate_error(e);
 
 	} catch(std::exception &e) {
 
@@ -153,6 +173,10 @@
 
 		getSession().disconnect();
 
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
+
 	} catch(std::exception &e) {
 
 		hllapi_lasterror = e.what();
@@ -168,12 +192,12 @@
 
  	try {
 
-		TN3270::Host &host = getSession();
+		getSession().waitForReady((unsigned int) seconds);
+		return HLLAPI_STATUS_SUCCESS;
 
-		if(host.isConnected())
-			host.waitForReady((unsigned int) seconds);
+	} catch(const std::system_error &e) {
 
-		return hllapi_get_state();
+		return hllapi_translate_error(e);
 
 	} catch(const std::exception &e) {
 
@@ -193,7 +217,11 @@
 
 		host.wait((TN3270::ConnectionState) cstate, (unsigned int) seconds);
 
-		return 0;
+		return HLLAPI_STATUS_SUCCESS;
+
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(const std::exception &e) {
 
@@ -209,12 +237,12 @@
 
  	try {
 
-		TN3270::Host &host = getSession();
+		getSession().waitForChange((unsigned int) seconds);
+		return HLLAPI_STATUS_SUCCESS;
 
-		if(host.isConnected())
-			host.waitForChange((unsigned int) seconds);
+	} catch(const std::system_error &e) {
 
-		return hllapi_get_state();
+		return hllapi_translate_error(e);
 
 	} catch(std::exception &e) {
 
@@ -233,6 +261,10 @@
 		getSession().setCharSet((const char *) charset);
 		return HLLAPI_STATUS_SUCCESS;
 
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
+
 	} catch(std::exception &e) {
 
 		hllapi_lasterror = e.what();
@@ -248,8 +280,11 @@
  	try {
 
 		getSession().wait(seconds);
+		return HLLAPI_STATUS_SUCCESS;
 
-		return hllapi_get_state();
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(std::exception &e) {
 
@@ -266,6 +301,10 @@
  	try {
 
 		return getSession().compare((unsigned int) row, (unsigned int) col, text);
+
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(std::exception &e) {
 
@@ -285,6 +324,10 @@
 
 		return HLLAPI_STATUS_SUCCESS;
 
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
+
 	} catch(std::exception &e) {
 
 		hllapi_lasterror = e.what();
@@ -300,6 +343,10 @@
  	try {
 
 		return getSession().compare((int) addr, text);
+
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(std::exception &e) {
 
@@ -323,6 +370,10 @@
 				return pos;
 
  		}
+
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(std::exception &e) {
 

@@ -35,16 +35,13 @@
 
  	try {
 
-		TN3270::Host &host = getSession();
-
-		if(!host.isConnected()) {
-			hllapi_lasterror = _( "Disconnected from host" );
-			return HLLAPI_STATUS_DISCONNECTED;
-		}
-
-		worker(host);
+		worker(getSession());
 
 		return HLLAPI_STATUS_SUCCESS;
+
+	} catch(const std::system_error &e) {
+
+		return hllapi_translate_error(e);
 
 	} catch(const std::exception &e) {
 
