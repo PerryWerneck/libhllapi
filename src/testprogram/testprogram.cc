@@ -83,6 +83,8 @@
 
 	cout << "TN3270 library revision is " << ((int) hllapi_get_revision()) << endl << ">";
 
+	hllapi_set_timeout(10);
+
 	cout.flush();
 
  	string cmdline;
