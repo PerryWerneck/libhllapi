@@ -20,7 +20,7 @@
 
 Summary:		HLLAPI client library for lib3270/pw3270
 Name:			libhllapi
-Version:		5.2
+Version:		5.3
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
@@ -60,7 +60,7 @@ See more details at https://softwarepublico.gov.br/social/pw3270/
 #---[ Library ]-------------------------------------------------------------------------------------------------------
 
 %define MAJOR_VERSION %(echo %{version} | cut -d. -f1)
-%define MINOR_VERSION %(echo %{version} | cut -d. -f2)
+%define MINOR_VERSION %(echo %{version} | cut -d. -f2 | cut -d+ -f1)
 %define _libvrs %{MAJOR_VERSION}_%{MINOR_VERSION}
 
 %package -n %{name}%{_libvrs}
