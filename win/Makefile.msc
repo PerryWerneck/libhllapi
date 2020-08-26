@@ -60,17 +60,32 @@ testprogram.exe: \
 	@link \
 		/nologo \
 		/OUT:"$@" \
+		/LIBPATH:"$(PW3270_SDK_PATH)\lib" \
 		src\testprogram\testprogram.obj
 
 hllapi.dll: \
-	$(OBJ_FILES) \
+	$(OBJ_FILES)
 	@echo Build dll file....
 	link \
 		/NOLOGO \
 		/DLL \
 		/OUT:"$@" \
+		/LIBPATH:"$(PW3270_SDK_PATH)\lib" \
 		$(OBJ_FILES) \
-		$(PW3270_SDK_PATH)\lib\ipc3270.lib
+		"ipc3270.lib \
+		Advapi32.lib
+
+install: \
+	$(OBJ_FILES)
+	@echo Building library...
+	@-mkdir "$(PW3270_SDK_PATH)\lib"
+	@lib \
+		/NOLOGO \
+		/OUT:"$(PW3270_SDK_PATH)\lib\hllapi.lib" \
+		$(OBJ_FILES)		
+
+	@-mkdir "$(PW3270_SDK_PATH)\include\lib3270"
+	@copy "src\include\lib3270\*.h" "$(PW3270_SDK_PATH)\include\lib3270"
 
 clean:
 	del \

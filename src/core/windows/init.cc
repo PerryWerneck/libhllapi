@@ -36,7 +36,11 @@
  *
  */
 
- #include <config.h>
+#ifndef _MSC_VER
+	#include <config.h>
+	#pragma comment(lib,"Advapi32.lib")
+#endif // !_MSC_VER
+
  #include <winsock2.h>
  #include <windows.h>
  #include "../private.h"

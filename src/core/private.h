@@ -31,7 +31,10 @@
 
 	#define PRIVATE_H_INCLUDED 1
 
+#ifndef _MSC_VER
 	#include <config.h>
+#endif // !_MSC_VER
+
 	#include <exception>
 	#include <stdexcept>
 	#include <string>

@@ -69,7 +69,7 @@
 		size_t length = strlen(buffer);
 		string contents = host.toString( (unsigned int) row, (unsigned int) col, (int) length);
 
-		strncpy((char *) buffer, contents.c_str(), std::min(length,contents.size()));
+		strncpy((char *) buffer, contents.c_str(), min(length,contents.size()));
 
 	});
 
@@ -92,7 +92,7 @@
 		string contents = host.toString((int) offset, (int) len);
 
 		memset(buffer,' ',len);
-		strncpy((char *) buffer, contents.c_str(), std::min((size_t) len,contents.size()));
+		strncpy((char *) buffer, contents.c_str(), min((size_t) len,contents.size()));
 
 	});
  }
@@ -113,7 +113,7 @@
 
 		string luname = host.getAssociatedLUName();
 		memset(buffer,' ',len);
-		strncpy((char *) buffer, luname.c_str(), std::min((size_t) len,luname.size()));
+		strncpy((char *) buffer, luname.c_str(), min((size_t) len,luname.size()));
 
 	});
 

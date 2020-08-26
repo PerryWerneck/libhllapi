@@ -28,11 +28,19 @@
  */
 
  #include <iostream>
- #include <getopt.h>
  #include <cstring>
  #include <cstdio>
+ #include <string>
  #include <ctime>
  #include <lib3270/hllapi.h>
+
+ #if defined(_MSC_VER)
+	#pragma comment(lib,"hllapi.lib")
+	#define strncasecmp _strnicmp
+	#define strcasecmp _stricmp
+ #else 
+ 	#include <getopt.h>
+ #endif 
 
  #define SCREEN_LENGTH 2000
 
@@ -46,6 +54,8 @@
 
  	const char *host	= "";
  	const char *session = ":a";
+
+ #if ! defined(_MSC_VER)
 
 	#pragma GCC diagnostic push
 	static struct option options[] =
@@ -75,6 +85,8 @@
 
 	}
 
+ #endif // ! defined(_MSC_VER)
+
  	int rc = hllapi_init((char *) session);
  	if(rc) {
 		cout << "hllapi_init returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
@@ -88,7 +100,7 @@
 	cout.flush();
 
  	string cmdline;
-	while(std::getline(std::cin, cmdline)) {
+	while(getline(cin, cmdline)) {
 
 		if(cmdline.empty())
 			break;

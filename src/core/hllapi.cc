@@ -27,6 +27,11 @@
  *
  */
 
+#if defined(_MSC_VER)
+	#define strncasecmp _strnicmp
+	#define strcasecmp _stricmp
+ #endif 
+
  #include "private.h"
  #include <lib3270/hllapi.h>
 
@@ -315,7 +320,7 @@ static int copy_ps(char *buffer, unsigned short *length, unsigned short GNUC_UNU
 
 		string contents = host.toString(0,-1,'\0');
 
-		size_t szBuffer = std::min(contents.size(), ((size_t) *length));
+		size_t szBuffer = min(contents.size(), ((size_t) *length));
 		*length = (unsigned short) szBuffer;
 
 		strncpy(buffer,contents.c_str(),szBuffer);
