@@ -56,7 +56,7 @@
  #include <stdexcept>
  #include <lib3270.h>
  #include <lib3270/hllapi.h>
- 
+
  #ifdef HAVE_LIBINTL
 	#include <libintl.h>
  #endif // HAVE_LIBINTL
@@ -75,7 +75,7 @@
 	extern HRESULT DllInstall(BOOL, PCWSTR);
 	extern HRESULT DllUnregisterServer();
 
- #else 
+ #else
 
 	extern __declspec (dllexport) HRESULT DllRegisterServer();
 	extern __declspec (dllexport) HRESULT DllInstall(BOOL, PCWSTR);
@@ -153,7 +153,7 @@
 			message
 	};
 
-	debug("Event: \"%s\"",msg);
+	debug("Event: \"%s\"",message);
 
 	ReportEvent(
 			hEventLog,

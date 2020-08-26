@@ -27,7 +27,13 @@
  *
  */
 
- #include "private.h"
+#include <algorithm>
+
+#if ! defined(_MSC_VER)
+	using std::min;
+#endif
+
+#include "private.h"
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 

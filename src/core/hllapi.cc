@@ -27,15 +27,20 @@
  *
  */
 
+#include <algorithm>
+
 #if defined(_MSC_VER)
 	#define strncasecmp _strnicmp
 	#define strcasecmp _stricmp
- #endif 
+#else
+	using std::min;
+#endif
 
- #include "private.h"
- #include <lib3270/hllapi.h>
+#include "private.h"
+#include <lib3270/hllapi.h>
 
- /*--[ Prototipes ]-----------------------------------------------------------------------------------*/
+
+/*--[ Prototipes ]-----------------------------------------------------------------------------------*/
 
  static int connect_ps(char *buffer, unsigned short *length, unsigned short *rc);
  static int disconnect_ps(char *buffer, unsigned short *length, unsigned short *rc);
