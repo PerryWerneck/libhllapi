@@ -50,6 +50,8 @@
 
  int main(int argc, char **argv) {
 
+	 printf("******\n");
+
 	char buffer[SCREEN_LENGTH+1];
 
  	const char *host	= "";
@@ -269,7 +271,13 @@
 		cout.flush();
 	}
 
- 	/*
+ 	rc = hllapi_deinit();
+	cout << "hllapi_deinit exits with rc=" << rc << endl;
+
+	return 0;
+ }
+
+	/*
 
 
 	rc = hllapi_wait_for_ready(10);
@@ -314,9 +322,4 @@
 
 	*/
 
-	rc = hllapi_deinit();
-	cout << "hllapi_deinit exits with rc=" << rc << endl;
-
-	return 0;
- }
 

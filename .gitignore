@@ -25,4 +25,9 @@ doxygen/html
 doxygen/rtf
 *~
 *.pc
+*.obj
+*.dll
+*.exe
+*.exp
+*.lib
 

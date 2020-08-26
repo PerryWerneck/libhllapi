@@ -36,13 +36,18 @@
  *
  */
 
-#ifndef _MSC_VER
-	#include <config.h>
-	#pragma comment(lib,"Advapi32.lib")
-#endif // !_MSC_VER
-
  #include <winsock2.h>
  #include <windows.h>
+
+ #ifdef _MSC_VER
+	#pragma comment(lib,"Advapi32.lib")
+	#pragma comment(lib,"ipc3270.lib")
+	#pragma comment(lib,"Delayimp.lib")
+	#include <Delayimp.h>
+ #else
+	#include <config.h>
+ #endif // !_MSC_VER
+
  #include "../private.h"
  #include <lmcons.h>
  #include <delayimp.h>
@@ -50,38 +55,61 @@
  #include <string>
  #include <stdexcept>
  #include <lib3270.h>
+ #include <lib3270/hllapi.h>
+ 
+ #ifdef HAVE_LIBINTL
+	#include <libintl.h>
+ #endif // HAVE_LIBINTL
 
-#ifdef HAVE_LIBINTL
- #include <libintl.h>
-#endif // HAVE_LIBINTL
-
- #ifdef USING_STATIC_IPC3270
+ using namespace std;
 
  extern "C" {
 
-	extern __declspec (dllexport) PfnDliHook __pfnDliNotifyHook2;
-	extern __declspec (dllexport) PfnDliHook __pfnDliFailureHook2;
+ #ifdef _MSC_VER
+
+	#pragma comment(linker, "/EXPORT:DllRegisterServer=DllRegisterServer,PRIVATE")
+	#pragma comment(linker, "/EXPORT:DllUnregisterServer=DllUnregisterServer,PRIVATE")
+	#pragma comment(linker, "/EXPORT:DllInstall=DllInstall,PRIVATE")
+
+	extern HRESULT DllRegisterServer();
+	extern HRESULT DllInstall(BOOL, PCWSTR);
+	extern HRESULT DllUnregisterServer();
+
+ #else 
 
 	extern __declspec (dllexport) HRESULT DllRegisterServer();
 	extern __declspec (dllexport) HRESULT DllInstall(BOOL, PCWSTR);
+	extern __declspec (dllexport) HRESULT DllUnregisterServer();
+
+ #endif // MSC_VER
 
 	FARPROC WINAPI hllapi_delay_load_hook(unsigned reason, DelayLoadInfo * info);
 
  }
 
- using std::string;
+#ifdef USING_STATIC_IPC3270
+
+	// https://docs.microsoft.com/en-us/cpp/build/reference/loading-all-imports-for-a-delay-loaded-dll?view=vs-2019
+	#ifdef _MSC_VER
+		const PfnDliHook __pfnDliNotifyHook2 = hllapi_delay_load_hook;
+		const PfnDliHook __pfnDliFailureHook2 = hllapi_delay_load_hook;
+	#else
+		PfnDliHook __pfnDliNotifyHook2 = hllapi_delay_load_hook;
+		PfnDliHook __pfnDliFailureHook2 = hllapi_delay_load_hook;
+	#endif // _MSC_VER
+
+#endif // USING_STATIC_IPC3270
 
 /*---[ Implement ]----------------------------------------------------------------------------------*/
-
- // https://docs.microsoft.com/en-us/cpp/build/reference/loading-all-imports-for-a-delay-loaded-dll?view=vs-2019
-
- PfnDliHook __pfnDliNotifyHook2 = hllapi_delay_load_hook;
- PfnDliHook __pfnDliFailureHook2 = hllapi_delay_load_hook;
 
  static HANDLE hModule = 0;
  static HANDLE hEventLog = 0;
 
  HRESULT DllRegisterServer() {
+ 	return S_OK;
+ }
+
+ HRESULT DllUnregisterServer() {
  	return S_OK;
  }
 
@@ -108,38 +136,43 @@
     return TRUE;
  }
 
- static void eventlog(const char *msg) {
+ HLLAPI_API_CALL hllapi_report_event(LPSTR message) {
 
-		char	username[UNLEN + 1];
-		DWORD	szName = sizeof(username);
+	char	username[UNLEN + 1];
+	DWORD	szName = sizeof(username);
 
-		memset(username,0,UNLEN + 1);
+	memset(username,0,UNLEN + 1);
 
-		if(!GetUserName(username, &szName)) {
-			username[0] = 0;
-		}
+	if(!GetUserName(username, &szName)) {
+		username[0] = 0;
+	}
 
-        const char *outMsg[] = {
-                username,
-                PACKAGE_NAME,
-                msg
-        };
+	const char *outMsg[] = {
+			username,
+			PACKAGE_NAME,
+			message
+	};
 
-        debug("Event: \"%s\"",msg);
+	debug("Event: \"%s\"",msg);
 
-        ReportEvent(
-                hEventLog,
-                EVENTLOG_ERROR_TYPE,
-                1,
-                0,
-                NULL,
-                3,
-                0,
-                outMsg,
-                NULL
-        );
+	ReportEvent(
+			hEventLog,
+			EVENTLOG_ERROR_TYPE,
+			1,
+			0,
+			NULL,
+			3,
+			0,
+			outMsg,
+			NULL
+	);
+
+	return HLLAPI_STATUS_SUCCESS;
 
  }
+
+
+#ifdef USING_STATIC_IPC3270
 
  static void dummyProc() {
 	throw std::runtime_error(_("Operation not supported"));
@@ -148,6 +181,8 @@
  FARPROC WINAPI hllapi_delay_load_hook(unsigned reason, DelayLoadInfo * info) {
 
 	static string savedpath;
+
+	printf("%s\n",__FUNCTION__);
 
 	// https://docs.microsoft.com/en-us/cpp/build/reference/structure-and-constant-definitions?view=vs-2019
 	switch (reason) {
@@ -197,15 +232,16 @@
 		{
 			string msg = "Can't load ";
 			msg += (const char *) info->szDll;
-			eventlog(msg.c_str());
+			hllapi_report_event((LPSTR) msg.c_str());
 		}
-		return (FARPROC) hModule;
+		break;
 
 	case dliFailGetProc:
 		{
+			// TODO: Check usage of RaiseException ?
 			string msg = "Can't find method on ";
 			msg += (const char *) info->szDll;
-			eventlog(msg.c_str());
+			hllapi_report_event((LPSTR) msg.c_str());
 		}
 		return (FARPROC) dummyProc;
 
@@ -217,5 +253,4 @@
 
  }
 
- #endif // USING_STATIC_IPC3270
-
+#endif // USING_STATIC_IPC3270

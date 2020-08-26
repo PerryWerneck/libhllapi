@@ -47,6 +47,7 @@ OBJ_FILES= \
 		/DPRODUCT_NAME=$(PRODUCT_NAME) \
 		/DLIB3270_NAME=$(LIB3270_NAME) \
 		/DNDEBUG=1 \
+		/DUSING_STATIC_IPC3270 \
 		/I".\src\include" \
 		/I"$(PW3270_SDK_PATH)\include" \
 		/EHsc \
@@ -60,6 +61,7 @@ testprogram.exe: \
 	@link \
 		/nologo \
 		/OUT:"$@" \
+		/LIBPATH:. \
 		/LIBPATH:"$(PW3270_SDK_PATH)\lib" \
 		src\testprogram\testprogram.obj
 
@@ -72,11 +74,11 @@ hllapi.dll: \
 		/OUT:"$@" \
 		/LIBPATH:"$(PW3270_SDK_PATH)\lib" \
 		$(OBJ_FILES) \
-		"ipc3270.lib \
-		Advapi32.lib
+		/DELAYLOAD:$(LIB3270_NAME).dll
+
 
 install: \
-	$(OBJ_FILES)
+	hllapi.dll
 	@echo Building library...
 	@-mkdir "$(PW3270_SDK_PATH)\lib"
 	@lib \
@@ -86,6 +88,7 @@ install: \
 
 	@-mkdir "$(PW3270_SDK_PATH)\include\lib3270"
 	@copy "src\include\lib3270\*.h" "$(PW3270_SDK_PATH)\include\lib3270"
+	@copy hllapi.dll "$(SystemRoot)\system32"
 
 clean:
 	del \

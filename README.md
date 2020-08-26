@@ -82,3 +82,26 @@ TODO
 	$ make install
 	```
 
+### Windows native with MSVC
+
+1. Install pw3270 with remote control and sdk modules
+
+2. Download and install Visual Studio Build Tools (https://visualstudio.microsoft.com/pt-br/downloads/)
+
+3. Download and install git for windows
+
+4. Build and install the "glue" library using the MSVC Native tools command prompt as administrator.
+
+	```shell
+	git clone https://github.com/PerryWerneck/libipc3270.git ./ipc3270
+	cd ipc3270
+	install.bat
+	```
+
+5. Build and install hllapi library using the MSVC Native tools command prompt as administrator.
+
+	```shell
+	git clone https://github.com/PerryWerneck/libhllapi.git ./hllapi
+	cd hllapi
+	install.bat
+	```

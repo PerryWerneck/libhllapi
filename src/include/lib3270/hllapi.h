@@ -360,6 +360,12 @@
 	HLLAPI_API_CALL hllapi_set_cursor_position(WORD row, WORD col);
 
 	/**
+	 * @brief Report event to system log
+	 * 
+	 */
+	HLLAPI_API_CALL hllapi_report_event(LPSTR message);
+
+	/**
 	 * @brief Get cursor address.
 	 *
 	 * @return Cursor address.
