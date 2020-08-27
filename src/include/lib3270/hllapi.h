@@ -351,7 +351,8 @@
 	 */
 	HLLAPI_API_CALL hllapi_set_charset(LPSTR charset);
 
-	HLLAPI_API_CSTR hllapi_get_last_error();
+	HLLAPI_API_CALL hllapi_get_last_error(LPSTR lpBuffer, WORD len);
+	HLLAPI_API_CSTR hllapi_get_last_error_as_cstring();
 
 	HLLAPI_API_CALL hllapi_set_unlock_delay(WORD ms);
 	HLLAPI_API_CALL hllapi_set_timeout(WORD seconds);
@@ -361,7 +362,7 @@
 
 	/**
 	 * @brief Report event to system log
-	 * 
+	 *
 	 */
 	HLLAPI_API_CALL hllapi_report_event(LPSTR message);
 

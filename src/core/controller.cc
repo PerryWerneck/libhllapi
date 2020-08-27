@@ -115,7 +115,17 @@
 
  }
 
- HLLAPI_API_CSTR hllapi_get_last_error() {
+HLLAPI_API_CALL hllapi_get_last_error(LPSTR lpBuffer, WORD len) {
+
+	strncpy(lpBuffer,hllapi_get_last_error_as_cstring(),len-1);
+	lpBuffer[len-1] = 0; // Just in case
+
+	return strlen(lpBuffer);
+}
+
+ HLLAPI_API_CSTR hllapi_get_last_error_as_cstring() {
+
  	return hllapi_lasterror.c_str();
+
  }
 

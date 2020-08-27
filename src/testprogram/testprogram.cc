@@ -38,9 +38,9 @@
 	#pragma comment(lib,"hllapi.lib")
 	#define strncasecmp _strnicmp
 	#define strcasecmp _stricmp
- #else 
+ #else
  	#include <getopt.h>
- #endif 
+ #endif
 
  #define SCREEN_LENGTH 2000
 
@@ -91,7 +91,7 @@
 
  	int rc = hllapi_init((char *) session);
  	if(rc) {
-		cout << "hllapi_init returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+		cout << "hllapi_init returns with rc=" << rc << " (" << hllapi_get_last_error_as_cstring() << ")" << endl;
 		return rc;
 	}
 
@@ -120,7 +120,7 @@
 		} else if(strcasecmp(cmdline.c_str(),"wait") == 0) {
 
 			rc = hllapi_wait_for_ready(10);
-			cout << "hllapi_wait_for_ready returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+			cout << "hllapi_wait_for_ready returns with rc=" << rc << " (" << hllapi_get_last_error_as_cstring() << ")" << endl;
 
 		} else if(strcasecmp(cmdline.c_str(),"disconnect") == 0) {
 
@@ -137,7 +137,7 @@
 		} else if(strcasecmp(cmdline.c_str(),"contents") == 0) {
 
 			rc = hllapi_get_screen(0,buffer,SCREEN_LENGTH);
-			cout << "hllapi_get_screen returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl
+			cout << "hllapi_get_screen returns with rc=" << rc << " (" << hllapi_get_last_error_as_cstring() << ")" << endl
 					<< buffer << endl << endl;
 
 		} else if(strncasecmp(cmdline.c_str(),"cursor",6) == 0) {
@@ -263,7 +263,7 @@
 		}
 
 		if(rc != HLLAPI_STATUS_SUCCESS) {
-			cout << "rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+			cout << "rc=" << rc << " (" << hllapi_get_last_error_as_cstring() << ")" << endl;
 			rc = HLLAPI_STATUS_SUCCESS;
 		}
 
@@ -282,7 +282,7 @@
 
 	rc = hllapi_wait_for_ready(10);
  	if(rc) {
-		cout << "hllapi_wait_for_ready returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+		cout << "hllapi_wait_for_ready returns with rc=" << rc << " (" << hllapi_get_last_error_as_cstring() << ")" << endl;
 		return rc;
 	}
 
@@ -294,7 +294,7 @@
 		buffer[SCREEN_LENGTH] = 0;
 
 		rc = hllapi_get_screen(0,buffer,SCREEN_LENGTH);
-		cout << "hllapi_get_screen returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+		cout << "hllapi_get_screen returns with rc=" << rc << " (" << hllapi_get_last_error_as_cstring() << ")" << endl;
 
 		if(rc == HLLAPI_STATUS_SUCCESS) {
 			cout << endl << buffer << endl;
@@ -314,11 +314,11 @@
 
 	rc = hllapi_disconnect();
  	if(rc) {
-		cout << "hllapi_disconnect returns with rc=" << rc << " (" << hllapi_get_last_error() << ")" << endl;
+		cout << "hllapi_disconnect returns with rc=" << rc << " (" << hllapi_get_last_error_as_cstring() << ")" << endl;
 		return rc;
 	}
 
-	cout << "HLLAPI Last error was \"" << hllapi_get_last_error() << "\"" << endl;
+	cout << "HLLAPI Last error was \"" << hllapi_get_last_error_as_cstring() << "\"" << endl;
 
 	*/
 
