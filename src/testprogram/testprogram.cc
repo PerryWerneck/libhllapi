@@ -143,18 +143,34 @@
 		} else if(strncasecmp(cmdline.c_str(),"cursor",6) == 0) {
 
 			unsigned int row, col;
+			const char * arg = cmdline.c_str()+6;
 
-			switch(std::sscanf(cmdline.c_str()+6,"%u,%u",&row,&col)) {
-			case 1:
-				cout << "Moving cursor to " << row << endl;
-				rc = hllapi_set_cursor_address((WORD) row);
-				break;
+			while(*arg && isspace(*arg))
+				arg++;
 
-			case 2:
-				cout << "Moving cursor to " << row << "," << col << endl;
-				rc = hllapi_set_cursor_position((WORD) row, (WORD) col);
-				break;
+			if(*arg) {
+
+				switch(std::sscanf(arg,"%u,%u",&row,&col)) {
+				case 1:
+					cout << "Moving cursor to " << row << endl;
+					rc = hllapi_set_cursor_address((WORD) row);
+					break;
+
+				case 2:
+					cout << "Moving cursor to " << row << "," << col << endl;
+					rc = hllapi_set_cursor_position((WORD) row, (WORD) col);
+					break;
+				}
+
+			} else {
+
+				int addr = hllapi_get_cursor_address();
+
+				cout << "Cursor address=" << addr << endl;
+
+
 			}
+
 
 		} else if(strncasecmp(cmdline.c_str(),"at",2) == 0) {
 

@@ -86,17 +86,11 @@
 
  	try {
 
-		TN3270::Host &host = getSession();
-
-		if(!host.isConnected())
-			return 0;
-
-		return (DWORD) (host.getCursorAddress()+1);
+		return (DWORD) (getSession().getCursorAddress()+1);
 
 	} catch(std::exception &e) {
 
 		hllapi_lasterror = e.what();
-		return -1;
 
 	}
 
