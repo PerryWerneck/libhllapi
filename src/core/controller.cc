@@ -68,12 +68,15 @@
 		hllapi_host = new TN3270::Host(*id ? id : nullptr, "UTF-8");
 #endif // _WIN32
 
+		debug("Will set timeout to %d",120);
+
 		hllapi_host->setTimeout(120);
 
-	}
-	catch(std::exception &e)
-	{
+	} catch(const std::exception &e) {
 		hllapi_lasterror = e.what();
+		return HLLAPI_STATUS_SYSTEM_ERROR;
+	} catch(...) {
+		hllapi_lasterror = "Unexpected error";
 		return HLLAPI_STATUS_SYSTEM_ERROR;
 	}
 

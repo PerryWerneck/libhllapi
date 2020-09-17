@@ -359,6 +359,7 @@
 
 	HLLAPI_API_CALL hllapi_set_cursor_address(WORD pos);
 	HLLAPI_API_CALL hllapi_set_cursor_position(WORD row, WORD col);
+	HLLAPI_API_CALL hllapi_get_cursor_position(WORD *row, WORD *col);
 
 	/**
 	 * @brief Report event to system log

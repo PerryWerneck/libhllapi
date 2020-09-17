@@ -50,7 +50,7 @@
 
  int main(int argc, char **argv) {
 
-	 printf("******\n");
+	int rc;
 
 	char buffer[SCREEN_LENGTH+1];
 
@@ -89,15 +89,28 @@
 
  #endif // ! defined(_MSC_VER)
 
- 	int rc = hllapi_init((char *) session);
- 	if(rc) {
-		cout << "hllapi_init returns with rc=" << rc << " (" << hllapi_get_last_error_as_cstring() << ")" << endl;
-		return rc;
+	try {
+
+		rc = hllapi_init((char *) session);
+		if(rc) {
+			cout << "hllapi_init returns with rc=" << rc << " (" << hllapi_get_last_error_as_cstring() << ")" << endl;
+			return rc;
+		}
+
+		cout << "TN3270 library revision is " << ((int) hllapi_get_revision()) << endl << ">";
+
+		hllapi_set_timeout(10);
+
+	} catch(const std::exception &e) {
+
+		cerr << e.what() << endl;
+		return -1;
+
+	} catch(...) {
+
+		cerr << "Unexpected error" << endl;
+		return -1;
 	}
-
-	cout << "TN3270 library revision is " << ((int) hllapi_get_revision()) << endl << ">";
-
-	hllapi_set_timeout(10);
 
 	cout.flush();
 
@@ -168,7 +181,10 @@
 
 				cout << "Cursor address=" << addr << endl;
 
+				WORD row, col;
+				rc = hllapi_get_cursor_position(&row,&col);
 
+				cout << "Cursor position=" << row << "," << col << endl;
 			}
 
 

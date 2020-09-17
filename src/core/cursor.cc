@@ -63,7 +63,6 @@
 		host.setCursor((unsigned short) pos -1);
 	});
 
-
  }
 
  HLLAPI_API_CALL hllapi_setcursor(WORD pos) {
@@ -98,6 +97,21 @@
  }
 
  HLLAPI_API_CALL hllapi_getcursor() {
+
  	return hllapi_get_cursor_address();
  }
 
+ HLLAPI_API_CALL hllapi_get_cursor_position(WORD *row, WORD *col) {
+
+	return set([row,col](TN3270::Host &host) {
+
+		*row = *col = 0;
+
+		auto position = host.getCursorPosition();
+
+		*row = (WORD) position.row;
+		*col = (WORD) position.col;
+
+	});
+
+}
