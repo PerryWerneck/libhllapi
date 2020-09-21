@@ -472,15 +472,10 @@ HLLAPI_API_CALL hllapi_set_session_parameter(LPSTR param, WORD len, WORD value)
 
 		int rc = HLLAPI_STATUS_BAD_PARAMETER;
 
-		char * buffer = NULL;
-		asprintf(&buffer,"%u",(unsigned int) value);
-
-		if(!buffer)
-			return HLLAPI_STATUS_SYSTEM_ERROR;
-
 		try {
 
-			getSession().setProperty(param,buffer);
+			string buffer = std::to_string((unsigned int) value);
+			getSession().setProperty(param,buffer.c_str());
 
 		} catch(const std::system_error &e) {
 
@@ -500,7 +495,6 @@ HLLAPI_API_CALL hllapi_set_session_parameter(LPSTR param, WORD len, WORD value)
 
 		}
 
-		free(buffer);
 		return rc;
 
 	}
