@@ -89,6 +89,9 @@
 
  #endif // ! defined(_MSC_VER)
 
+		cout	<< "Host: \"" << host << "\"" << endl
+				<< "Session: \"" << session << "\"" << endl;
+
 	try {
 
 		rc = hllapi_init((char *) session);
@@ -100,6 +103,9 @@
 		cout << "TN3270 library revision is " << ((int) hllapi_get_revision()) << endl << ">";
 
 		hllapi_set_timeout(10);
+
+		// Hack to speed up connection.
+		hllapi_set_session_property("crl_download","0");
 
 	} catch(const std::exception &e) {
 

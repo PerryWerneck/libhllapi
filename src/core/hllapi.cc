@@ -470,7 +470,38 @@ HLLAPI_API_CALL hllapi_set_session_parameter(LPSTR param, WORD len, WORD value)
 
 	} else {
 
-		return HLLAPI_STATUS_BAD_PARAMETER;
+		int rc = HLLAPI_STATUS_BAD_PARAMETER;
+
+		char * buffer = NULL;
+		asprintf(&buffer,"%u",(unsigned int) value);
+
+		if(!buffer)
+			return HLLAPI_STATUS_SYSTEM_ERROR;
+
+		try {
+
+			getSession().setProperty(param,buffer);
+
+		} catch(const std::system_error &e) {
+
+			rc = hllapi_translate_error(e);
+
+		} catch(const std::exception &e) {
+
+			// Error getting session or lock state
+			hllapi_lasterror = e.what();
+			rc = HLLAPI_STATUS_SYSTEM_ERROR;
+
+		} catch(...) {
+
+			// Unexpected error getting session or lock state
+			hllapi_lasterror = _( "Unexpected error" );
+			rc = HLLAPI_STATUS_SYSTEM_ERROR;
+
+		}
+
+		free(buffer);
+		return rc;
 
 	}
 

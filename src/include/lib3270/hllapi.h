@@ -330,6 +330,7 @@
 	HLLAPI_API_CALL hllapi_pakey(WORD key);
 
 	HLLAPI_API_CALL hllapi_set_session_parameter(LPSTR param, WORD len, WORD value);
+	HLLAPI_API_CALL hllapi_set_session_property(const LPSTR property, const LPSTR value);
 
 	HLLAPI_API_CALL hllapi_enter(void);
 	HLLAPI_API_CALL hllapi_erase(void);

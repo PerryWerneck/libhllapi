@@ -117,3 +117,20 @@
 	});
 
  }
+
+ HLLAPI_API_CALL hllapi_set_session_property(const LPSTR property, const LPSTR value) {
+
+	if(!(property && *property)) {
+		hllapi_lasterror = _( "Invalid property name" );
+		return HLLAPI_STATUS_BAD_PARAMETER;
+
+	}
+
+	return set([property,value](TN3270::Host &host) {
+
+		host.setProperty(property,value);
+
+	});
+
+ }
+

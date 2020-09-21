@@ -70,6 +70,11 @@
 
 		debug("Will set timeout to %d",120);
 
+#ifdef DEBUG
+		// Hack to speed up the tests.
+		hllapi_host->setProperty("crl_download",false);
+#endif // DEBUG
+
 		hllapi_host->setTimeout(120);
 
 	} catch(const std::exception &e) {
