@@ -55,11 +55,10 @@ WINDRES=@WINDRES@
 AR=@AR@
 VALGRIND=@VALGRIND@
 GENMARSHAL=@GENMARSHAL@
-CONVERT=@CONVERT@
-OPTIPNG=@OPTIPNG@
 ZIP=@ZIP@
 DOXYGEN=@DOXYGEN@
 DLLTOOL=@DLLTOOL@
+STRIP=@STRIP@
 
 #---[ Paths ]----------------------------------------------------------------------------
 
@@ -132,6 +131,11 @@ $(OBJDBG)/%.o: \
 
 	@$(CXX) \
 		$(CFLAGS) \
+		-DDEBUG=1 \
+		-MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+
+	@$(CXX) \
+		$(CFLAGS) \
 		-g -Wall -Wextra -fstack-check \
 		-DDEBUG=1 \
 		-o $@ \
@@ -152,6 +156,12 @@ $(OBJRLS)/%.o: \
 
 	@echo $< ...
 	@$(MKDIR) $(dir $@)
+
+	@$(CXX) \
+		$(CFLAGS) \
+		-DNDEBUG=1 \
+		-MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+
 	@$(CXX) \
 		$(CFLAGS) \
 		-DNDEBUG=1 \
@@ -247,6 +257,10 @@ install-windows-lib: \
 	@$(INSTALL_PROGRAM) \
 		$(BINRLS)/$(SONAME) \
 		$(DESTDIR)$(bindir)/$(LIBNAME)@DLLEXT@
+
+	@$(STRIP) \
+		--discard-all \
+		$(DESTDIR)$(bindir)/$(LIBNAME)@DLLEXT@
 		
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)
@@ -301,7 +315,6 @@ else
 			$(BINDBG)/$(LIBNAME)@EXEEXT@
 endif
 
-
 $(BINDBG)/$(SONAME): \
 	$(foreach SRC, $(basename $(SOURCES)), $(OBJDBG)/$(SRC).o)
 
@@ -337,5 +350,9 @@ cleanRelease:
 clean: \
 	cleanDebug \
 	cleanRelease
+
+-include $(foreach SRC, $(basename $(SOURCES)), $(OBJRLS)/$(SRC).d)
+-include $(foreach SRC, $(basename $(SOURCES)), $(OBJDBG)/$(SRC).d)
+
 
 
