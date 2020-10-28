@@ -73,14 +73,6 @@ jobs:
        sudo make install
        cd ..
        sudo rm -fr lib3270
-       git clone https://github.com/PerryWerneck/libv3270.git ./libv3270
-       NOCONFIGURE=1 ./libv3270/autogen.sh
-       cd libv3270
-       ./configure --prefix=/usr
-       make all
-       sudo make install
-       cd ..
-       sudo rm -fr libv3270
        git clone https://github.com/PerryWerneck/libipc3270.git ./libipc3270
        NOCONFIGURE=1 ./libipc3270/autogen.sh
        cd libipc3270
