@@ -1,6 +1,8 @@
 
 ## HLLAPI library for lib3270/pw3270
 
+![CodeQL](https://github.com/PerryWerneck/lib3270/workflows/CodeQL/badge.svg)
+
 ## Installation
 
 ### Linux
