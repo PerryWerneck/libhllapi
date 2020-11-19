@@ -36,7 +36,7 @@ BuildRequires:	coreutils
 BuildRequires:	gcc-c++
 BuildRequires:	gettext-devel
 BuildRequires:	m4
-BuildRequires:  pkgconfig(ipc3270)
+BuildRequires:	pkgconfig(ipc3270)
 
 %if 0%{?fedora} ||  0%{?suse_version} > 1200
 
@@ -64,8 +64,8 @@ See more details at https://softwarepublico.gov.br/social/pw3270/
 %define _libvrs %{MAJOR_VERSION}_%{MINOR_VERSION}
 
 %package -n %{name}%{_libvrs}
-Summary:		HLLAPI client library for lib3270/pw3270
-Group:			Development/Libraries/C and C++
+Summary:	HLLAPI client library for lib3270/pw3270
+Group:		Development/Libraries/C and C++
 
 %description -n %{name}%{_libvrs}
 
@@ -76,8 +76,8 @@ See more details at https://softwarepublico.gov.br/social/pw3270/
 #---[ Development ]---------------------------------------------------------------------------------------------------
 
 %package devel
-Summary: HLLAPI Development files.
-Requires: %{name}%{_libvrs} = %{version}
+Summary:	HLLAPI Development files.
+Requires:	%{name}%{_libvrs} = %{version}
 
 %description devel
 
@@ -121,6 +121,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_libdir}/%{name}.so
 %{_includedir}/lib3270/hllapi.h
+%{_libdir}/pkgconfig/hllapi.pc
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 
