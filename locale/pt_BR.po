@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pw3270 5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-05 15:52-0300\n"
+"POT-Creation-Date: 2021-01-21 18:55-0300\n"
 "PO-Revision-Date: 2020-02-05 15:53-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Português <>\n"
@@ -19,31 +19,36 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Gtranslator 2.91.7\n"
 
-#: src/core/hllapi.cc:191 src/core/hllapi.cc:312 src/core/cursor.cc:41
-#: src/core/calls.cc:98
+#: src/core/hllapi.cc:201 src/core/hllapi.cc:322 src/core/calls.cc:114
 msgid "Disconnected from host"
 msgstr "Desconectado do servidor"
 
-#: src/core/set.cc:93 src/core/set.cc:110 src/core/set.cc:128
-#: src/core/get.cc:66 src/core/get.cc:84 src/core/get.cc:89 src/core/get.cc:108
-#: src/core/get.cc:113
+#: src/core/set.cc:70 src/core/set.cc:87 src/core/set.cc:105 src/core/get.cc:69
+#: src/core/get.cc:87 src/core/get.cc:92 src/core/get.cc:109
+#: src/core/get.cc:114
 msgid "Invalid parameter"
 msgstr "Parâmetro inválido"
 
-#: src/core/controller.cc:110
+#: src/core/set.cc:124
+#, fuzzy
+msgid "Invalid property name"
+msgstr "Sintaxe de proxy inválida"
+
+#: src/core/controller.cc:118
 msgid "Not initialized"
 msgstr "Não inicializado"
 
-#: src/core/set.cc:81 src/core/keyboard.cc:56 src/core/get.cc:54
-#: src/core/cursor.cc:55 src/core/calls.cc:65 src/core/actions.cc:58
+#: src/core/set.cc:59 src/core/keyboard.cc:53 src/core/hllapi.cc:493
+#: src/core/get.cc:57 src/core/cursor.cc:52 src/core/calls.cc:75
+#: src/core/actions.cc:53
 msgid "Unexpected error"
 msgstr "Erro inesperado"
 
-#: src/core/calls.cc:125
+#: src/core/calls.cc:145
 msgid "Unexpected message id"
 msgstr "Identificador de mensagem inesperado"
 
-#: src/core/calls.cc:107
+#: src/core/calls.cc:123
 msgid "keyboard is locked"
 msgstr "Teclado está bloqueado"
 
@@ -1374,9 +1379,6 @@ msgstr "Teclado está bloqueado"
 
 #~ msgid "Invalid proxy hostname syntax"
 #~ msgstr "Erro de sintaxe no nome do proxy"
-
-#~ msgid "Invalid proxy syntax"
-#~ msgstr "Sintaxe de proxy inválida"
 
 #~ msgid "Invalid proxy type '%.*s'"
 #~ msgstr "Tipo de proxy invalido '%.*s'"

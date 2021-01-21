@@ -322,6 +322,15 @@ if test "$app_cv_pic" == "yes"; then
 fi
 
 dnl ---------------------------------------------------------------------------
+dnl Set translation domain.
+dnl ---------------------------------------------------------------------------
+
+app_cv_gettext_package="libhllapi-$app_vrs_major.$app_vrs_minor"
+
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$app_cv_gettext_package")
+AC_SUBST(GETTEXT_PACKAGE,"$app_cv_gettext_package")
+
+dnl ---------------------------------------------------------------------------
 dnl Configure which files to generate.
 dnl ---------------------------------------------------------------------------
 

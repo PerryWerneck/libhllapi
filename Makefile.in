@@ -29,6 +29,7 @@
 LIBNAME=libhllapi
 SONAME=@SONAME@
 PRODUCT_NAME=@PRODUCT_NAME@
+GETTEXT_PACKAGE=@GETTEXT_PACKAGE@
 
 SOURCES= \
 	$(wildcard src/core/*.cc) \
@@ -38,7 +39,7 @@ SOURCES= \
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)
 
-INSTALL_PACKAGES=@INSTALL_PACKAGES@
+INSTALL_PACKAGES=@INSTALL_PACKAGES@ locale
 
 #---[ Tools ]----------------------------------------------------------------------------
 
@@ -203,11 +204,11 @@ $(POTDIR)/$(LIBNAME).pot: \
 	@$(MSGCAT) --sort-output $^ > $@
 
 locale: \
-	locale/$(LIBNAME).pot
+	locale/$(GETTEXT_PACKAGE).pot
 
 	@$(MAKE) -C locale all
 
-locale/$(LIBNAME).pot: \
+locale/$(GETTEXT_PACKAGE).pot: \
 	$(POTDIR)/$(LIBNAME).pot
 
 	@rm -f $@
@@ -281,6 +282,18 @@ install-windows-lib: \
 	@$(INSTALL_DATA) \
 		$(BINRLS)/$(LIBNAME).def \
 		$(DESTDIR)$(datarootdir)/$(PRODUCT_NAME)/def
+
+install-locale: \
+	locale/$(GETTEXT_PACKAGE).pot
+
+	@$(MAKE) -C locale DESTDIR=$(DESTDIR) install
+
+	@$(MKDIR) \
+		$(DESTDIR)$(datarootdir)/$(PRODUCT_NAME)/pot
+
+	@$(INSTALL_DATA) \
+		locale/$(GETTEXT_PACKAGE).pot \
+		$(DESTDIR)$(datarootdir)/$(PRODUCT_NAME)/pot/$(LIBNAME).pot
 
 
 doc:

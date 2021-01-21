@@ -31,3 +31,4 @@ doxygen/rtf
 *.exp
 *.lib
 metainfo.xml
+*.pot
