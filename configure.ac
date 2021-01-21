@@ -328,6 +328,7 @@ dnl ---------------------------------------------------------------------------
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(locale/Makefile)
 AC_CONFIG_FILES(sdk/hllapi.pc)
+AC_CONFIG_FILES(metainfo.xml)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.

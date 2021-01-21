@@ -234,6 +234,11 @@ install-linux-lib: \
 		$(LIBNAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
 		$(DESTDIR)$(libdir)/$(LIBNAME)@DLLEXT@
 
+	@$(MKDIR) $(DESTDIR)$(datarootdir)/appdata
+	@$(INSTALL_DATA) \
+		metainfo.xml \
+		$(DESTDIR)$(datarootdir)/appdata/$(PRODUCT_NAME)-hllapi.metainfo.xml
+
 install-dev:
 
 	# Install devel

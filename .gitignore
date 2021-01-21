@@ -30,4 +30,4 @@ doxygen/rtf
 *.exe
 *.exp
 *.lib
-
+metainfo.xml
