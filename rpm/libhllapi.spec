@@ -16,6 +16,8 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
+%define product %(pkg-config --variable=product_name lib3270)
+
 #---[ Package header ]------------------------------------------------------------------------------------------------
 
 Summary:		HLLAPI client library for lib3270/pw3270
@@ -23,7 +25,7 @@ Name:			libhllapi
 Version:		5.3
 Release:		0
 License:		LGPL-3.0
-Source:			%{name}-%{version}.tar.xz
+Source:		%{name}-%{version}.tar.xz
 
 Url:			https://github.com/PerryWerneck/libhllapi.git
 
@@ -102,8 +104,9 @@ make all
 rm -rf $RPM_BUILD_ROOT
 
 %makeinstall
+%find_lang %{name}-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
 
-%files -n %{name}%{_libvrs}
+%files -n %{name}%{_libvrs} -f langfiles
 %defattr(-,root,root)
 
 # https://en.opensuse.org/openSUSE:Packaging_for_Leap#RPM_Distro_Version_Macros
@@ -115,6 +118,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
+%{_datadir}/appdata/*.metainfo.xml
 
 %files devel
 %defattr(-,root,root)
@@ -122,6 +126,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}.so
 %{_includedir}/lib3270/hllapi.h
 %{_libdir}/pkgconfig/hllapi.pc
+%{_datadir}/%{product}/pot/*.pot
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 
