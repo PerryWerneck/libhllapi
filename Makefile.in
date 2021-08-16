@@ -121,6 +121,13 @@ $(POTDIR)/$(LIBNAME)/%.pot: \
 		$<
 	@touch $@
 
+$(POTDIR)/$(LIBNAME)/%.pot: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+	@touch $@
+
 #---[ Debug Rules ]----------------------------------------------------------------------
 
 $(OBJDBG)/%.o: \
