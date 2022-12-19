@@ -102,8 +102,6 @@
 
  HLLAPI_API_CALL hllapi_get_state(void) {
 
-//	debug("",__FUNCTION__);
-
  	try {
 
 		switch(hllapi_get_message_id()) {

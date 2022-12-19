@@ -118,7 +118,6 @@
 		throw runtime_error( _("Not initialized") );
  	}
 
- //	trace("%s()=%p",__FUNCTION__,hllapi_host);
  	return *hllapi_host;
 
  }
