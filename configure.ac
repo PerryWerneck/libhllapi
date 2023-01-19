@@ -63,7 +63,7 @@ dnl ---------------------------------------------------------------------------
 dnl Version info
 dnl ---------------------------------------------------------------------------
 
-AC_SUBST(PACKAGE_DESCRIPTION,"LIB3270/PW3270 HLLAPI API Module")
+AC_SUBST(PACKAGE_DESCRIPTION,"LIB3270/PW3270 HLLAPI Module")
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
@@ -258,11 +258,11 @@ if test "$app_cv_static_ipc3270" == "auto"; then
 fi
 
 if test "$app_cv_static_ipc3270" == "yes"; then
-	PKG_CHECK_MODULES( [IPC3270], [ipc3270-static], AC_DEFINE(USING_STATIC_IPC3270), AC_MSG_ERROR([IPC3270 static not present.]))
+	PKG_CHECK_MODULES( [IPC3270], [libipc3270-static], AC_DEFINE(USING_STATIC_IPC3270), AC_MSG_ERROR([IPC3270 static not present.]))
 	AC_MSG_NOTICE([Not using libintl to avoid the dependency.])
 	app_cv_pkgconfig_requires="ipc3270-static"
 else
-	PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(USING_DYNAMIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
+	PKG_CHECK_MODULES( [IPC3270], [libipc3270], AC_DEFINE(USING_DYNAMIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
 	app_cv_pkgconfig_requires="ipc3270"
 
 	# Use libintl only if using dynamic ipc3270 to avoid an extra DLL dependency.
