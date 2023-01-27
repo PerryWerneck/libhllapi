@@ -38,6 +38,7 @@
 
 #include "private.h"
 #include <lib3270/hllapi.h>
+#include <lib3270/ipc/host.h>
 
 
 /*--[ Prototipes ]-----------------------------------------------------------------------------------*/

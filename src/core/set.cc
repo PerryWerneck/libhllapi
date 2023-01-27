@@ -29,10 +29,10 @@
 
  #include "private.h"
  #include <lib3270/keyboard.h>
+ #include <lib3270/ipc/host.h>
 
  #include <string>
  #include <functional>
-
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
