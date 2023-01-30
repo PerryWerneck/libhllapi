@@ -12,7 +12,7 @@ TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc) \
 	$(wildcard src/testprogram/@OSNAME@/*.rc)
 	
-TARGETS=@OSNAME@-lib devel locale
+TARGETS=@OSNAME@-lib dev locale
 
 #---[ Tools ]----------------------------------------------------------------------------
 
@@ -235,6 +235,11 @@ install-linux-lib: \
 	@$(LN_S) \
 		@SONAME@ \
 		$(DESTDIR)$(libdir)/$(PACKAGE_NAME)@LIBEXT@
+		
+	@$(MKDIR) $(DESTDIR)$(datarootdir)/metainfo
+	@$(INSTALL_DATA) \
+		metainfo.xml \
+		$(DESTDIR)$(datarootdir)/metainfo/@APPLICATION_ID@.hllapi.metainfo.xml
 
 install-windows-lib: \
 	$(BINRLS)/@SONAME@ \
@@ -256,7 +261,7 @@ install-windows-lib: \
 		--dllname @SONAME@ \
 		--output-lib $(DESTDIR)$(libdir)/$(PACKAGE_NAME).dll.a
 
-install-devel:
+install-dev:
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/lib3270
@@ -294,7 +299,7 @@ uninstall-windows-lib:
 	@rm -f \
 		$(DESTDIR)$(libdir)/@SONAME@.a
 
-uninstall-devel:
+uninstall-dev:
 
 	@rm -fr \
 		$(DESTDIR)$(includedir)/udjat

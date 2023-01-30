@@ -12,13 +12,13 @@
 
 <component type="addon">
 
-	<id>@PRODUCT_NAME@-hllapi</id>
-	<extends>br.com.bb.@PRODUCT_NAME@.desktop</extends>
+	<id>@APPLICATION_ID@.hllapi</id>
+	<extends>@APPLICATION_ID@.terminal.desktop</extends>
 
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>LGPL-3.0</project_license>
 
-	<name>@PRODUCT_NAME@-hllapi</name>
+	<name>@PRODUCT_NAME@-@PACKAGE_NAME@</name>
 	<name xml:lang="pt_BR">@PRODUCT_NAME@-@PACKAGE_NAME@</name>
 
 	<summary>HLLAPI module for @PRODUCT_NAME@</summary>

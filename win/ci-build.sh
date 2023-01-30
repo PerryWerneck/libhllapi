@@ -63,7 +63,7 @@ cd ../..
 #
 # Build HLLAPI
 #
-echo "Building IPC"
+echo "Building HLLAPI"
 ./autogen.sh || die "Autogen failure"
 ./configure || die "Configure failure"
 make clean || die "Make clean failure"
