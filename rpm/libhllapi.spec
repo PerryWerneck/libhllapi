@@ -118,15 +118,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainf
 %endif
 
 %{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
-%{_datadir}/appdata/*.metainfo.xml
+%{_datadir}/metainfo/*.metainfo.xml
 
 %files devel
 %defattr(-,root,root)
 
 %{_libdir}/%{name}.so
 %{_includedir}/lib3270/hllapi.h
-%{_libdir}/pkgconfig/hllapi.pc
-%{_datadir}/%{product}/pot/*.pot
+%{_libdir}/pkgconfig/*.pc
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 

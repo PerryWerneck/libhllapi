@@ -12,7 +12,7 @@ TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc) \
 	$(wildcard src/testprogram/@OSNAME@/*.rc)
 	
-TARGETS=@OSNAME@-lib devel locale
+TARGETS=@OSNAME@-lib dev locale
 
 #---[ Tools ]----------------------------------------------------------------------------
 
@@ -261,7 +261,7 @@ install-windows-lib: \
 		--dllname @SONAME@ \
 		--output-lib $(DESTDIR)$(libdir)/$(PACKAGE_NAME).dll.a
 
-install-devel:
+install-dev:
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/lib3270
@@ -299,7 +299,7 @@ uninstall-windows-lib:
 	@rm -f \
 		$(DESTDIR)$(libdir)/@SONAME@.a
 
-uninstall-devel:
+uninstall-dev:
 
 	@rm -fr \
 		$(DESTDIR)$(includedir)/udjat
