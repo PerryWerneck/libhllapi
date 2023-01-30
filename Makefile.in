@@ -235,6 +235,11 @@ install-linux-lib: \
 	@$(LN_S) \
 		@SONAME@ \
 		$(DESTDIR)$(libdir)/$(PACKAGE_NAME)@LIBEXT@
+		
+	@$(MKDIR) $(DESTDIR)$(datarootdir)/metainfo
+	@$(INSTALL_DATA) \
+		metainfo.xml \
+		$(DESTDIR)$(datarootdir)/metainfo/$(PRODUCT_NAME)-$(PACKAGE_NAME).metainfo.xm
 
 install-windows-lib: \
 	$(BINRLS)/@SONAME@ \
