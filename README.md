@@ -8,7 +8,9 @@
 
 ### Linux
 
-For the supported distributions get the install repositories and instructions from https://software.opensuse.org/download.html?project=home%3APerryWerneck%3Apw3270&package=libhllapi
+You can download installation package for supported distributions in Open Build Service.
+
+[<img src="https://raw.githubusercontent.com/PerryWerneck/pw3270/master/branding/obs-badge-en.svg" alt="Download from open build service" height="80px">](https://software.opensuse.org/download.html?project=home%3APerryWerneck%3Apw3270&package=libhllapi)
 
 ### Windows
 
