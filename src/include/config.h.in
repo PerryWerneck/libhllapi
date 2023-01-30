@@ -1,5 +1,8 @@
 /* src/include/config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* The application ID */
+#undef APPLICATION_ID
+
 /* The Gettext package name */
 #undef GETTEXT_PACKAGE
 

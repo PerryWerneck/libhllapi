@@ -239,7 +239,7 @@ install-linux-lib: \
 	@$(MKDIR) $(DESTDIR)$(datarootdir)/metainfo
 	@$(INSTALL_DATA) \
 		metainfo.xml \
-		$(DESTDIR)$(datarootdir)/metainfo/$(PRODUCT_NAME)-$(PACKAGE_NAME).metainfo.xm
+		$(DESTDIR)$(datarootdir)/metainfo/@APPLICATION_ID@.hllapi.metainfo.xml
 
 install-windows-lib: \
 	$(BINRLS)/@SONAME@ \

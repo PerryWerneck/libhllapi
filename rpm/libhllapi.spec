@@ -37,13 +37,14 @@ BuildRequires:	binutils
 BuildRequires:	coreutils
 BuildRequires:	gcc-c++
 BuildRequires:	gettext-devel
+BuildRequires:	libtool
 BuildRequires:	m4
-BuildRequires:	pkgconfig(ipc3270)
+BuildRequires:  appstream-glib
 
 %if 0%{?fedora} ||  0%{?suse_version} > 1200
 
 BuildRequires:	gcc-c++
-BuildRequires:	pkgconfig(ipc3270)
+BuildRequires:	pkgconfig(libipc3270) >= 5.5
 
 %else
 
@@ -55,9 +56,7 @@ BuildRequires:	libipc3270-devel
 
 %description
 
-HLLAPI client library for pw3270/lib3270
-
-See more details at https://softwarepublico.gov.br/social/pw3270/
+Implementation os HLLAPI methods for pw3270/lib3270 based on libipc3270
 
 #---[ Library ]-------------------------------------------------------------------------------------------------------
 
@@ -102,9 +101,10 @@ make all
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-%makeinstall
+%make_install
 %find_lang %{name}-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
+
+appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.metainfo.xml
 
 %files -n %{name}%{_libvrs} -f langfiles
 %defattr(-,root,root)
