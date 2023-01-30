@@ -28,6 +28,7 @@
  */
 
  #include "private.h"
+ #include <lib3270/ipc/host.h>
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 
@@ -101,8 +102,6 @@
  }
 
  HLLAPI_API_CALL hllapi_get_state(void) {
-
-//	debug("",__FUNCTION__);
 
  	try {
 

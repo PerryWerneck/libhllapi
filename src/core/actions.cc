@@ -29,6 +29,7 @@
 
  #include "private.h"
  #include <functional>
+ #include <lib3270/ipc/host.h>
 
 /*--[ Implement ]------------------------------------------------------------------------------------*/
 

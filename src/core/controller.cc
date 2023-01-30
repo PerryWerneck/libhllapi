@@ -28,6 +28,7 @@
  */
 
  #include "private.h"
+ #include <lib3270/ipc/host.h>
 
 /*--[ Globals ]--------------------------------------------------------------------------------------*/
 
@@ -118,7 +119,6 @@
 		throw runtime_error( _("Not initialized") );
  	}
 
- //	trace("%s()=%p",__FUNCTION__,hllapi_host);
  	return *hllapi_host;
 
  }

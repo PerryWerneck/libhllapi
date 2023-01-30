@@ -32,3 +32,8 @@ doxygen/rtf
 *.lib
 metainfo.xml
 *.pot
+ABOUT-NLS
+intl
+m4
+po
+

@@ -1,40 +1,36 @@
+dnl SPDX-License-Identifier: LGPL-3.0-or-later
 dnl
-dnl Software pw3270, desenvolvido com base nos códigos fontes do  C3270  e  X3270
-dnl (Paul Mattes Paul.Mattes@usa.net), de emulação de terminal 3270 para acesso a
-dnl aplicativos mainframe. Registro no INPI sob o nome G3270.
+dnl Copyright (C) 2008 Banco do Brasil S.A.
 dnl
-dnl Copyright (C) <2008> <Banco do Brasil S.A.>
+dnl This program is free software: you can redistribute it and/or modify
+dnl it under the terms of the GNU Lesser General Public License as published
+dnl by the Free Software Foundation, either version 3 of the License, or
+dnl (at your option) any later version.
 dnl
-dnl Este programa é software livre. Você pode redistribuí-lo e/ou modificá-lo sob
-dnl os termos da GPL v.2 - Licença Pública Geral  GNU,  conforme  publicado  pela
-dnl Free Software Foundation.
+dnl This program is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
 dnl
-dnl Este programa é distribuído na expectativa de  ser  útil,  mas  SEM  QUALQUER
-dnl GARANTIA; sem mesmo a garantia implícita de COMERCIALIZAÇÃO ou  de  ADEQUAÇÃO
-dnl A QUALQUER PROPÓSITO EM PARTICULAR. Consulte a Licença Pública Geral GNU para
-dnl obter mais detalhes.
-dnl
-dnl Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este
-dnl programa;  se  não, escreva para a Free Software Foundation, Inc., 59 Temple
-dnl Place, Suite 330, Boston, MA, 02111-1307, USA
-dnl
-dnl Contatos:
-dnl
-dnl perry.werneck@gmail.com	(Alexandre Perry de Souza Werneck)
-dnl erico.mendonca@gmail.com	(Erico Mascarenhas de Mendonça)
+dnl You should have received a copy of the GNU Lesser General Public License
+dnl along with this program.  If not, see <https://www.gnu.org/licenses/>.
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
 
 dnl The minimum version of autoconf required.
-AC_PREREQ(2.61)
+AC_PREREQ(2.59)
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libhllapi], [5.4], [perry.werneck@gmail.com])
+AC_INIT([libhllapi], [5.4.1], [perry.werneck@gmail.com], [libhllapi], [https://github.com/PerryWerneck/libhllapi])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
+
+LT_INIT 
+
+AC_CONFIG_MACRO_DIRS([m4])
 
 dnl Compute the canonical host-system type
 AC_CANONICAL_HOST
@@ -52,71 +48,63 @@ dnl Set gettext version
 AM_GNU_GETTEXT_VERSION([0.14])
 
 dnl Checks for programs.
-AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_CC
 AC_PROG_SED
 AC_PROG_LN_S
 
 AC_LANG([C++])
 
 dnl ---------------------------------------------------------------------------
-dnl Version info
+dnl Version info - https://semver.org/
 dnl ---------------------------------------------------------------------------
-
-AC_SUBST(PACKAGE_DESCRIPTION,"LIB3270/PW3270 HLLAPI API Module")
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
+app_vrs_patch=$(echo $VERSION | cut -d. -f3)
 
-AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_VERSION, $app_vrs_major)
-AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor)
+AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_VERSION, $app_vrs_major, [The library major version])
+AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor, [The library minor version])
+AC_DEFINE_UNQUOTED(PACKAGE_PATCH_LEVEL, $app_vrs_patch, [The patch level])
 
 AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
 AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
+AC_SUBST(PACKAGE_PATCH_LEVEL,$app_vrs_patch)
 
-AC_ARG_WITH([release], [AS_HELP_STRING([--with-release], [Set release])], [ app_cv_release="$withval" ],[ app_cv_release="`date +%-y`.`date +%-m`.`date +%-d`" ])
+dnl ---------------------------------------------------------------------------
+dnl Set translation domain.
+dnl ---------------------------------------------------------------------------
 
-app_rls_major=$(echo $app_cv_release.0.0 | cut -d. -f1)
-app_rls_minor=$(echo $app_cv_release.0.0 | cut -d. -f2)
+app_cv_gettext_package="libhllapi-$app_vrs_major.$app_vrs_minor"
 
-AC_DEFINE_UNQUOTED(PACKAGE_RELEASE, $app_cv_release)
-AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_RELEASE, $app_rls_major)
-AC_DEFINE_UNQUOTED(PACKAGE_MINOR_RELEASE, $app_rls_minor)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$app_cv_gettext_package",[The Gettext package name])
+AC_SUBST(GETTEXT_PACKAGE,"$app_cv_gettext_package")
 
-AC_SUBST(PACKAGE_RELEASE,$app_cv_release)
-AC_SUBST(PACKAGE_MAJOR_RELEASE,$app_rls_major)
-AC_SUBST(PACKAGE_MINOR_RELEASE,$app_rls_minor)
+dnl ---------------------------------------------------------------------------
+dnl Check for PKG-Config
+dnl ---------------------------------------------------------------------------
 
-AC_ARG_WITH([application-datadir], [AS_HELP_STRING([--with-application-datadir], [Set path for configuration file])], [ app_cv_source_appdatadir="$withval" ],[ app_cv_source_appdatadir="\$(datarootdir)/\$(PACKAGE_NAME)" ])
-
-AC_DEFINE_UNQUOTED(APPDATADIR, $app_cv_source_appdatadir)
-AC_SUBST(APPDATADIR,$app_cv_source_appdatadir)
+PKG_CHECK_EXISTS
 
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
-INSTALL_PACKAGES="dev"
+
+CFLAGS="$CFLAGS -I$ac_pwd/src/include"
+CXXFLAGS="$CXXFLAGS -I$ac_pwd/src/include"
 
 case "$host" in
 	*-mingw32|*-pc-msys)
-		app_cv_osname="windows"
-
-		CFLAGS="$CFLAGS -D_WIN32_WINNT=0x0600"
+		CFLAGS="$CFLAGS -pthread"
+		#  -D_WIN32_WINNT=0x0600
 		LDFLAGS="$LDFLAGS -shared -static-libgcc -static-libstdc++ -Wl,--add-stdcall-alias,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic,--output-def,\$(@D)/\$(LIBNAME).def"
-		INSTALL_PACKAGES="windows-lib $INSTALL_PACKAGES"
-
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
-		DLLEXT=".dll"
 
-		app_win32_revision=$(date +%-y.%-m.%-d.%-H)
-		AC_SUBST(WIN32_VERSION,$app_win32_revision)
-
-		app_win32_file_version=$(date +%-y,%-m,%-d,%-H)
-		AC_SUBST(WIN32_FILE_VERSION,$app_win32_file_version)
-
-		AC_CONFIG_FILES(src/core/windows/resources.rc)
-		AC_CONFIG_FILES(win/hllapi.nsi)
-
+		AC_SUBST(LIBEXT,.dll)
+		AC_SUBST(EXEEXT,.exe)
+		AC_SUBST(SONAME,hllapi.dll)
+		AC_SUBST(OSNAME,windows)
+		
 		if test "$host_cpu" = "x86_64"; then
 			app_cv_programfiles="PROGRAMFILES64"
 			app_cv_winarch="64"
@@ -129,80 +117,48 @@ case "$host" in
 
 		AC_SUBST(PROGRAMFILES,$app_cv_programfiles)
 		AC_SUBST(WINARCH,$app_cv_winarch)
-                AC_SUBST(SONAME,hllapi.dll)
 		AC_SUBST(NSISREDIR,$app_cv_nsisredir)
 
+		AC_CONFIG_FILES(src/core/windows/resources.rc)
+		AC_CONFIG_FILES(win/hllapi.nsi)
 		;;
 
  	*)
-		CFLAGS="$CFLAGS"
-		LDFLAGS="$LDFLAGS -shared"
-		INSTALL_PACKAGES="linux-lib $INSTALL_PACKAGES"
-
-		app_cv_datadir="/usr/share"
-		app_cv_confdir="/etc"
-		app_cv_osname="linux"
-		LOGDIR="/var/log"
-		DLLEXT=".so"
-                AC_SUBST(SONAME,libhllapi.so.$app_vrs_major.$app_vrs_minor)
+		CFLAGS="$CFLAGS -pthread -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
+		CXXFLAGS="$CXXFLAGS -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
+		LDFLAGS="$LDFLAGS -pthread"
+		LIBS="$LIBS -ldl"
+		AC_SUBST(LIBEXT,.so)
+		AC_SUBST(EXEEXT)
+		AC_SUBST(SONAME,libhllapi.so.$app_vrs_major.$app_vrs_minor)
+		AC_SUBST(OSNAME,linux)
 
 esac
 
-AC_SUBST(DATADIR,$app_cv_datadir)
-AC_SUBST(CONFDIR,$app_cv_confdir)
-AC_SUBST(OSNAME,$app_cv_osname)
-AC_SUBST(LIBS)
-AC_SUBST(LOGDIR)
-AC_SUBST(DLLEXT)
-AC_SUBST(DLLPREFIX)
-AC_SUBST(INSTALL_PACKAGES)
-
 dnl ---------------------------------------------------------------------------
-dnl Check for other programs
+dnl Check for tools
 dnl ---------------------------------------------------------------------------
 
-AC_PATH_TOOL([AR], [ar], [ar])
-AC_PATH_TOOL([WINDRES], [windres], [no])
 AC_PATH_TOOL([VALGRIND], [valgrind], [no])
-AC_PATH_TOOL([DLLTOOL], [dlltool], [no])
+AC_PATH_TOOL([AR], [ar], [ar])
+AC_PATH_TOOL([DLLTOOL], [dlltool], [true])
 AC_PATH_TOOL([STRIP], [strip], [true])
-
-PKG_CHECK_EXISTS
-
-dnl ---------------------------------------------------------------------------
-dnl Check for doxygen
-dnl ---------------------------------------------------------------------------
-
-AC_PATH_TOOL([DOXYGEN], [doxygen])
-
-dnl Help line for graphviz (optionally used by doxygen)
-AC_ARG_ENABLE(graphviz,
-	AS_HELP_STRING([--disable-graphviz], [prevent doxygen from using dot]),
-	[wantgraphviz=$enableval], [wantgraphviz=yes])
-
-AC_CHECK_PROGS([GRAPHVIZDOT], [dot])
-AC_MSG_CHECKING([whether doxygen should use graphviz])
-if test "x$wantgraphviz" = "xyes" ; then
-	if test $GRAPHVIZDOT ; then
-		AC_MSG_RESULT([yes])
-		usegraphviz=yes
-	else
-		AC_MSG_RESULT([no, graphviz missing])
-		usegraphviz=no
-	fi
-else
-	AC_MSG_RESULT([no, disabled by configure])
-	usegraphviz=no
-fi
-
-AC_SUBST(HAVE_DOT,`echo $usegraphviz | tr yesno YESNO`)
-
-if test "x$DOXYGEN" != "x"; then
-	AC_CONFIG_FILES(doxygen/doxyfile)
-fi
+AC_PATH_TOOL([STRIP], [strip], [true])
+AC_PATH_TOOL([WINDRES], [windres], [true])
+AC_PATH_TOOL([DOXYGEN], [doxygen], [true])
 
 dnl ---------------------------------------------------------------------------
-dnl Check for C++ 2011 support
+dnl Check for libintl
+dnl ---------------------------------------------------------------------------
+
+AC_PATH_TOOL([XGETTEXT], [xgettext], [true])
+AC_PATH_TOOL([MSGCAT], [msgcat], [true])
+AC_PATH_TOOL([MSGINIT], [msginit], [true])
+AC_PATH_TOOL([MSGMERGE], [msgmerge], [true])
+AC_PATH_TOOL([MSGFMT], [msgfmt], [true])
+
+dnl ---------------------------------------------------------------------------
+dnl Check for C++ 2017 support
 dnl ---------------------------------------------------------------------------
 AC_DEFUN([AX_CHECK_COMPILE_FLAG],
 [AC_PREREQ(2.59)dnl for _AC_LANG_PREFIX
@@ -220,17 +176,58 @@ AS_IF([test x"AS_VAR_GET(CACHEVAR)" = xyes],
 AS_VAR_POPDEF([CACHEVAR])dnl
 ])dnl AX_CHECK_COMPILE_FLAGS
 
-AX_CHECK_COMPILE_FLAG([-std=gnu++11], [CFLAGS="$CFLAGS -std=gnu++11"])
+AX_CHECK_COMPILE_FLAG([-std=c++17], [CPPFLAGS="$CPPFLAGS -std=c++17"], [AC_MSG_ERROR(["C++ 17 is required"])])
 
 dnl ---------------------------------------------------------------------------
-dnl Check for tools
+dnl Set the ELF symbol visibility support
 dnl ---------------------------------------------------------------------------
+AC_DEFINE(HAVE_GNUC_VISIBILITY, 1, [supports GCC visibility attributes])
 
-AC_PATH_TOOL([XGETTEXT], [xgettext], [no])
-AC_PATH_TOOL([MSGCAT], [msgcat], [no])
-AC_PATH_TOOL([MSGINIT], [msginit], [no])
-AC_PATH_TOOL([MSGMERGE], [msgmerge], [no])
-AC_PATH_TOOL([MSGFMT], [msgfmt], [no])
+dnl ---------------------------------------------------------------------------
+dnl Check for compiler visibility flag
+dnl ---------------------------------------------------------------------------
+AC_MSG_CHECKING(whether $CC accepts -fvisibility=hidden)
+AC_CACHE_VAL(app_cv_fvisibility_ok,
+[ac_save_cc="$CC"
+CC="$CC -fvisibility=hidden"
+AC_TRY_RUN([int main() { return 0; }],
+  app_cv_fvisibility_ok=yes,
+  app_cv_fvisibility_ok=no,
+  app_cv_fvisibility_ok=no)
+CC="$ac_save_cc"])
+AC_MSG_RESULT($app_cv_fvisibility_ok)
+if test $app_cv_fvisibility_ok = yes; then
+  CFLAGS="$CFLAGS -fvisibility=hidden"
+  CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
+fi
+
+dnl ---------------------------------------------------------------------------
+dnl Check for pic
+dnl ---------------------------------------------------------------------------
+AC_ARG_ENABLE([pic],
+	[AS_HELP_STRING([--disable-pic], [disable support for PIC libraries (required to compile on 64bits)])],
+[
+	app_cv_pic="$enableval"
+],[
+
+	case "$host" in
+		*-mingw32|*-pc-msys)
+			app_cv_pic="no"
+		;;
+
+ 	s390x-*)
+			app_cv_pic="yes"
+		;;
+
+	*)
+		app_cv_pic="yes"
+	esac
+])
+
+if test "$app_cv_pic" == "yes"; then
+	CFLAGS="$CFLAGS -fPIC"
+	CXXFLAGS="$CXXFLAGS -fPIC"
+fi
 
 dnl ---------------------------------------------------------------------------
 dnl Check for IPC3270
@@ -258,17 +255,17 @@ if test "$app_cv_static_ipc3270" == "auto"; then
 fi
 
 if test "$app_cv_static_ipc3270" == "yes"; then
-	PKG_CHECK_MODULES( [IPC3270], [ipc3270-static], AC_DEFINE(USING_STATIC_IPC3270), AC_MSG_ERROR([IPC3270 static not present.]))
+	PKG_CHECK_MODULES( [IPC3270], [libipc3270-static], AC_DEFINE(USING_STATIC_IPC3270,1,[Using static version of libipc3270]), AC_MSG_ERROR([IPC3270 static not present.]))
 	AC_MSG_NOTICE([Not using libintl to avoid the dependency.])
 	app_cv_pkgconfig_requires="ipc3270-static"
 else
-	PKG_CHECK_MODULES( [IPC3270], [ipc3270], AC_DEFINE(USING_DYNAMIC_IPC3270), AC_MSG_ERROR([IPC3270 not present.]))
+	PKG_CHECK_MODULES( [IPC3270], [libipc3270], AC_DEFINE(USING_DYNAMIC_IPC3270,1,[Using dynamic version of libipc3270]), AC_MSG_ERROR([IPC3270 not present.]))
 	app_cv_pkgconfig_requires="ipc3270"
 
 	# Use libintl only if using dynamic ipc3270 to avoid an extra DLL dependency.
 	AC_CHECK_HEADER(libintl.h, [
 
-		AC_DEFINE(HAVE_LIBINTL, 1)
+		AC_DEFINE(HAVE_LIBINTL, 1,[ Do we have libintl? ])
 
 		case "$host" in
 		*-mingw32|*-pc-msys)
@@ -290,66 +287,21 @@ AC_SUBST(IPC3270_LIBS)
 AC_SUBST(IPC3270_CFLAGS)
 
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product=`pkg-config --variable=product_name lib3270` ])
-AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product)
+AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product,[The product name])
 AC_SUBST(PRODUCT_NAME,$app_cv_product)
 AC_SUBST(PKGCONFIG_REQUIRES,$app_cv_pkgconfig_requires)
-
-dnl ---------------------------------------------------------------------------
-dnl Check for pic
-dnl ---------------------------------------------------------------------------
-
-AC_ARG_ENABLE([pic],
-	[AS_HELP_STRING([--disable-pic], [disable support for PIC libraries (required to compile on 64bits)])],
-[
-	app_cv_pic="$enableval"
-],[
-
-	case "$host_cpu" in
-	x86_64)
-		app_cv_pic="yes"
-		;;
-
-	aarch64)
-		app_cv_pic="yes"
-		;;
-
-	*)
-		app_cv_pic="no"
-	esac
-
-])
-
-if test "$app_cv_pic" == "yes"; then
-	CFLAGS="$CFLAGS -fPIC"
-	CXXFLAGS="$CXXFLAGS -fPIC"
-fi
-
-dnl ---------------------------------------------------------------------------
-dnl Set translation domain.
-dnl ---------------------------------------------------------------------------
-
-app_cv_gettext_package="libhllapi-$app_vrs_major.$app_vrs_minor"
-
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$app_cv_gettext_package")
-AC_SUBST(GETTEXT_PACKAGE,"$app_cv_gettext_package")
 
 dnl ---------------------------------------------------------------------------
 dnl Configure which files to generate.
 dnl ---------------------------------------------------------------------------
 
-AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(sdk/dynamic.pc)
 AC_CONFIG_FILES(locale/Makefile)
-AC_CONFIG_FILES(sdk/hllapi.pc)
-AC_CONFIG_FILES(metainfo.xml)
+AC_CONFIG_FILES(Makefile)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.
 dnl ---------------------------------------------------------------------------
 
-AC_SUBST(LDFLAGS)
-
-AC_SUBST(BASEDIR,$ac_pwd)
-
 AC_OUTPUT
-
 
