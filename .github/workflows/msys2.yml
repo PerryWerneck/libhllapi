@@ -22,7 +22,28 @@ jobs:
           msystem: mingw64
           update: true
           install: xz mingw-w64-x86_64-gcc automake autoconf make git pkgconf mingw-w64-x86_64-gettext gettext-devel mingw-w64-x86_64-openssl libtool
+      - uses: robinraju/release-downloader@v1.7
+        with:
+          repository: "PerryWerneck/lib3270"
+          latest: true
+          fileName: "mingw-lib3270.tar.xz"   
+      - uses: robinraju/release-downloader@v1.7
+        with:
+          repository: "PerryWerneck/libipc3270"
+          latest: true
+          fileName: "mingw-libipc3270.tar.xz"  
       - name: CI-Build
         run: |
           ./win/ci-build.sh
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: 5.4
+          artifacts: "mingw-hllapi.tar.xz"
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          omitBody: true
+          omitPrereleaseDuringUpdate: true
+          replacesArtifacts: true
+
 
