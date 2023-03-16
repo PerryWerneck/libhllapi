@@ -1,46 +1,25 @@
-#
-# "Software pw3270, desenvolvido com base nos códigos fontes do WC3270  e X3270
-# (Paul Mattes Paul.Mattes@usa.net), de emulação de terminal 3270 para acesso a
-# aplicativos mainframe. Registro no INPI sob o nome G3270.
+# SPDX-License-Identifier: LGPL-3.0-or-later
 #
 # Copyright (C) <2008> <Banco do Brasil S.A.>
 #
-# Este programa é software livre. Você pode redistribuí-lo e/ou modificá-lo sob
-# os termos da GPL v.2 - Licença Pública Geral  GNU,  conforme  publicado  pela
-# Free Software Foundation.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-# Este programa é distribuído na expectativa de  ser  útil,  mas  SEM  QUALQUER
-# GARANTIA; sem mesmo a garantia implícita de COMERCIALIZAÇÃO ou  de  ADEQUAÇÃO
-# A QUALQUER PROPÓSITO EM PARTICULAR. Consulte a Licença Pública Geral GNU para
-# obter mais detalhes.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-# Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este
-# programa;  se  não, escreva para a Free Software Foundation, Inc., 59 Temple
-# Place, Suite 330, Boston, MA, 02111-1307, USA
-#
-# Contatos:
-#
-# perry.werneck@gmail.com	(Alexandre Perry de Souza Werneck)
-# erico.mendonca@gmail.com	(Erico Mascarenhas de Mendonça)
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
 !include "$(PW3270_SDK_PATH)\lib3270.mak"
 
-OBJ_FILES= \
-	src\core\windows\tools.obj \
-	src\core\windows\init.obj \
-	src\core\tools.obj \
-	src\core\actions.obj \
-	src\core\calls.obj \
-	src\core\controller.obj \
-	src\core\cursor.obj \
-	src\core\get.obj \
-	src\core\hllapi.obj \
-	src\core\keyboard.obj \
-	src\core\set.obj
-
 .cc.obj:
-	@echo Compiling...
+	@echo $@ ...
 	@$(CPP) \
 		/c \
 		/DPACKAGE_NAME=\"HLLAPI\" \
@@ -54,45 +33,73 @@ OBJ_FILES= \
 		/Fo"$@" \
 		$<
 
+all: \
+	hllapi.dll \
+	hllapi.static.lib
+
+install: \
+	hllapi.dll \
+	hllapi.static.lib \
+	$(LIB3270_NAME).lib
+	@echo Building library...
+	@-mkdir "$(PW3270_SDK_PATH)\lib"
+	copy /Y "$(LIB3270_NAME).lib" "$(PW3270_SDK_PATH)\lib\$(LIB3270_NAME).lib"
+	copy /Y "hllapi.static.lib" "$(PW3270_SDK_PATH)\lib\hllapi.static.lib"
+	copy /Y "hllapi.dll.lib" "$(PW3270_SDK_PATH)\lib\hllapi.dll.lib"
+	copy /Y "hllapi.dll" "$(PW3270_SDK_PATH)\..\hllapi.dll"
+
+	@-mkdir "$(PW3270_SDK_PATH)\include\lib3270"
+	@copy /Y "src\include\lib3270\*.h" "$(PW3270_SDK_PATH)\include\lib3270"
+	@copy /Y hllapi.dll "$(SystemRoot)\system32"
+
 testprogram.exe: \
 	src\testprogram\testprogram.obj \
 	hllapi.dll
+	
 	@echo Build exe file....
-	@link \
+	link \
 		/nologo \
 		/OUT:"$@" \
-		/LIBPATH:. \
-		/LIBPATH:"$(PW3270_SDK_PATH)\lib" \
 		src\testprogram\testprogram.obj
 
+hllapi.static.lib: \
+	src/core/*.cc \
+	src/core/windows/*.cc \
+	@$(MAKE) \
+		/f win\Makefile.msc \
+		$(**:.cc=.obj)
+
+	@lib \
+		/NOLOGO \
+		/OUT:"$@" \
+		$(**:.cc=.obj) \
+
 hllapi.dll: \
-	$(OBJ_FILES)
-	@echo Build dll file....
-	link \
+	src/core/*.cc \
+	src/core/windows/*.cc \
+	$(LIB3270_NAME).lib
+	@$(MAKE) \
+		/f win\Makefile.msc \
+		$(**:.cc=.obj)
+
+	@link \
 		/NOLOGO \
 		/DLL \
 		/OUT:"$@" \
-		/LIBPATH:"$(PW3270_SDK_PATH)\lib" \
-		$(OBJ_FILES) \
+		/IMPLIB:hllapi.dll.lib \
+		$(**:.cc=.obj) \
 		/DELAYLOAD:$(LIB3270_NAME).dll
 
+$(LIB3270_NAME).lib:
+	lib \
+		/def:"$(PW3270_SDK_PATH)\def\$(LIB3270_NAME).def" \
+		/out:$(LIB3270_NAME).lib
 
-install: \
-	hllapi.dll
-	@echo Building library...
-	@-mkdir "$(PW3270_SDK_PATH)\lib"
-	@lib \
-		/NOLOGO \
-		/OUT:"$(PW3270_SDK_PATH)\lib\hllapi.lib" \
-		$(OBJ_FILES)		
-
-	@-mkdir "$(PW3270_SDK_PATH)\include\lib3270"
-	@copy "src\include\lib3270\*.h" "$(PW3270_SDK_PATH)\include\lib3270"
-	@copy hllapi.dll "$(SystemRoot)\system32"
-
-clean:
-	del \
-		hllapi.dll \
-		$(OBJ_FILES) \
+clean: \
+	src\core\*.cc \
+	src\core\windows\*.cc \
+	del /Q \
+		*.lib \
+		*.dll \
+		$(**:.cc=.obj) \
 		testprogram.*
-
