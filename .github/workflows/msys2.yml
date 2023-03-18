@@ -3,6 +3,9 @@ on:
   pull_request:
     branches:
       - master
+  push:
+    branches:
+      - develop      
 jobs:
   msys2-mingw:
     runs-on: windows-latest
@@ -11,11 +14,16 @@ jobs:
         shell: msys2 {0}
     steps:
       - uses: actions/checkout@v3
+      - uses: oprypin/find-latest-tag@v1
+        id: gettag
+        with:
+          repository: PerryWerneck/libhllapi  # The repository to scan.
+          releases-only: true  # We know that all relevant tags have a GitHub release for them.
       - uses: msys2/setup-msys2@v2
         with:
           msystem: mingw64
           update: true
-          install: xz mingw-w64-x86_64-gcc automake autoconf make git pkgconf mingw-w64-x86_64-gettext gettext-devel mingw-w64-x86_64-openssl libtool
+          install: xz mingw-w64-x86_64-gcc automake autoconf make git pkgconf mingw-w64-x86_64-gettext gettext-devel mingw-w64-x86_64-openssl libtool zip
       - uses: robinraju/release-downloader@v1.7
         with:
           repository: "PerryWerneck/lib3270"
@@ -25,13 +33,13 @@ jobs:
         with:
           repository: "PerryWerneck/libipc3270"
           latest: true
-          fileName: "mingw-libipc3270.tar.xz"  
+          fileName: "mingw-libipc3270.tar.xz"   
       - name: CI-Build
         run: |
           ./win/ci-build.sh
       - uses: ncipollo/release-action@v1
         with:
-          tag: 5.4
+          tag: ${{ steps.gettag.outputs.tag }}
           artifacts: "mingw-hllapi.tar.xz"
           allowUpdates: true
           draft: false
@@ -39,5 +47,3 @@ jobs:
           omitBody: true
           omitPrereleaseDuringUpdate: true
           replacesArtifacts: true
-
-
