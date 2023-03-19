@@ -44,7 +44,6 @@ install: \
 
 	@-mkdir "$(DESTDIR)"
 	@-mkdir "$(DESTDIR)\lib"
-	@copy /Y "$(LIB3270_NAME).lib" "$(DESTDIR)\lib\$(LIB3270_NAME).lib"
 	@copy /Y "hllapi.static.lib" "$(DESTDIR)\lib\hllapi.static.lib"
 	@copy /Y "hllapi.dll.lib" "$(DESTDIR)\lib\hllapi.dll.lib"
 
