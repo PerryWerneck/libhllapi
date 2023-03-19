@@ -70,43 +70,31 @@ TODO
 
 ### Windows native with MSYS2
 
-1. Build and install [libipc3270](../../../libipc3270)
-
-2. Get hllapi sources from git
-
-	```
-	$ git clone https://github.com/PerryWerneck/libhllapi.git
-	```
-
-3. Build and install
-
-	```
-	$ cd libhllapi
-	$ ./autogen.sh
-	$ make all
-	$ make install
-	```
+TODO
 
 ### Windows native with MSVC
 
-1. Install pw3270 with remote control and sdk modules
+1. Download and install Visual Studio Build Tools (https://visualstudio.microsoft.com/pt-br/downloads/)
 
-2. Download and install Visual Studio Build Tools (https://visualstudio.microsoft.com/pt-br/downloads/)
+2. Download and install git for windows
 
-3. Download and install git for windows
-
-4. Build and install the "glue" library using the MSVC Native tools command prompt as administrator.
+3. Get libhllapi sources from git
 
 	```shell
-	git clone https://github.com/PerryWerneck/libipc3270.git ./ipc3270
-	cd ipc3270
-	install.bat
+	git clone https://github.com/PerryWerneck/libhllapi.git ./libhllapi
 	```
 
-5. Build and install hllapi library using the MSVC Native tools command prompt as administrator.
+4. Download latest build of the 'glue' library.
 
 	```shell
-	git clone https://github.com/PerryWerneck/libhllapi.git ./hllapi
-	cd hllapi
-	install.bat
+	cd libhllapi
+	wget https://github.com/PerryWerneck/libipc3270/releases/download/5.5/msvc-libipc3270.zip
+	7z x msvc-libipc3270.zip -y -oipc3270
 	```
+
+5. Make 
+
+	```shell
+	nmake /f win\Makefile-ci.msc LIB3270_SDK_PATH=ipc3270 DESTDIR=ipc3270.msvc install
+	```
+
