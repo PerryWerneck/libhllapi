@@ -40,7 +40,7 @@ all: \
 install: \
 	hllapi.dll \
 	hllapi.static.lib
-	@echo Building library...
+	@echo Installing on $(DESTDIR)...
 
 	@-mkdir "$(DESTDIR)"
 	@-mkdir "$(DESTDIR)\lib"
