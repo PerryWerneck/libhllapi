@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-!include "$(LIB3270_SDK_PATH)\share\pw3270\def\lib3270.mak"
+!include "$(LIB3270_SDK_PATH)\include\lib3270\lib3270.mak"
 
 .cc.obj:
 	@echo $@ ...
@@ -44,6 +44,7 @@ install: \
 
 	@-mkdir "$(DESTDIR)"
 	@-mkdir "$(DESTDIR)\lib"
+	@copy /Y "$(LIB3270_NAME).lib" "$(DESTDIR)\lib\$(LIB3270_NAME).lib"
 	@copy /Y "hllapi.static.lib" "$(DESTDIR)\lib\hllapi.static.lib"
 	@copy /Y "hllapi.dll.lib" "$(DESTDIR)\lib\hllapi.dll.lib"
 
@@ -51,6 +52,7 @@ install: \
 	@copy /Y "hllapi.dll" "$(DESTDIR)\bin\hllapi.dll"
 
 	@-mkdir "$(DESTDIR)\include"
+	@-mkdir "$(DESTDIR)\include\lib3270"
 	@xcopy /s /y "src\include\lib3270" "$(DESTDIR)\include\lib3270"
 
 testprogram.exe: \
@@ -66,7 +68,6 @@ testprogram.exe: \
 hllapi.static.lib: \
 	src/core/*.cc \
 	src/core/windows/*.cc
-
 	@$(MAKE) \
 		/f win\Makefile-ci.msc \
 		$(**:.cc=.obj)
@@ -78,10 +79,7 @@ hllapi.static.lib: \
 
 hllapi.dll: \
 	src/core/*.cc \
-	src/core/windows/*.cc \
-	ipc3270.static.lib \
-	$(LIB3270_NAME).lib
-	
+	src/core/windows/*.cc
 	@$(MAKE) \
 		/f win\Makefile-ci.msc \
 		$(**:.cc=.obj)
@@ -89,23 +87,20 @@ hllapi.dll: \
 	@link \
 		/NOLOGO \
 		/DLL \
+		/LTCG \
 		/OUT:"$@" \
+		/LIBPATH:ipc3270\lib \
 		/IMPLIB:hllapi.dll.lib \
 		$(**:.cc=.obj) \
-		/DELAYLOAD:$(LIB3270_NAME).dll
-
-$(LIB3270_NAME).lib:
-	lib \
-		/def:"$(LIB3270_SDK_PATH)\share\pw3270\def\$(LIB3270_NAME).def" \
-		/out:$(LIB3270_NAME).lib
+		/DELAYLOAD:$(LIB3270_NAME).dll \
+		/NODEFAULTLIB:ipc3270.lib  \
+		ipc3270.static.lib
 
 clean: \
-	src/core/*.cc \
-	src/core/windows/*.cc
-
+	src\core\*.cc \
+	src\core\windows\*.cc
 	del /Q \
 		*.lib \
 		*.dll \
 		$(**:.cc=.obj) \
 		testprogram.*
-

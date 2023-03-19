@@ -41,8 +41,8 @@
 
  #ifdef _MSC_VER
 	#pragma comment(lib,"Advapi32.lib")
-	#pragma comment(lib,"ipc3270.lib")
 	#pragma comment(lib,"Delayimp.lib")
+	#pragma comment(lib,"ipc3270.lib")
 	#include <Delayimp.h>
  #else
 	#include <config.h>
