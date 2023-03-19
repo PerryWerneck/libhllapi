@@ -1,0 +1,40 @@
+name: MSVC
+on:
+  push:
+    branches:
+      - msvc
+  pull_request:
+    branches:
+      - master
+jobs:
+  msvc-pack:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: oprypin/find-latest-tag@v1
+        id: gettag
+        with:
+          repository: PerryWerneck/libipc3270  # The repository to scan.
+          releases-only: true  # We know that all relevant tags have a GitHub release for them.
+      - uses: ilammy/msvc-dev-cmd@v1.4.1
+      - uses: robinraju/release-downloader@v1.7
+        with:
+          repository: "PerryWerneck/libipc3270"
+          latest: true
+          fileName: "msvc-libipc3270.zip"
+      - name: Extract libipc3270
+        run: 7z x msvc-libipc3270.zip -y -oipc3270
+      - name: Build
+        run: nmake /f win\Makefile-ci.msc LIB3270_SDK_PATH=ipc3270 DESTDIR=hllapi.msvc install
+      - name: pack
+        run: 7z a msvc-hllapi.zip .\hllapi.msvc\*
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.gettag.outputs.tag }}
+          artifacts: "*.zip"
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          omitBody: true
+          omitPrereleaseDuringUpdate: true
+          replacesArtifacts: true

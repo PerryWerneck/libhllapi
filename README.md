@@ -95,6 +95,6 @@ TODO
 5. Make 
 
 	```shell
-	nmake /f win\Makefile-ci.msc LIB3270_SDK_PATH=ipc3270 DESTDIR=ipc3270.msvc install
+	nmake /f win\Makefile-ci.msc LIB3270_SDK_PATH=ipc3270 DESTDIR=hllapi.msvc install
 	```
 
