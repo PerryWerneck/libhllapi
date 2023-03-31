@@ -96,8 +96,7 @@ CXXFLAGS="$CXXFLAGS -I$ac_pwd/src/include"
 case "$host" in
 	*-mingw32|*-pc-msys)
 		CFLAGS="$CFLAGS -pthread"
-		#  -D_WIN32_WINNT=0x0600
-		LDFLAGS="$LDFLAGS -shared -static-libgcc -static-libstdc++ -Wl,--add-stdcall-alias,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic,--output-def,\$(@D)/\$(LIBNAME).def"
+		LDFLAGS="$LDFLAGS -shared -static-libgcc -static-libstdc++ -Wl,--add-stdcall-alias,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic,--output-def,\$(@D)/\$(PACKAGE_NAME).def"
 		LIBS="$LIBS -lws2_32 -lwtsapi32 -lcomdlg32"
 
 		AC_SUBST(LIBEXT,.dll)

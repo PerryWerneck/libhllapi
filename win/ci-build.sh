@@ -22,44 +22,16 @@ rm -fr ./.build
 mkdir -p ./.build
 
 #
-# Build LIB3270
+# Unpack LIB3270
 #
-if [ -e mingw-lib3270.tar.xz ]; then
-
-	echo "Unpacking lib3270"
-	tar -C / -Jxvf mingw-lib3270.tar.xz 
-
-else
-	echo "Building lib3270"
-	git clone https://github.com/PerryWerneck/lib3270.git ./.build/lib3270 || die "clone lib3270 failure"
-	cd ./.build/lib3270
-	./autogen.sh || die "Lib3270 autogen failure"
-	./configure || die "Lib3270 Configure failure"
-	make clean || die "Lib3270 Make clean failure"
-	make all || die "Lib3270 Make failure"
-	make install || die "Lib3270 Install failure"
-	cd ../..
-fi
+echo "Unpacking lib3270"
+tar -C / -Jxvf ${MINGW_PACKAGE_PREFIX}-lib3270.tar.xz 
 
 #
-# Build LIBIPC3270
+# Unpack LIBIPC3270
 #
-if [ -e mingw-libipc3270.tar.xz ]; then
-
-	echo "Unpacking libv3270"
-	tar -C / -Jxvf mingw-libipc3270.tar.xz 
-
-else
-	echo "Building libipc3270"
-	git clone https://github.com/PerryWerneck/libipc3270.git ./.build/libipc3270 || die "clone libipc3270 failure"
-	cd ./.build/libipc3270
-	./autogen.sh || die "libipc3270 Autogen failure"
-	./configure || die "libipc3270 Configure failure"
-	make clean || die "libipc3270 Make clean failure"
-	make all || die "libipc3270 Make failure"
-	make install || die "libipc3270 Install failure"
-	cd ../..
-fi
+echo "Unpacking libipc3270"
+tar -C / -Jxvf ${MINGW_PACKAGE_PREFIX}-libipc3270.tar.xz 
 
 #
 # Build HLLAPI
@@ -70,8 +42,8 @@ echo "Building HLLAPI"
 make clean || die "Make clean failure"
 make all  || die "Make failure"
 
-make DESTDIR=.bin/package install
-tar --create --xz --file=mingw-hllapi.tar.xz --directory=.bin/package --verbose .
+make DESTDIR=.bin/package install || die "Install failure"
+tar --create --xz --file=${MINGW_PACKAGE_PREFIX}-hllapi.tar.xz --directory=.bin/package --verbose . || die "Package failure"
 
 echo "Build complete"
 

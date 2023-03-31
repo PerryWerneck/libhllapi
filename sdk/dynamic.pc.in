@@ -7,7 +7,7 @@ version_major=@PACKAGE_MAJOR_VERSION@
 version_minor=@PACKAGE_MINOR_VERSION@
 
 Name: @PACKAGE_NAME@
-Description: @PACKAGE_DESCRIPTION@
+Description: HLLAPI client library for lib3270/pw3270
 Version: @PACKAGE_VERSION@
 Requires: @PKGCONFIG_REQUIRES@
 Libs: -lhllapi
