@@ -9,6 +9,7 @@ on:
 jobs:
   msvc-pack:
     runs-on: windows-latest
+    name: Publish MSVC Library
     steps:
       - uses: actions/checkout@v3
       - uses: oprypin/find-latest-tag@v1
