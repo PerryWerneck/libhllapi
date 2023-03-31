@@ -15,7 +15,7 @@ jobs:
       - uses: oprypin/find-latest-tag@v1
         id: gettag
         with:
-          repository: PerryWerneck/libipc3270  # The repository to scan.
+          repository: PerryWerneck/libhllapi  # The repository to scan.
           releases-only: true  # We know that all relevant tags have a GitHub release for them.
       - uses: ilammy/msvc-dev-cmd@v1.4.1
       - uses: robinraju/release-downloader@v1.7
