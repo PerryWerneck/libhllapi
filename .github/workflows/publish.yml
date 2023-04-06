@@ -15,30 +15,29 @@ jobs:
       - uses: oprypin/find-latest-tag@v1
         id: gettag
         with:
-          repository: PerryWerneck/libhllapi  # The repository to scan.
-          releases-only: true  # We know that all relevant tags have a GitHub release for them.
+          repository: PerryWerneck/libhllapi
+          releases-only: true
       - uses: msys2/setup-msys2@v2
         with:
           msystem: mingw64
           update: true
-          install: xz mingw-w64-x86_64-gcc automake autoconf make git pkgconf mingw-w64-x86_64-gettext gettext-devel mingw-w64-x86_64-openssl libtool zip
+          install: dos2unix mingw-w64-x86_64-gcc automake autoconf make git pkgconf mingw-w64-x86_64-gettext gettext-devel mingw-w64-x86_64-openssl libtool zip
       - uses: robinraju/release-downloader@v1.7
         with:
           repository: "PerryWerneck/lib3270"
           latest: true
-          fileName: "mingw-w64-x86_64-lib3270.tar.xz"   
+          fileName: "mingw-w64-x86_64-lib3270-5.4-0-x86_64.pkg.tar.zst"      
       - uses: robinraju/release-downloader@v1.7
         with:
           repository: "PerryWerneck/libipc3270"
           latest: true
-          fileName: "mingw-w64-x86_64-libipc3270.tar.xz"   
+          fileName: "mingw-w64-x86_64-libipc3270-5.4-0-x86_64.pkg.tar.zst"      
       - name: CI-Build
-        run: |
-          ./win/ci-build.sh
+        run: ./win/ci-build.sh
       - uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.gettag.outputs.tag }}
-          artifacts: "*-hllapi.tar.xz"
+          artifacts: "*-hllapi-*.pkg.tar.zst"
           allowUpdates: true
           draft: false
           makeLatest: true
@@ -47,30 +46,30 @@ jobs:
           replacesArtifacts: true
   msvc-pack:
     runs-on: windows-latest
-    name: Publish MSVC Library
+    name: Publish MSVC 64
     steps:
       - uses: actions/checkout@v3
       - uses: oprypin/find-latest-tag@v1
         id: gettag
         with:
-          repository: PerryWerneck/libhllapi  # The repository to scan.
-          releases-only: true  # We know that all relevant tags have a GitHub release for them.
+          repository: PerryWerneck/libhllapi
+          releases-only: true
       - uses: ilammy/msvc-dev-cmd@v1.4.1
       - uses: robinraju/release-downloader@v1.7
         with:
           repository: "PerryWerneck/libipc3270"
           latest: true
-          fileName: "msvc-libipc3270.zip"
+          fileName: "msvc-libipc3270-x86_64.zip"
       - name: Extract libipc3270
-        run: 7z x msvc-libipc3270.zip -y -oipc3270
+        run: 7z x msvc-libipc3270-x86_64.zip -y -oipc3270
       - name: Build
         run: nmake /f win\Makefile-ci.msc LIB3270_SDK_PATH=ipc3270 DESTDIR=hllapi.msvc install
       - name: pack
-        run: 7z a msvc-hllapi.zip .\hllapi.msvc\*
+        run: 7z a msvc-hllapi-x86_64.zip .\hllapi.msvc\*
       - uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.gettag.outputs.tag }}
-          artifacts: "msvc-hllapi.zip"
+          artifacts: "*-hllapi-*.zip"
           allowUpdates: true
           draft: false
           makeLatest: true
