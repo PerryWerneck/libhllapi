@@ -23,7 +23,7 @@ AC_PREREQ(2.59)
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libhllapi], [5.4.1], [perry.werneck@gmail.com], [libhllapi], [https://github.com/PerryWerneck/libhllapi])
+AC_INIT([libhllapi], [5.5.0], [perry.werneck@gmail.com], [libhllapi], [https://github.com/PerryWerneck/libhllapi])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
