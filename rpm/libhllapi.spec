@@ -22,7 +22,7 @@
 
 Summary:		HLLAPI client library for lib3270/pw3270
 Name:			libhllapi
-Version:		5.3
+Version: 5.5.0
 Release:		0
 License:		LGPL-3.0
 Source:		%{name}-%{version}.tar.xz

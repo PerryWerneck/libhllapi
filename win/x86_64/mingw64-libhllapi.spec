@@ -28,7 +28,7 @@
 
 Name:		mingw64-libhllapi
 Summary:	HLLAPI client library for lib3270/pw3270
-Version:	5.2
+Version: 5.5.0
 Release:	0
 License:	LGPL-3.0
 Source:		libhllapi-%{version}.tar.xz
