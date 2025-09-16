@@ -57,10 +57,24 @@ add_project_arguments(cxx.get_supported_arguments(compiler_flags_common), langua
 #
 # Dependencies
 #
-lib3270 = dependency('lib3270', required:true)
+lib3270 = dependency(
+  'lib3270', 
+  required: true,
+  fallback: [ 
+    'lib3270', 
+    'static_library'
+  ]
+)
 
 lib_deps = [
-  dependency('ipc3270', required:true)
+  dependency(
+    'libipc3270', 
+    required: true,
+    fallback: [ 
+      'libipc3270', 
+      'static_library'
+    ]
+  )
 ]
 
 #
