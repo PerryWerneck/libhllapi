@@ -49,17 +49,8 @@ compiler_flags_common = [
   '-DHAVE_CONFIG_H=1',
   '-ggdb3',
   '-fPIC',
-	]
-
-if enable_debug
-  compiler_flags_common += [
-	  '-DDEBUG=1'
-  ]
-else
-  compiler_flags_common += [
-	'-DNDEBUG=1'
-  ]
-endif
+  get_option('buildtype').contains('debug') ? '-DDEBUG=1' : '-DNDEBUG=1',
+]
 
 add_project_arguments(cxx.get_supported_arguments(compiler_flags_common), language: 'cpp')
 
@@ -67,10 +58,9 @@ add_project_arguments(cxx.get_supported_arguments(compiler_flags_common), langua
 # Dependencies
 #
 lib3270 = dependency('lib3270', required:true)
-libipc3270 = dependency('libipc3270', required:true)
 
 lib_deps = [
-  libipc3270
+  dependency('ipc3270', required:true)
 ]
 
 #
@@ -168,7 +158,7 @@ endif
 #
 if cxx.get_id() == 'msvc'
 
-  static = static_library(
+  static_library(
     meson.project_name(), 
     sources,
     install: true,
@@ -184,15 +174,6 @@ if cxx.get_id() == 'msvc'
     include_directories: includes_dir
   )
 
-#  executable(
-#    meson.project_name(),
-#    config_src + [ sources ],
-#    install: true,
-#    link_with : static,
-#    install_dir: get_option('bindir'),
-#    include_directories: includes_dir
-#  )
-
 else
 
   dynamic = shared_library(
@@ -206,7 +187,7 @@ else
     include_directories: includes_dir
   )
 
-  static = static_library(
+  static_library(
     meson.project_name(), 
     sources,
     install: true,
