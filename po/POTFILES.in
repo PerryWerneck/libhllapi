@@ -1,0 +1,13 @@
+src/core/actions.cc
+src/core/calls.cc
+src/core/controller.cc
+src/core/cursor.cc
+src/core/get.cc
+src/core/hllapi.cc
+src/core/keyboard.cc
+src/core/set.cc
+src/core/tools.cc
+src/core/windows/init.cc
+src/core/windows/tools.cc
+src/core/private.h
+src/include/lib3270/hllapi.h
