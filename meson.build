@@ -226,7 +226,7 @@ else
   executable(
     meson.project_name(),
     [ 'src/testprogram/testprogram.cc' ],
-    install: true,
+    install: false,
     link_with : dynamic,
     install_dir: get_option('bindir'),
     include_directories: includes_dir
