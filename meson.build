@@ -210,7 +210,7 @@ else
     cpp_args: [ '-ffat-lto-objects' ],
     gnu_symbol_visibility: 'hidden',
     dependencies: lib_deps,
-    soversion: pkg_major_version,
+    soversion: libversion,
     include_directories: includes_dir
   )
 
