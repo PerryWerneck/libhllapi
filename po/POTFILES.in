@@ -9,5 +9,3 @@ src/core/set.cc
 src/core/tools.cc
 src/core/windows/init.cc
 src/core/windows/tools.cc
-src/core/private.h
-src/include/lib3270/hllapi.h

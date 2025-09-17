@@ -93,6 +93,7 @@ app_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
 app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 
+app_conf.set('PRODUCT_ID', lib3270.get_variable('product_id'))
 app_conf.set('PRODUCT_NAME', lib3270.get_variable('product_name'))
 app_conf.set('PRODUCT_VERSION',lib3270.get_variable('sdk_version'))
 
@@ -168,6 +169,13 @@ else
     name: meson.project_name() + '-static',
     description: project_description,
     libraries: [ '-l:libdmiget.a' ]
+  )
+
+  configure_file(
+    input : 'branding/metainfo.xml.in',
+    output : lib3270.get_variable('product_id') + '.metainfo.xml',
+    install_dir: get_option('datadir') / 'metainfo',
+    configuration : app_conf
   )
 
 endif
