@@ -186,7 +186,7 @@ endif
 if cxx.get_id() == 'msvc'
 
   static_library(
-    meson.project_name(), 
+    'hllapi', 
     sources,
     install: true,
     dependencies: lib_deps,
@@ -194,7 +194,7 @@ if cxx.get_id() == 'msvc'
   )
 
   shared_library(
-    meson.project_name(), 
+    'hllapi', 
     sources,
     install: true,
     dependencies: lib_deps,
@@ -204,7 +204,7 @@ if cxx.get_id() == 'msvc'
 else
 
   dynamic = shared_library(
-    meson.project_name(), 
+    'hllapi', 
     sources,
     install: true,
     cpp_args: [ '-ffat-lto-objects' ],
@@ -215,7 +215,7 @@ else
   )
 
   static_library(
-    meson.project_name(), 
+    'hllapi', 
     sources,
     install: true,
     cpp_args: [ '-fno-lto' ],
