@@ -62,17 +62,7 @@ add_project_arguments(cxx.get_supported_arguments(compiler_flags_common), langua
 #
 # Dependencies
 #
-lib3270 = dependency(
-  'lib3270', 
-  required: true,
-  fallback: [ 
-    'lib3270', 
-    'static_library'
-  ]
-)
-
-lib_deps = [
-  dependency(
+ipc3270 = dependency(
     'libipc3270', 
     required: true,
     fallback: [ 
@@ -80,6 +70,9 @@ lib_deps = [
       'static_library'
     ]
   )
+
+lib_deps = [
+  ipc3270
 ]
 
 #
@@ -93,9 +86,9 @@ app_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
 app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 
-app_conf.set('PRODUCT_ID', lib3270.get_variable('product_id'))
-app_conf.set('PRODUCT_NAME', lib3270.get_variable('product_name'))
-app_conf.set('PRODUCT_VERSION',lib3270.get_variable('sdk_version'))
+app_conf.set('PRODUCT_ID', ipc3270.get_variable('product_id'))
+app_conf.set('PRODUCT_NAME', ipc3270.get_variable('product_name'))
+app_conf.set('PRODUCT_VERSION',ipc3270.get_variable('sdk_version'))
 
 config_src = [
   configure_file(
@@ -173,7 +166,7 @@ else
 
   configure_file(
     input : 'branding/metainfo.xml.in',
-    output : lib3270.get_variable('product_id') + '.metainfo.xml',
+    output : ipc3270.get_variable('product_id') + '.metainfo.xml',
     install_dir: get_option('datadir') / 'metainfo',
     configuration : app_conf
   )
