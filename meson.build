@@ -65,6 +65,8 @@ add_project_arguments(cxx.get_supported_arguments(compiler_flags_common), langua
 ipc3270 = dependency(
     'libipc3270', 
     required: true,
+    static: true,
+    version: '>= 5.5.0',
     fallback: [ 
       'libipc3270', 
       'static_library'
