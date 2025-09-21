@@ -19,16 +19,13 @@ TODO
 
 ## Building for Linux
 
-1. Build and install [libipc3270](../../../libipc3270)
-
-
-2. Get hllapi sources from git
+1. Get hllapi sources from git
 
 	```
 	$ git clone https://github.com/PerryWerneck/libhllapi.git
 	```
 
-3. Setup, build and install
+2. Setup, build and install
 
 	```shell
 	meson setup .build
