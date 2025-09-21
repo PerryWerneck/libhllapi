@@ -28,13 +28,12 @@ TODO
 	$ git clone https://github.com/PerryWerneck/libhllapi.git
 	```
 
-3. Build and install
+3. Setup, build and install
 
-	```
-	$ cd libhllapi
-	$ ./autogen.sh
-	$ make all
-	$ sudo make install
+	```shell
+	meson setup .build
+	meson compile -C .build
+	meson install -C .build
 	```
 
 ## Building for Windows
@@ -50,28 +49,75 @@ TODO
 	$ sudo zypper ref
 	```
 
-2. Get hllapi sources from git
+2. Install cross compilers
+
+	```shell
+	zypper in \
+			pkgconfig \
+			gettext-devel \
+			mingw64-libcurl-devel \
+			mingw64-cross-meson \
+			mingw64-libopenssl-devel \
+			mingw64-cross-gcc-c++
+	```
+
+
+3. Get hllapi sources from git
 
 	```
 	$ git clone https://github.com/PerryWerneck/libhllapi.git
 	```
 
-3. Install 64 bits cross compilers
-
-	```
-	$ ./libhllapi/win/install-cross.sh --64
-	```
-
-4. Run the build script
+4. Configure and build
 
 	```shell
-	$ cd libhllapi
-	$ ./win/pack.sh
+	meson setup --cross-file /usr/lib/rpm/macros.d/meson-mingw64-cross-file.txt .build
+	meson compile -C .build
 	```
 
 ### Windows native with MSYS2
 
-TODO
+1. Install and update MSYS2 
+
+	* Download and install [msys2](https://www.msys2.org/)
+	* Update msys:
+	
+	```shell
+	pacman -Syu
+	```
+	Afther this close and reopen mingw shell.
+
+2. Update system path
+
+	* Add c:\msys64\usr\bin and c:\msys64\mingw64\bin to system path
+
+3. Install devel packages using pacman on mingw shell
+
+	```shell
+	pacman -S \
+		dos2unix \
+		mingw-w64-x86_64-gcc \
+		mingw-w64-x86_64-meson \
+		mingw-w64-x86_64-iconv \
+		pkgconf \
+		mingw-w64-x86_64-gettext \
+		gettext-devel \
+		mingw-w64-x86_64-openssl
+	```
+
+	Afther this close and reopen mingw shell.
+
+4. Get hllapi sources from git
+
+	```
+	$ git clone https://github.com/PerryWerneck/libhllapi.git
+	```
+
+5. Build with packman
+
+	```shell
+	makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw
+	```
 
 ### Windows native with MSVC
 
@@ -79,23 +125,12 @@ TODO
 
 2. Download and install git for windows
 
-3. Get libhllapi sources from git
+3. Download and install meson for windows
+
+4. Get libhllapi sources from git
 
 	```shell
 	git clone https://github.com/PerryWerneck/libhllapi.git ./libhllapi
 	```
 
-4. Download latest build of the 'glue' library.
-
-	```shell
-	cd libhllapi
-	wget https://github.com/PerryWerneck/libipc3270/releases/download/5.5/msvc-libipc3270.zip
-	7z x msvc-libipc3270.zip -y -oipc3270
-	```
-
-5. Make 
-
-	```shell
-	nmake /f win\Makefile-ci.msc LIB3270_SDK_PATH=ipc3270 DESTDIR=hllapi.msvc install
-	```
-
+[TODO]
